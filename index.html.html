@@ -6,7 +6,7 @@
 <title>Admin CX — Ridery</title>
 <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2338CEA6'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-family='Bebas Neue%2C Arial Black%2C sans-serif' font-size='42' font-weight='900' fill='%230F111E'%3ER%3C/text%3E%3C/svg%3E">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;600;700;900&family=Nunito:wght@400;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400&family=Nunito:wght@400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
 <style>
 /* ═══════════════════════════════════════════
    VARIABLES GLOBALES
@@ -40,7 +40,16 @@
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: var(--font-main); background: var(--fondo); color: var(--negro); min-height: 100vh; overflow-x: hidden; }
+body {
+  font-family: var(--font-main);
+  font-weight: 500;
+  background: var(--fondo);
+  color: var(--negro);
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 
 /* ═══════════════════════════════════════════
    PANTALLAS DE LOGIN — Split panel style
@@ -322,7 +331,7 @@ body { font-family: var(--font-main); background: var(--fondo); color: var(--neg
   transition: max-height .3s ease;
   margin-left: 10px;
 }
-.nav-sub.open { max-height: 260px; }
+.nav-sub.open { max-height: 360px; }
 
 .nav-sub-item {
   display: flex; align-items: center; gap: 10px;
@@ -432,7 +441,7 @@ body { font-family: var(--font-main); background: var(--fondo); color: var(--neg
   width: 100%; padding: 13px 16px;
   background: var(--gris-1); color: var(--negro);
   border: 1.5px solid var(--borde); border-radius: var(--radius-s);
-  font-family: 'Urbanist', sans-serif; font-size: .92rem; font-weight: 600;
+  font-family: var(--font-main); font-size: .92rem; font-weight: 600;
   outline: none; resize: vertical;
   transition: border-color .2s, box-shadow .2s;
 }
@@ -2582,13 +2591,7 @@ input:checked + .slider:before { transform: translateX(18px); }
     <nav class="sidebar-nav">
       <div class="nav-section-label">Módulos</div>
 
-      <!-- Categoría -->
-      <div class="nav-item">
-        <div class="nav-item-header" onclick="navigateTo('categoria', this)">
-          <span class="nav-icon">🏷️</span>
-          <span class="nav-label">Categoría</span>
-        </div>
-      </div>
+
 
       <!-- Calculadora -->
       <div class="nav-item">
@@ -2634,19 +2637,30 @@ input:checked + .slider:before { transform: translateX(18px); }
         </div>
       </div>
 
-      <!-- DISPONIBILIDAD -->
+      <!-- DISPONIBILIDAD (módulo agrupado) -->
       <div class="nav-item">
-        <div class="nav-item-header" onclick="navigateTo('disponibilidad', this)">
+        <div class="nav-item-header" onclick="toggleNav('nav-disponibilidad', this)">
           <span class="nav-icon">🚦</span>
-          <span class="nav-label">Disponibilidad Ciudad</span>
+          <span class="nav-label">Disponibilidad</span>
+          <span class="nav-arrow" id="nav-disponibilidad-arrow">▶</span>
+        </div>
+        <div class="nav-sub" id="nav-disponibilidad">
+          <div class="nav-sub-item" onclick="navigateTo('disponibilidad', this)"><span class="nav-sub-dot"></span>Disponibilidad Ciudad</div>
+          <div class="nav-sub-item" onclick="navigateTo('disponibilidad-aspirantes', this)"><span class="nav-sub-dot"></span>Aspirantes</div>
+          <div class="nav-sub-item" onclick="navigateTo('kits', this)"><span class="nav-sub-dot"></span>Kits</div>
         </div>
       </div>
 
-      <!-- DISPONIBILIDAD ASPIRANTES -->
+      <!-- SIMULADOR (módulo agrupado) -->
       <div class="nav-item">
-        <div class="nav-item-header" onclick="navigateTo('disponibilidad-aspirantes', this)">
-          <span class="nav-icon">🧑‍✈️</span>
-          <span class="nav-label">Disponibilidad Aspirantes</span>
+        <div class="nav-item-header" onclick="toggleNav('nav-simulador', this)">
+          <span class="nav-icon">🧪</span>
+          <span class="nav-label">Simulador</span>
+          <span class="nav-arrow" id="nav-simulador-arrow">▶</span>
+        </div>
+        <div class="nav-sub" id="nav-simulador">
+          <div class="nav-sub-item" onclick="navigateTo('categoria', this)"><span class="nav-sub-dot"></span>Simulador de Categoría</div>
+          <div class="nav-sub-item" onclick="navigateTo('simulacion-flota', this)"><span class="nav-sub-dot"></span>Simulación Flota Vehículo</div>
         </div>
       </div>
 
@@ -2670,7 +2684,7 @@ input:checked + .slider:before { transform: translateX(18px); }
         <div class="nav-sub" id="nav-admin">
           <div class="nav-sub-item" onclick="navigateTo('guardia-vacante', this)"><span class="nav-sub-dot"></span>Guardia Vacante</div>
           <div class="nav-sub-item" onclick="navigateTo('validador', this)"><span class="nav-sub-dot"></span>Validador de Pagos</div>
-          <div class="nav-sub-item" onclick="navigateTo('gestion-usuarios', this)"><span class="nav-sub-dot"></span>Gestión de Usuarios</div>
+
         </div>
       </div>
       </div>
@@ -4227,6 +4241,736 @@ input:checked + .slider:before { transform: translateX(18px); }
       </div>
     </div>
 
+    <!-- ══════════════════════════════════════
+         KITS — Disponibilidad y Precios
+    ══════════════════════════════════════ -->
+    <div class="page-content" id="page-kits">
+      <div style="padding:0 28px 48px;max-width:1100px">
+
+        <!-- Banner -->
+        <div style="background:linear-gradient(135deg,#0d1b2e 0%,#1a2a40 100%);border-radius:16px;padding:28px 32px;display:flex;align-items:center;gap:20px;margin-bottom:28px;box-shadow:0 4px 24px rgba(0,0,0,.15)">
+          <div style="font-size:2.8rem">🎒</div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:2rem;letter-spacing:3px;color:#fff;margin-bottom:4px">KITS <span style="color:var(--verde)">RIDERY</span></div>
+            <div style="font-family:var(--font-secondary);font-size:.82rem;color:rgba(255,255,255,.5);font-weight:600">Disponibilidad y precios de equipamiento para conductores</div>
+          </div>
+        </div>
+
+        <!-- Grid de Kits -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;margin-bottom:32px">
+
+          <!-- CASCO -->
+          <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--verde)"></div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+              <div style="font-size:2.2rem">🪖</div>
+              <span style="background:var(--verde-p);color:var(--negro-2);border:1.5px solid rgba(56,206,166,.4);border-radius:999px;padding:4px 14px;font-size:.72rem;font-weight:900;font-family:var(--font-secondary)">✅ EN STOCK</span>
+            </div>
+            <div style="font-family:var(--font-main);font-size:.95rem;font-weight:900;color:var(--negro);margin-bottom:8px;line-height:1.3">CASCO SEMI-INTEGRAL PERSONALIZADO DOBLE VISOR</div>
+            <div style="font-family:var(--font-display);font-size:2rem;letter-spacing:2px;color:var(--verde);margin-bottom:8px">$42.92</div>
+            <div style="font-family:var(--font-secondary);font-size:.78rem;color:var(--gris-4);font-weight:600">Incluye: casco + personalización Ridery + doble visor</div>
+          </div>
+
+          <!-- KIT MOTO SUDADERA -->
+          <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;opacity:.85">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--rosa)"></div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+              <div style="font-size:2.2rem">🧥</div>
+              <span style="background:var(--rosa-p);color:var(--rosa);border:1.5px solid rgba(215,29,92,.25);border-radius:999px;padding:4px 14px;font-size:.72rem;font-weight:900;font-family:var(--font-secondary)">❌ SIN ETIQUETAS</span>
+            </div>
+            <div style="font-family:var(--font-main);font-size:.95rem;font-weight:900;color:var(--negro);margin-bottom:8px;line-height:1.3">KIT MOTO SUDADERA</div>
+            <div style="font-family:var(--font-display);font-size:2rem;letter-spacing:2px;color:var(--gris-4);margin-bottom:8px">$72.54</div>
+            <div style="background:var(--rosa-p);border:1px solid rgba(215,29,92,.15);border-radius:8px;padding:8px 12px;font-family:var(--font-secondary);font-size:.75rem;color:var(--rosa);font-weight:700">⚠️ Sin etiquetas — No hay en stock en este momento</div>
+          </div>
+
+          <!-- KIT MOTO CHAQUETA -->
+          <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden;opacity:.85">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--rosa)"></div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+              <div style="font-size:2.2rem">🧤</div>
+              <span style="background:var(--rosa-p);color:var(--rosa);border:1.5px solid rgba(215,29,92,.25);border-radius:999px;padding:4px 14px;font-size:.72rem;font-weight:900;font-family:var(--font-secondary)">❌ SIN ETIQUETAS</span>
+            </div>
+            <div style="font-family:var(--font-main);font-size:.95rem;font-weight:900;color:var(--negro);margin-bottom:8px;line-height:1.3">KIT MOTO CHAQUETA</div>
+            <div style="font-family:var(--font-display);font-size:2rem;letter-spacing:2px;color:var(--gris-4);margin-bottom:8px">$77.45</div>
+            <div style="background:var(--rosa-p);border:1px solid rgba(215,29,92,.15);border-radius:8px;padding:8px 12px;font-family:var(--font-secondary);font-size:.75rem;color:var(--rosa);font-weight:700">⚠️ Sin etiquetas — No hay en stock en este momento</div>
+          </div>
+
+          <!-- AFILIACIÓN Y ETIQUETAS -->
+          <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:24px;box-shadow:var(--shadow);position:relative;overflow:hidden">
+            <div style="position:absolute;top:0;left:0;right:0;height:4px;background:var(--azul)"></div>
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px">
+              <div style="font-size:2.2rem">🏷️</div>
+              <span style="background:var(--azul-p);color:var(--azul);border:1.5px solid rgba(39,40,131,.2);border-radius:999px;padding:4px 14px;font-size:.72rem;font-weight:900;font-family:var(--font-secondary)">✅ DISPONIBLE</span>
+            </div>
+            <div style="font-family:var(--font-main);font-size:.95rem;font-weight:900;color:var(--negro);margin-bottom:8px;line-height:1.3">AFILIACIÓN Y ETIQUETAS</div>
+            <div style="font-family:var(--font-display);font-size:2rem;letter-spacing:2px;color:var(--azul);margin-bottom:8px">$38.56</div>
+            <div style="font-family:var(--font-secondary);font-size:.78rem;color:var(--gris-4);font-weight:600">Pack completo de afiliación con etiquetas incluidas</div>
+          </div>
+
+        </div>
+
+        <!-- Sección de Etiquetas individuales -->
+        <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:28px;box-shadow:var(--shadow)">
+          <div style="font-family:var(--font-display);font-size:1.4rem;letter-spacing:2px;color:var(--negro);margin-bottom:6px;border-left:4px solid var(--verde);padding-left:14px">ETIQUETAS INDIVIDUALES</div>
+          <div style="font-family:var(--font-secondary);font-size:.8rem;color:var(--gris-4);font-weight:600;margin-bottom:24px;padding-left:18px">Precios unitarios por etiqueta</div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px">
+
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--gris-1);border-radius:10px;padding:14px 18px;border:1px solid var(--borde)">
+              <div>
+                <div style="font-family:var(--font-main);font-size:.85rem;font-weight:800;color:var(--negro);margin-bottom:3px">ETIQUETA TRASERA CONDUCTOR CERTIFICADO</div>
+                <div style="font-family:var(--font-secondary);font-size:.7rem;color:var(--gris-4);font-weight:600">10.3×21 cm · Única</div>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.3rem;letter-spacing:1px;color:var(--verde);white-space:nowrap;margin-left:12px">$1.25</div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--gris-1);border-radius:10px;padding:14px 18px;border:1px solid var(--borde)">
+              <div>
+                <div style="font-family:var(--font-main);font-size:.85rem;font-weight:800;color:var(--negro);margin-bottom:3px">ETIQUETA LATERAL REDONDA</div>
+                <div style="font-family:var(--font-secondary);font-size:.7rem;color:var(--gris-4);font-weight:600">10×10 cm · Única</div>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.3rem;letter-spacing:1px;color:var(--verde);white-space:nowrap;margin-left:12px">$0.37</div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--gris-1);border-radius:10px;padding:14px 18px;border:1px solid var(--borde)">
+              <div>
+                <div style="font-family:var(--font-main);font-size:.85rem;font-weight:800;color:var(--negro);margin-bottom:3px">ETIQUETA FRONTAL PARABRISAS ROTULADO + TRANSFER</div>
+                <div style="font-family:var(--font-secondary);font-size:.7rem;color:var(--gris-4);font-weight:600">10×7 cm · Única</div>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.3rem;letter-spacing:1px;color:var(--verde);white-space:nowrap;margin-left:12px">$0.26</div>
+            </div>
+
+            <div style="display:flex;align-items:center;justify-content:space-between;background:var(--gris-1);border-radius:10px;padding:14px 18px;border:1px solid var(--borde)">
+              <div>
+                <div style="font-family:var(--font-main);font-size:.85rem;font-weight:800;color:var(--negro);margin-bottom:3px">ETIQUETA FRONTAL CONDUCTOR CERTIFICADO MOTO</div>
+                <div style="font-family:var(--font-secondary);font-size:.7rem;color:var(--gris-4);font-weight:600">8×5 cm · Única</div>
+              </div>
+              <div style="font-family:var(--font-display);font-size:1.3rem;letter-spacing:1px;color:var(--verde);white-space:nowrap;margin-left:12px">$0.23</div>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         SIMULACIÓN FLOTA VEHÍCULO
+    ══════════════════════════════════════ -->
+    <div class="page-content" id="page-simulacion-flota">
+      <div style="padding:0 28px 48px;max-width:980px">
+
+        <!-- Banner -->
+        <div style="background:linear-gradient(135deg,#0d1b2e 0%,#1a2a40 100%);border-radius:16px;padding:24px 28px;display:flex;align-items:center;gap:20px;margin-bottom:24px;box-shadow:0 4px 24px rgba(0,0,0,.2)">
+          <div style="font-size:2.6rem">🚗</div>
+          <div>
+            <div style="font-family:var(--font-display);font-size:1.9rem;letter-spacing:3px;color:#fff;line-height:1;margin-bottom:4px">SIMULACIÓN <span style="color:var(--verde)">FLOTA</span></div>
+            <div style="font-family:var(--font-secondary);font-size:.8rem;color:rgba(255,255,255,.45);font-weight:600">Clasificador inteligente de vehículos por categoría Ridery</div>
+          </div>
+          <div style="margin-left:auto;display:flex;align-items:center;gap:7px;background:rgba(56,206,166,.15);border:1px solid rgba(56,206,166,.3);border-radius:999px;padding:6px 16px;flex-shrink:0">
+            <span style="font-size:.55rem;color:var(--verde);animation:pulse 2s infinite">●</span>
+            <span style="font-family:var(--font-secondary);font-size:.7rem;font-weight:800;color:var(--verde);letter-spacing:.08em">CLASIFICADOR ACTIVO</span>
+          </div>
+        </div>
+
+        <!-- Referencia de categorías colapsable -->
+        <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:14px;margin-bottom:20px;overflow:hidden;box-shadow:0 2px 8px rgba(15,17,30,.05)">
+          <div id="sf-ref-toggle" onclick="sfToggleRef()" style="display:flex;align-items:center;justify-content:space-between;padding:14px 20px;cursor:pointer;user-select:none">
+            <div style="font-family:var(--font-secondary);font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--gris-4)">📋 Ver referencia de categorías</div>
+            <span id="sf-ref-ico" style="font-size:.7rem;color:var(--gris-4);font-weight:700;transition:transform .2s">▶</span>
+          </div>
+          <div id="sf-ref-body" style="display:none;padding:0 20px 20px">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px">
+              <div style="background:#FFF9EC;border:1.5px solid rgba(217,119,6,.25);border-radius:10px;padding:12px 14px"><div style="font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;color:var(--amber);margin-bottom:5px">🛵 MOTO BARATICA</div><div style="font-family:var(--font-secondary);font-size:.73rem;color:#6b4f12;font-weight:600;line-height:1.5">• Año 2010+<br>• 100% operativa<br>• 2 cascos (no bicicleta, no Sandoval)</div></div>
+              <div style="background:#FFF9EC;border:1.5px solid rgba(217,119,6,.25);border-radius:10px;padding:12px 14px"><div style="font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;color:var(--amber);margin-bottom:5px">🏍️ MOTO</div><div style="font-family:var(--font-secondary);font-size:.73rem;color:#6b4f12;font-weight:600;line-height:1.5">• Año 2010+<br>• 100% operativa<br>• Sin requisito de cascos</div></div>
+              <div style="background:#EBF4FF;border:1.5px solid rgba(39,40,131,.2);border-radius:10px;padding:12px 14px"><div style="font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;color:var(--azul);margin-bottom:5px">🚐 CAMIONETA</div><div style="font-family:var(--font-secondary);font-size:.73rem;color:#2d2e6b;font-weight:600;line-height:1.5">• Año 2000+<br>• Capacidad: 4 maletas 25kg + 2 mano</div></div>
+              <div style="background:#F0FDF4;border:1.5px solid rgba(22,163,74,.25);border-radius:10px;padding:12px 14px"><div style="font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;color:#16a34a;margin-bottom:5px">🚗 BARATICO</div><div style="font-family:var(--font-secondary);font-size:.73rem;color:#166534;font-weight:600;line-height:1.5">• Compactos, 2 ptas, desde 1990<br>• Puede o no tener A/C<br>• Permite detalles estéticos</div></div>
+              <div style="background:#EDFAF6;border:1.5px solid rgba(56,206,166,.3);border-radius:10px;padding:12px 14px"><div style="font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;color:var(--verde);margin-bottom:5px">🚙 ECONÓMICO</div><div style="font-family:var(--font-secondary);font-size:.73rem;color:#0d6e51;font-weight:600;line-height:1.5">• Sedán, años 2000–2015</div></div>
+              <div style="background:#FDF2F8;border:1.5px solid rgba(215,29,92,.2);border-radius:10px;padding:12px 14px"><div style="font-family:var(--font-display);font-size:.9rem;letter-spacing:2px;color:var(--rosa);margin-bottom:5px">🚘 RIDERY PREMIUM</div><div style="font-family:var(--font-secondary);font-size:.73rem;color:#7c0a2f;font-weight:600;line-height:1.5">• Sedán, año 2016+</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Formulario principal -->
+        <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:26px 28px;box-shadow:var(--shadow);margin-bottom:20px">
+
+          <!-- PASO 1: Año -->
+          <div style="margin-bottom:24px">
+            <div style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--verde);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+              <span style="width:20px;height:20px;background:var(--verde);color:var(--negro);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900">1</span>
+              AÑO DEL VEHÍCULO
+            </div>
+            <input type="number" id="sf-anio" placeholder="Ej: 2018" min="1980" max="2030"
+              style="width:200px;padding:12px 16px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:1.1rem;font-weight:700;color:var(--negro);outline:none;transition:border-color .2s"
+              onfocus="this.style.borderColor='var(--verde)'" onblur="this.style.borderColor='var(--borde)'">
+          </div>
+
+          <!-- PASO 2: Tipo de carrocería visual -->
+          <div style="margin-bottom:24px">
+            <div style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--verde);margin-bottom:14px;display:flex;align-items:center;gap:8px">
+              <span style="width:20px;height:20px;background:var(--verde);color:var(--negro);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900">2</span>
+              TIPO DE VEHÍCULO
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px" id="sf-tipo-grid">
+
+              <!-- 2 Puertas / Compacto -->
+              <div class="sf-tipo-card" data-tipo="compacto_2p" onclick="sfSelectTipo(this)" style="border:2px solid var(--borde);border-radius:12px;padding:16px 12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--blanco)">
+                <svg viewBox="0 0 160 80" style="width:100%;max-width:140px;height:56px;margin-bottom:8px" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Sombra suave -->
+                  <ellipse cx="80" cy="75" rx="52" ry="4" fill="rgba(15,17,30,.1)"/>
+                  <!-- Cuerpo -->
+                  <rect x="18" y="38" width="124" height="24" rx="5" fill="#1A1D30"/>
+                  <!-- Detalle lateral verde -->
+                  <rect x="18" y="50" width="124" height="3" rx="1" fill="#38CEA6" opacity=".5"/>
+                  <!-- Cabina (2 puertas, techo más corto) -->
+                  <path d="M50 38 Q58 17 80 15 Q102 17 110 38 Z" fill="#272883"/>
+                  <!-- Ventana única grande -->
+                  <path d="M55 37 Q63 21 80 19 Q97 21 105 37 Z" fill="#5ADBB8" opacity=".55"/>
+                  <!-- Marco ventana -->
+                  <path d="M55 37 Q63 21 80 19 Q97 21 105 37 Z" fill="none" stroke="#38CEA6" stroke-width="1" opacity=".7"/>
+                  <!-- Ruedas -->
+                  <circle cx="45" cy="62" r="10" fill="#0F111E"/>
+                  <circle cx="45" cy="62" r="6" fill="#1A1D30"/>
+                  <circle cx="45" cy="62" r="3" fill="#38CEA6" opacity=".7"/>
+                  <circle cx="115" cy="62" r="10" fill="#0F111E"/>
+                  <circle cx="115" cy="62" r="6" fill="#1A1D30"/>
+                  <circle cx="115" cy="62" r="3" fill="#38CEA6" opacity=".7"/>
+                  <!-- Puerta única -->
+                  <rect x="62" y="39" width="36" height="20" rx="2" fill="none" stroke="#38CEA6" stroke-width="1" opacity=".4"/>
+                  <circle cx="95" cy="49" r="1.8" fill="#38CEA6" opacity=".8"/>
+                  <!-- Faro delantero LED -->
+                  <ellipse cx="139" cy="47" rx="6" ry="4" fill="#38CEA6" opacity=".9"/>
+                  <ellipse cx="139" cy="47" rx="3" ry="2" fill="#fff" opacity=".6"/>
+                  <!-- Faro trasero -->
+                  <ellipse cx="21" cy="47" rx="5" ry="3.5" fill="#D71D5C" opacity=".9"/>
+                  <!-- Parrilla delantera -->
+                  <rect x="135" y="52" width="7" height="5" rx="1.5" fill="#38CEA6" opacity=".3"/>
+                </svg>
+                <div style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--negro-2);line-height:1.3">Compacto<br>2 Puertas</div>
+              </div>
+
+              <!-- 4 Puertas Sedán Corto -->
+              <div class="sf-tipo-card" data-tipo="sedan_corto" onclick="sfSelectTipo(this)" style="border:2px solid var(--borde);border-radius:12px;padding:16px 12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--blanco)">
+                <svg viewBox="0 0 160 80" style="width:100%;max-width:140px;height:56px;margin-bottom:8px" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Sombra -->
+                  <ellipse cx="80" cy="75" rx="54" ry="4" fill="rgba(15,17,30,.1)"/>
+                  <!-- Cuerpo -->
+                  <rect x="12" y="38" width="136" height="24" rx="5" fill="#1A1D30"/>
+                  <!-- Franja lateral -->
+                  <rect x="12" y="51" width="136" height="2.5" rx="1" fill="#38CEA6" opacity=".4"/>
+                  <!-- Cabina sedán clásico -->
+                  <path d="M38 38 Q48 15 80 13 Q112 15 122 38 Z" fill="#272883"/>
+                  <!-- Parabrisas delantero -->
+                  <path d="M86 37 Q98 19 120 20 L122 37 Z" fill="#5ADBB8" opacity=".5"/>
+                  <!-- Ventana trasera -->
+                  <path d="M38 37 L42 20 Q61 16 79 17 L80 37 Z" fill="#5ADBB8" opacity=".5"/>
+                  <!-- Ventanilla central -->
+                  <path d="M80 37 L80 17 Q90 16 98 17 L98 37 Z" fill="#5ADBB8" opacity=".3"/>
+                  <!-- Marcos ventanas -->
+                  <path d="M86 37 Q98 19 120 20 L122 37 Z" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".6"/>
+                  <path d="M38 37 L42 20 Q61 16 79 17 L80 37 Z" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".6"/>
+                  <!-- Ruedas -->
+                  <circle cx="40" cy="62" r="10" fill="#0F111E"/>
+                  <circle cx="40" cy="62" r="6" fill="#1A1D30"/>
+                  <circle cx="40" cy="62" r="3" fill="#38CEA6" opacity=".7"/>
+                  <circle cx="120" cy="62" r="10" fill="#0F111E"/>
+                  <circle cx="120" cy="62" r="6" fill="#1A1D30"/>
+                  <circle cx="120" cy="62" r="3" fill="#38CEA6" opacity=".7"/>
+                  <!-- 4 puertas -->
+                  <line x1="80" y1="39" x2="80" y2="61" stroke="#38CEA6" stroke-width="1" opacity=".4"/>
+                  <rect x="54" y="39" width="25" height="20" rx="1.5" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <rect x="81" y="39" width="25" height="20" rx="1.5" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <circle cx="77" cy="49" r="1.8" fill="#38CEA6" opacity=".8"/>
+                  <circle cx="108" cy="49" r="1.8" fill="#38CEA6" opacity=".8"/>
+                  <!-- Faro delantero LED -->
+                  <ellipse cx="145" cy="47" rx="6" ry="3.5" fill="#38CEA6" opacity=".9"/>
+                  <ellipse cx="145" cy="47" rx="3" ry="1.8" fill="#fff" opacity=".5"/>
+                  <!-- Faro trasero -->
+                  <ellipse cx="15" cy="47" rx="5" ry="3.5" fill="#D71D5C" opacity=".9"/>
+                </svg>
+                <div style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--negro-2);line-height:1.3">Sedán Corto<br>4 Puertas</div>
+              </div>
+
+              <!-- 4 Puertas Sedán Largo -->
+              <div class="sf-tipo-card" data-tipo="sedan_largo" onclick="sfSelectTipo(this)" style="border:2px solid var(--borde);border-radius:12px;padding:16px 12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--blanco)">
+                <svg viewBox="0 0 180 80" style="width:100%;max-width:160px;height:56px;margin-bottom:8px" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Sombra -->
+                  <ellipse cx="90" cy="75" rx="62" ry="4" fill="rgba(15,17,30,.1)"/>
+                  <!-- Cuerpo más largo -->
+                  <rect x="10" y="38" width="160" height="24" rx="5" fill="#1A1D30"/>
+                  <!-- Franja lateral rosa (premium) -->
+                  <rect x="10" y="51" width="160" height="2.5" rx="1" fill="#D71D5C" opacity=".5"/>
+                  <!-- Cabina más larga -->
+                  <path d="M35 38 Q48 14 90 12 Q132 14 145 38 Z" fill="#272883"/>
+                  <!-- Parabrisas -->
+                  <path d="M96 37 Q112 17 143 18 L145 37 Z" fill="#5ADBB8" opacity=".5"/>
+                  <!-- Ventanas traseras -->
+                  <path d="M35 37 L39 18 Q60 14 78 14 L80 37 Z" fill="#5ADBB8" opacity=".5"/>
+                  <path d="M80 37 L80 14 Q96 13 96 14 L96 37 Z" fill="#5ADBB8" opacity=".3"/>
+                  <!-- Marcos -->
+                  <path d="M96 37 Q112 17 143 18 L145 37 Z" fill="none" stroke="#D71D5C" stroke-width=".8" opacity=".5"/>
+                  <path d="M35 37 L39 18 Q60 14 78 14 L80 37 Z" fill="none" stroke="#D71D5C" stroke-width=".8" opacity=".5"/>
+                  <!-- Ruedas -->
+                  <circle cx="42" cy="62" r="10" fill="#0F111E"/>
+                  <circle cx="42" cy="62" r="6" fill="#1A1D30"/>
+                  <circle cx="42" cy="62" r="3" fill="#D71D5C" opacity=".8"/>
+                  <circle cx="138" cy="62" r="10" fill="#0F111E"/>
+                  <circle cx="138" cy="62" r="6" fill="#1A1D30"/>
+                  <circle cx="138" cy="62" r="3" fill="#D71D5C" opacity=".8"/>
+                  <!-- 4 puertas -->
+                  <line x1="88" y1="39" x2="88" y2="61" stroke="#D71D5C" stroke-width="1" opacity=".4"/>
+                  <rect x="58" y="39" width="29" height="20" rx="1.5" fill="none" stroke="#D71D5C" stroke-width=".8" opacity=".4"/>
+                  <rect x="89" y="39" width="29" height="20" rx="1.5" fill="none" stroke="#D71D5C" stroke-width=".8" opacity=".4"/>
+                  <circle cx="85" cy="49" r="1.8" fill="#D71D5C" opacity=".8"/>
+                  <circle cx="120" cy="49" r="1.8" fill="#D71D5C" opacity=".8"/>
+                  <!-- Faro delantero LED -->
+                  <ellipse cx="167" cy="47" rx="6" ry="3.5" fill="#38CEA6" opacity=".9"/>
+                  <ellipse cx="167" cy="47" rx="3" ry="1.8" fill="#fff" opacity=".5"/>
+                  <!-- Faro trasero -->
+                  <ellipse cx="13" cy="47" rx="5" ry="3.5" fill="#D71D5C" opacity=".9"/>
+                  <!-- Detalle premium techo -->
+                  <line x1="50" y1="13" x2="130" y2="13" stroke="#D71D5C" stroke-width="1" opacity=".3" stroke-dasharray="4,3"/>
+                </svg>
+                <div style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--negro-2);line-height:1.3">Sedán Largo<br>4 Puertas</div>
+              </div>
+
+              <!-- Camioneta / SUV -->
+              <div class="sf-tipo-card" data-tipo="camioneta" onclick="sfSelectTipo(this)" style="border:2px solid var(--borde);border-radius:12px;padding:16px 12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--blanco)">
+                <svg viewBox="0 0 180 80" style="width:100%;max-width:160px;height:56px;margin-bottom:8px" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Sombra -->
+                  <ellipse cx="90" cy="75" rx="60" ry="4" fill="rgba(15,17,30,.12)"/>
+                  <!-- Cuerpo alto y ancho -->
+                  <rect x="10" y="30" width="160" height="32" rx="5" fill="#1A1D30"/>
+                  <!-- Franja lateral azul -->
+                  <rect x="10" y="43" width="160" height="3" rx="1" fill="#272883" opacity=".7"/>
+                  <!-- Techo plano SUV -->
+                  <rect x="22" y="14" width="136" height="18" rx="4" fill="#272883"/>
+                  <!-- Parabrisas casi vertical -->
+                  <path d="M22 32 L22 14 L36 14 L42 32 Z" fill="#5ADBB8" opacity=".5"/>
+                  <!-- Línea del parabrisas -->
+                  <path d="M22 32 L22 14 L36 14 L42 32 Z" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".5"/>
+                  <!-- Ventana lateral trasera -->
+                  <rect x="98" y="16" width="56" height="14" rx="2" fill="#5ADBB8" opacity=".35"/>
+                  <rect x="98" y="16" width="56" height="14" rx="2" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <!-- Ventana lateral delantera -->
+                  <rect x="44" y="16" width="50" height="14" rx="2" fill="#5ADBB8" opacity=".4"/>
+                  <rect x="44" y="16" width="50" height="14" rx="2" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <!-- Ruedas grandes -->
+                  <circle cx="42" cy="64" r="12" fill="#0F111E"/>
+                  <circle cx="42" cy="64" r="7" fill="#1A1D30"/>
+                  <circle cx="42" cy="64" r="3.5" fill="#38CEA6" opacity=".7"/>
+                  <circle cx="138" cy="64" r="12" fill="#0F111E"/>
+                  <circle cx="138" cy="64" r="7" fill="#1A1D30"/>
+                  <circle cx="138" cy="64" r="3.5" fill="#38CEA6" opacity=".7"/>
+                  <!-- Puertas -->
+                  <line x1="96" y1="32" x2="96" y2="61" stroke="#38CEA6" stroke-width="1" opacity=".35"/>
+                  <rect x="58" y="32" width="37" height="27" rx="1.5" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".35"/>
+                  <rect x="97" y="32" width="37" height="27" rx="1.5" fill="none" stroke="#38CEA6" stroke-width=".8" opacity=".35"/>
+                  <!-- Faros rectangulares LED -->
+                  <rect x="155" y="33" width="13" height="9" rx="2" fill="#38CEA6" opacity=".9"/>
+                  <rect x="157" y="35" width="5" height="5" rx="1" fill="#fff" opacity=".5"/>
+                  <rect x="12" y="33" width="12" height="9" rx="2" fill="#D71D5C" opacity=".9"/>
+                  <!-- Rack de techo -->
+                  <rect x="28" y="12" width="124" height="2.5" rx="1.5" fill="#38CEA6" opacity=".4"/>
+                  <!-- Detalle parrilla -->
+                  <rect x="155" y="43" width="13" height="6" rx="1.5" fill="#38CEA6" opacity=".25"/>
+                </svg>
+                <div style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--negro-2);line-height:1.3">Camioneta<br>/ SUV</div>
+              </div>
+
+              <!-- Moto -->
+              <div class="sf-tipo-card" data-tipo="moto" onclick="sfSelectTipo(this)" style="border:2px solid var(--borde);border-radius:12px;padding:16px 12px;cursor:pointer;text-align:center;transition:all .2s;background:var(--blanco)">
+                <svg viewBox="0 0 160 80" style="width:100%;max-width:140px;height:56px;margin-bottom:8px" xmlns="http://www.w3.org/2000/svg">
+                  <!-- Sombra -->
+                  <ellipse cx="80" cy="76" rx="44" ry="3.5" fill="rgba(15,17,30,.1)"/>
+                  <!-- Rueda trasera -->
+                  <circle cx="40" cy="57" r="16" fill="none" stroke="#0F111E" stroke-width="6"/>
+                  <circle cx="40" cy="57" r="10" fill="none" stroke="#1A1D30" stroke-width="2"/>
+                  <circle cx="40" cy="57" r="4" fill="#38CEA6" opacity=".8"/>
+                  <!-- Rayos rueda trasera -->
+                  <line x1="40" y1="41" x2="40" y2="73" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <line x1="24" y1="57" x2="56" y2="57" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <line x1="28.7" y1="46.3" x2="51.3" y2="67.7" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <line x1="51.3" y1="46.3" x2="28.7" y2="67.7" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <!-- Rueda delantera -->
+                  <circle cx="120" cy="57" r="16" fill="none" stroke="#0F111E" stroke-width="6"/>
+                  <circle cx="120" cy="57" r="10" fill="none" stroke="#1A1D30" stroke-width="2"/>
+                  <circle cx="120" cy="57" r="4" fill="#38CEA6" opacity=".8"/>
+                  <!-- Rayos rueda delantera -->
+                  <line x1="120" y1="41" x2="120" y2="73" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <line x1="104" y1="57" x2="136" y2="57" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <line x1="108.7" y1="46.3" x2="131.3" y2="67.7" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <line x1="131.3" y1="46.3" x2="108.7" y2="67.7" stroke="#38CEA6" stroke-width=".8" opacity=".4"/>
+                  <!-- Chasis -->
+                  <path d="M40 57 L58 34 L84 29 L106 39 L120 57" fill="none" stroke="#272883" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  <!-- Tanque -->
+                  <ellipse cx="82" cy="31" rx="20" ry="9" fill="#272883"/>
+                  <ellipse cx="82" cy="31" rx="20" ry="9" fill="none" stroke="#38CEA6" stroke-width="1" opacity=".5"/>
+                  <!-- Detalle tanque -->
+                  <ellipse cx="82" cy="29" rx="8" ry="3" fill="#38CEA6" opacity=".25"/>
+                  <!-- Manillar -->
+                  <path d="M112 41 L125 28 M125 28 L133 26 M125 28 L133 32" stroke="#1A1D30" stroke-width="3.5" stroke-linecap="round"/>
+                  <!-- Manillar detalle -->
+                  <circle cx="133" cy="29" r="2.5" fill="#38CEA6" opacity=".7"/>
+                  <!-- Asiento -->
+                  <path d="M60 34 Q76 26 102 34" fill="none" stroke="#1A1D30" stroke-width="5.5" stroke-linecap="round"/>
+                  <path d="M60 34 Q76 26 102 34" fill="none" stroke="#38CEA6" stroke-width="1.5" stroke-linecap="round" opacity=".5"/>
+                  <!-- Faro LED -->
+                  <ellipse cx="132" cy="43" rx="7" ry="5.5" fill="#38CEA6" opacity=".9"/>
+                  <ellipse cx="132" cy="43" rx="4" ry="3" fill="#fff" opacity=".55"/>
+                  <!-- Caño escape -->
+                  <path d="M55 54 Q45 64 28 67" fill="none" stroke="#D97706" stroke-width="3" stroke-linecap="round" opacity=".8"/>
+                  <circle cx="27" cy="67" r="2.5" fill="#D97706" opacity=".5"/>
+                </svg>
+                <div style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--negro-2);line-height:1.3">Moto</div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- PASO 3: Características -->
+          <div style="margin-bottom:22px">
+            <div style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--verde);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+              <span style="width:20px;height:20px;background:var(--verde);color:var(--negro);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900">3</span>
+              CARACTERÍSTICAS
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px">
+              <label id="lbl-ac" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-ac" onchange="sfStyleCheck('lbl-ac','sf-ac')" style="accent-color:var(--verde);width:15px;height:15px"> ❄️ Aire acondicionado
+              </label>
+              <label id="lbl-op" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-operativa" onchange="sfStyleCheck('lbl-op','sf-operativa')" style="accent-color:var(--verde);width:15px;height:15px"> ✅ Completamente operativa
+              </label>
+              <label id="lbl-vidrios" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-vidrios" onchange="sfStyleCheck('lbl-vidrios','sf-vidrios')" style="accent-color:var(--verde);width:15px;height:15px"> 🪟 Vidrios eléctricos
+              </label>
+              <label id="lbl-cuero" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-cuero" onchange="sfStyleCheck('lbl-cuero','sf-cuero')" style="accent-color:var(--verde);width:15px;height:15px"> 🪑 Tapicería en buen estado
+              </label>
+            </div>
+          </div>
+
+          <!-- PASO 4: Desperfectos físicos -->
+          <div style="margin-bottom:24px">
+            <div style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--rosa);margin-bottom:12px;display:flex;align-items:center;gap:8px">
+              <span style="width:20px;height:20px;background:var(--rosa);color:#fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:900">4</span>
+              DESPERFECTOS FÍSICOS
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:12px">
+              <label id="lbl-rayones" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-rayones" onchange="sfStyleCheckRed('lbl-rayones','sf-rayones')" style="accent-color:var(--rosa);width:15px;height:15px"> 〰️ Rayones / golpes estéticos
+              </label>
+              <label id="lbl-espejo" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-espejo" onchange="sfStyleCheckRed('lbl-espejo','sf-espejo')" style="accent-color:var(--rosa);width:15px;height:15px"> 🪞 Le falta espejo
+              </label>
+              <label id="lbl-faro" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-faro" onchange="sfStyleCheckRed('lbl-faro','sf-faro')" style="accent-color:var(--rosa);width:15px;height:15px"> 💡 Faro dañado / faltante
+              </label>
+              <label id="lbl-frenos" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-frenos" onchange="sfStyleCheckRed('lbl-frenos','sf-frenos')" style="accent-color:var(--rosa);width:15px;height:15px"> 🔴 Problema en frenos
+              </label>
+              <label id="lbl-tapiceria" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-tapiceria" onchange="sfStyleCheckRed('lbl-tapiceria','sf-tapiceria')" style="accent-color:var(--rosa);width:15px;height:15px"> 🛋️ Tapicería deteriorada
+              </label>
+              <label id="lbl-ruido" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                <input type="checkbox" id="sf-ruido" onchange="sfStyleCheckRed('lbl-ruido','sf-ruido')" style="accent-color:var(--rosa);width:15px;height:15px"> 🔊 Ruidos mecánicos
+              </label>
+            </div>
+            <!-- Desperfectos adicionales libres -->
+            <textarea id="sf-obs" placeholder="Otros desperfectos o detalles adicionales... Ej: le falta la manija de la puerta trasera, el odómetro no funciona, tiene una grieta en el parabrisas..." rows="2"
+              style="width:100%;padding:11px 14px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:.87rem;font-weight:500;color:var(--negro);outline:none;resize:vertical;transition:border-color .2s;line-height:1.5"
+              onfocus="this.style.borderColor='var(--rosa)'" onblur="this.style.borderColor='var(--borde)'"></textarea>
+          </div>
+
+          <!-- Botón -->
+          <button onclick="sfAnalizar()" id="sf-btn"
+            style="background:linear-gradient(135deg,var(--verde),var(--verde-l));color:var(--negro);border:none;border-radius:999px;padding:15px 44px;font-size:1rem;font-weight:900;font-family:var(--font-display);letter-spacing:2px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 8px 28px rgba(56,206,166,.4);display:inline-flex;align-items:center;gap:12px"
+            onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 14px 36px rgba(56,206,166,.5)'"
+            onmouseout="this.style.transform='';this.style.boxShadow='0 8px 28px rgba(56,206,166,.4)'">
+            <span id="sf-btn-ico">⚡</span> <span id="sf-btn-txt">CLASIFICAR VEHÍCULO</span>
+          </button>
+        </div>
+
+        <!-- Resultado -->
+        <div id="sf-resultado" style="display:none">
+          <div id="sf-cat-banner" style="border-radius:16px;padding:26px 30px;margin-bottom:18px;display:flex;align-items:center;gap:20px;box-shadow:0 6px 28px rgba(0,0,0,.1)">
+            <div id="sf-cat-ico" style="font-size:2.8rem"></div>
+            <div style="flex:1">
+              <div id="sf-cat-label" style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;opacity:.65">CATEGORÍA ASIGNADA</div>
+              <div id="sf-cat-nombre" style="font-family:var(--font-display);font-size:2rem;letter-spacing:3px;line-height:1"></div>
+            </div>
+            <div id="sf-cat-badge" style="border-radius:10px;padding:9px 18px;font-family:var(--font-secondary);font-size:.78rem;font-weight:900;letter-spacing:.04em;flex-shrink:0"></div>
+          </div>
+
+          <div style="background:var(--blanco);border:1.5px solid var(--borde);border-radius:16px;padding:24px 26px;box-shadow:var(--shadow)">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">
+              <div style="width:30px;height:30px;border-radius:8px;background:var(--negro);display:flex;align-items:center;justify-content:center;font-size:.85rem">🤖</div>
+              <div style="font-family:var(--font-display);font-size:.95rem;letter-spacing:2px;color:var(--negro)">ANÁLISIS DEL SISTEMA</div>
+            </div>
+            <div id="sf-ia-loading" style="display:none;padding:18px 0;display:flex;align-items:center;gap:12px">
+              <div style="width:22px;height:22px;border:3px solid var(--verde-p);border-top-color:var(--verde);border-radius:50%;animation:spin .8s linear infinite;flex-shrink:0"></div>
+              <span style="font-family:var(--font-secondary);font-size:.86rem;color:var(--gris-4);font-weight:600">Clasificando vehículo...</span>
+            </div>
+            <div id="sf-ia-text" style="font-family:var(--font-main);font-size:.92rem;color:var(--negro);line-height:1.75;font-weight:500"></div>
+            <div id="sf-actions" style="display:none;margin-top:18px;padding-top:16px;border-top:1.5px solid var(--gris-1);gap:10px;flex-wrap:wrap">
+              <button onclick="sfCopiarAnalisis()" id="sf-copy-btn" style="background:var(--verde);color:var(--negro);border:none;border-radius:8px;padding:10px 20px;font-family:var(--font-secondary);font-size:.8rem;font-weight:900;cursor:pointer;display:inline-flex;align-items:center;gap:7px">📋 Copiar análisis</button>
+              <button onclick="sfNueva()" style="background:var(--gris-1);color:var(--negro);border:1.5px solid var(--borde);border-radius:8px;padding:10px 20px;font-family:var(--font-secondary);font-size:.8rem;font-weight:900;cursor:pointer">🔄 Nueva consulta</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <style>
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .sf-tipo-card:hover { border-color: var(--verde) !important; background: var(--verde-p) !important; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(56,206,166,.2); }
+    .sf-tipo-card.selected { border-color: var(--verde) !important; background: var(--verde-p) !important; box-shadow: 0 0 0 3px rgba(56,206,166,.2); }
+    .sf-tipo-card.selected svg rect[fill="#CBD5E1"], .sf-tipo-card.selected svg path[fill="#94A3B8"] { }
+    </style>
+
+    <script>
+    // ═══════════════════════════════════════════
+    //  MÓDULO: SIMULACIÓN FLOTA VEHÍCULO v2
+    // ═══════════════════════════════════════════
+
+    let sfTipoSeleccionado = '';
+
+    const SF_CATEGORIAS = {
+      'moto_baratica': { nombre:'MOTO BARATICA', ico:'🛵', color:'#D97706', bg:'#FFFBEB', border:'rgba(217,119,6,.3)', badge:'🛵 Moto Baratica' },
+      'moto':          { nombre:'MOTO',           ico:'🏍️', color:'#D97706', bg:'#FFF9EC', border:'rgba(217,119,6,.25)',badge:'🏍️ Moto' },
+      'camioneta':     { nombre:'CAMIONETA',       ico:'🚐', color:'#272883', bg:'#EBEBFF', border:'rgba(39,40,131,.3)', badge:'🚐 Camioneta' },
+      'baratico':      { nombre:'BARATICO',        ico:'🚗', color:'#16a34a', bg:'#F0FDF4', border:'rgba(22,163,74,.3)', badge:'🚗 Baratico' },
+      'economico':     { nombre:'ECONÓMICO',       ico:'🚙', color:'#38CEA6', bg:'#EDFAF6', border:'rgba(56,206,166,.3)',badge:'🚙 Económico' },
+      'premium':       { nombre:'RIDERY PREMIUM',  ico:'🚘', color:'#D71D5C', bg:'#FDEEF4', border:'rgba(215,29,92,.3)', badge:'🚘 Ridery Premium' },
+    };
+
+    const SF_TIPO_LABELS = {
+      'compacto_2p': 'Compacto / 2 puertas',
+      'sedan_corto': 'Sedán 4 puertas (talla corta/media)',
+      'sedan_largo': 'Sedán 4 puertas (talla larga/ejecutiva)',
+      'camioneta':   'Camioneta / SUV',
+      'moto':        'Moto',
+    };
+
+    function sfToggleRef() {
+      const body = document.getElementById('sf-ref-body');
+      const ico  = document.getElementById('sf-ref-ico');
+      const open = body.style.display === 'block';
+      body.style.display = open ? 'none' : 'block';
+      ico.textContent = open ? '▶' : '▼';
+    }
+
+    function sfSelectTipo(card) {
+      document.querySelectorAll('.sf-tipo-card').forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      sfTipoSeleccionado = card.dataset.tipo;
+    }
+
+    function sfStyleCheck(lblId, cbId) {
+      const lbl = document.getElementById(lblId);
+      const cb  = document.getElementById(cbId);
+      lbl.style.borderColor = cb.checked ? 'var(--verde)' : 'var(--borde)';
+      lbl.style.background  = cb.checked ? 'var(--verde-p)' : 'var(--gris-1)';
+    }
+
+    function sfStyleCheckRed(lblId, cbId) {
+      const lbl = document.getElementById(lblId);
+      const cb  = document.getElementById(cbId);
+      lbl.style.borderColor = cb.checked ? 'var(--rosa)' : 'var(--borde)';
+      lbl.style.background  = cb.checked ? 'var(--rosa-p)' : 'var(--gris-1)';
+    }
+
+    async function sfAnalizar() {
+      const anio      = (document.getElementById('sf-anio').value || '').trim();
+      const ac        = document.getElementById('sf-ac').checked;
+      const operativa = document.getElementById('sf-operativa').checked;
+      const vidrios   = document.getElementById('sf-vidrios').checked;
+      const cuero     = document.getElementById('sf-cuero').checked;
+      const rayones   = document.getElementById('sf-rayones').checked;
+      const espejo    = document.getElementById('sf-espejo').checked;
+      const faro      = document.getElementById('sf-faro').checked;
+      const frenos    = document.getElementById('sf-frenos').checked;
+      const tapiceria = document.getElementById('sf-tapiceria').checked;
+      const ruido     = document.getElementById('sf-ruido').checked;
+      const obs       = document.getElementById('sf-obs').value.trim();
+
+      if (!anio) { alert('Por favor ingresa el año del vehículo.'); return; }
+      if (!sfTipoSeleccionado) { alert('Por favor selecciona el tipo de vehículo.'); return; }
+
+      const btn = document.getElementById('sf-btn');
+      document.getElementById('sf-btn-ico').textContent = '⏳';
+      document.getElementById('sf-btn-txt').textContent = 'ANALIZANDO...';
+      btn.style.opacity = '.6'; btn.disabled = true;
+
+      const resultado = document.getElementById('sf-resultado');
+      resultado.style.display = 'block';
+      document.getElementById('sf-ia-loading').style.display = 'flex';
+      document.getElementById('sf-ia-text').textContent = '';
+      document.getElementById('sf-actions').style.display = 'none';
+      document.getElementById('sf-cat-banner').style.opacity = '0';
+
+      // Construir lista de desperfectos
+      const desperfectos = [];
+      if (rayones)   desperfectos.push('rayones o golpes estéticos en carrocería');
+      if (espejo)    desperfectos.push('espejo faltante o dañado');
+      if (faro)      desperfectos.push('faro dañado o faltante');
+      if (frenos)    desperfectos.push('problema en el sistema de frenos');
+      if (tapiceria) desperfectos.push('tapicería deteriorada');
+      if (ruido)     desperfectos.push('ruidos mecánicos');
+      if (obs)       desperfectos.push(obs);
+
+      const datosBrutos = `
+Año del vehículo: ${anio}
+Tipo de carrocería: ${SF_TIPO_LABELS[sfTipoSeleccionado] || sfTipoSeleccionado}
+Aire acondicionado: ${ac ? 'SÍ' : 'NO'}
+Completamente operativa (mecánica y eléctrica): ${operativa ? 'SÍ' : 'NO'}
+Vidrios eléctricos: ${vidrios ? 'SÍ' : 'NO'}
+Tapicería en buen estado: ${cuero ? 'SÍ' : 'NO'}
+Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(', ') : 'Ninguno'}
+      `.trim();
+
+      // ── CLASIFICADOR LOCAL (sin dependencia de API externa) ──────────────
+      try {
+        const anioNum = parseInt(anio, 10);
+
+        // Fallas críticas que impiden categorías superiores
+        const fallas_criticas = espejo || faro || frenos || ruido;
+        // Defecto no operativo total
+        const no_operativa = !operativa;
+
+        let categoria = '';
+        let explicacion = '';
+        const tipoLabel = SF_TIPO_LABELS[sfTipoSeleccionado] || sfTipoSeleccionado;
+
+        if (sfTipoSeleccionado === 'moto') {
+          // ── MOTOS ──────────────────────────────────────────────
+          if (anioNum < 2010) {
+            categoria = 'baratico';
+            explicacion = `La moto es del año ${anioNum}, anterior al mínimo requerido de 2010 para las flotas de moto en Ridery. Vehículos de este año no califican para ninguna categoría de moto activa. Se clasifica en BARATICO como categoría de menor exigencia, aunque esto aplica solo a carros; se recomienda revisar si el vehículo puede incorporarse bajo otra condición operativa.`;
+          } else if (!operativa || fallas_criticas) {
+            categoria = 'moto';
+            explicacion = `La moto del año ${anioNum} cumple el año mínimo requerido. Sin embargo, presenta condiciones mecánicas u operativas deficientes (${desperfectos.join(', ') || 'no completamente operativa'}), por lo que no califica para MOTO BARATICA, que exige plena operatividad. Clasifica en la flota MOTO estándar.`;
+          } else {
+            // Operativa y año OK → MOTO BARATICA (la más completa para motos)
+            categoria = 'moto_baratica';
+            explicacion = `La moto del año ${anioNum} cumple el año mínimo (2010+) y está reportada como completamente operativa, sin desperfectos en faros, espejos ni sistema de frenos. Clasifica directamente en MOTO BARATICA, la categoría moto de mayor nivel en Ridery, que además requiere 2 cascos reglamentarios al momento de la afiliación.`;
+          }
+
+        } else if (sfTipoSeleccionado === 'camioneta') {
+          // ── CAMIONETA / SUV ────────────────────────────────────
+          if (anioNum < 2000) {
+            categoria = 'baratico';
+            explicacion = `La camioneta / SUV del año ${anioNum} no alcanza el mínimo de año 2000 exigido para la flota Camioneta de Ridery. Vehículos de esta antigüedad tampoco califican para económico ni premium por su tipo de carrocería. Se clasifica en BARATICO.`;
+          } else {
+            categoria = 'camioneta';
+            const estadoOp = (no_operativa || fallas_criticas) ? ' Aunque presenta algunas observaciones mecánicas o estéticas, la categoría Camioneta admite estos vehículos mientras puedan movilizarse.' : ' El vehículo está en condiciones operativas adecuadas.';
+            explicacion = `La ${tipoLabel} del año ${anioNum} cumple el requisito mínimo de año 2000+ para la flota CAMIONETA de Ridery. Esta categoría está diseñada para vehículos de mayor capacidad de carga (4 maletas de 25 kg + 2 de mano).${estadoOp}`;
+          }
+
+        } else if (sfTipoSeleccionado === 'compacto_2p') {
+          // ── COMPACTO 2 PUERTAS → siempre BARATICO ─────────────
+          categoria = 'baratico';
+          let razon = `El vehículo es un compacto de 2 puertas (${tipoLabel}), lo que lo clasifica automáticamente en BARATICO independientemente del año o condiciones. `;
+          if (anioNum < 1990) {
+            razon += `Adicionalmente, el año ${anioNum} es anterior al mínimo de 1990 requerido incluso para esta categoría; se recomienda verificar elegibilidad total.`;
+          } else {
+            razon += `Los vehículos de 2 puertas nunca califican para Económico ni Premium en Ridery. Año: ${anioNum}.`;
+          }
+          if (fallas_criticas || no_operativa) razon += ` Presenta además desperfectos adicionales: ${desperfectos.join(', ')}.`;
+          explicacion = razon;
+
+        } else {
+          // ── SEDÁN 4 PUERTAS (corto o largo) ───────────────────
+          if (anioNum < 1990) {
+            categoria = 'baratico';
+            explicacion = `El sedán del año ${anioNum} es demasiado antiguo para cualquier categoría activa de Ridery. El mínimo para BARATICO es 1990. Se clasifica en BARATICO con observación de elegibilidad.`;
+          } else if (no_operativa || fallas_criticas) {
+            categoria = 'baratico';
+            const listaFallas = desperfectos.length ? desperfectos.join(', ') : 'condiciones mecánicas o eléctricas deficientes';
+            explicacion = `El ${tipoLabel} del año ${anioNum} presenta fallas que lo descalifican para Económico o Premium: ${listaFallas}. Según las reglas de Ridery, faro dañado, espejo faltante, frenos deficientes o ruidos mecánicos implican clasificación automática en BARATICO hasta su corrección.`;
+          } else if (!ac) {
+            categoria = 'baratico';
+            explicacion = `El ${tipoLabel} del año ${anioNum} no cuenta con aire acondicionado. En Ridery, cualquier sedán sin A/C clasifica automáticamente en BARATICO, independientemente del año o condición mecánica. Una vez instalado y verificado el A/C, el vehículo podrá ser reevaluado para Económico o Premium.`;
+          } else {
+            // Operativo, con A/C, sedán 4 puertas
+            if (anioNum >= 2016) {
+              categoria = 'premium';
+              const extra = (tapiceria || rayones) ? ' Se observan detalles estéticos menores (tapicería o rayones), pero estos no descalifican para Premium en sedanes operativos con A/C.' : '';
+              explicacion = `El ${tipoLabel} del año ${anioNum} cumple todos los requisitos para RIDERY PREMIUM: sedán de 4 puertas, año 2016 o posterior, con aire acondicionado y en condiciones operativas completas.${extra} Es la categoría de mayor nivel para vehículos de pasajeros en Ridery.`;
+            } else if (anioNum >= 2000) {
+              categoria = 'economico';
+              const extra = (tapiceria || rayones) ? ' Los detalles estéticos presentes (tapicería o rayones) no descalifican para esta categoría.' : '';
+              explicacion = `El ${tipoLabel} del año ${anioNum} clasifica en ECONÓMICO: sedán de 4 puertas entre 2000 y 2015, con aire acondicionado y condiciones mecánicas completas.${extra} Para alcanzar Premium se requiere año 2016 en adelante.`;
+            } else {
+              // 1990-1999, con A/C, sedán operativo
+              categoria = 'baratico';
+              explicacion = `El ${tipoLabel} del año ${anioNum}, aunque cuenta con A/C y está operativo, es anterior al año 2000 mínimo requerido para ECONÓMICO. Por su antigüedad clasifica en BARATICO, la categoría que acepta sedanes con A/C desde 1990.`;
+            }
+          }
+        }
+
+        // Pequeña pausa visual para que se vea el loader
+        await new Promise(r => setTimeout(r, 600));
+
+        const cat = SF_CATEGORIAS[categoria] || SF_CATEGORIAS['baratico'];
+
+        const banner = document.getElementById('sf-cat-banner');
+        banner.style.background = cat.bg;
+        banner.style.border = '2px solid ' + cat.border;
+        banner.style.opacity = '1';
+        document.getElementById('sf-cat-ico').textContent = cat.ico;
+        document.getElementById('sf-cat-label').style.color = cat.color;
+        document.getElementById('sf-cat-nombre').textContent = cat.nombre;
+        document.getElementById('sf-cat-nombre').style.color = cat.color;
+        const badge = document.getElementById('sf-cat-badge');
+        badge.textContent = cat.badge;
+        badge.style.background = cat.color;
+        badge.style.color = '#fff';
+
+        document.getElementById('sf-ia-loading').style.display = 'none';
+        document.getElementById('sf-ia-text').textContent = explicacion;
+        document.getElementById('sf-actions').style.display = 'flex';
+
+      } catch(err) {
+        document.getElementById('sf-ia-loading').style.display = 'none';
+        document.getElementById('sf-ia-text').innerHTML = `<span style="color:var(--rosa);font-weight:700">⚠️ Error en el clasificador. Intenta nuevamente.</span><br><span style="font-size:.8rem;color:var(--gris-4)">${err.message}</span>`;
+        console.error('SF Error:', err);
+      }
+
+      document.getElementById('sf-btn-ico').textContent = '⚡';
+      document.getElementById('sf-btn-txt').textContent = 'CLASIFICAR VEHÍCULO';
+      btn.style.opacity = '1'; btn.disabled = false;
+    }
+
+    function sfCopiarAnalisis() {
+      const anio  = document.getElementById('sf-anio').value;
+      const tipo  = SF_TIPO_LABELS[sfTipoSeleccionado] || sfTipoSeleccionado;
+      const cat   = document.getElementById('sf-cat-nombre').textContent;
+      const exp   = document.getElementById('sf-ia-text').textContent;
+      const txt   = `🚗 SIMULACIÓN DE FLOTA — RIDERY\n\nVehículo: ${tipo} · Año ${anio}\nCategoría: ${cat}\n\nAnálisis:\n${exp}`;
+      navigator.clipboard.writeText(txt).then(() => {
+        const b = document.getElementById('sf-copy-btn');
+        b.textContent = '✅ Copiado';
+        setTimeout(() => { b.textContent = '📋 Copiar análisis'; }, 2000);
+      });
+    }
+
+    function sfNueva() {
+      sfTipoSeleccionado = '';
+      document.querySelectorAll('.sf-tipo-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById('sf-anio').value = '';
+      document.getElementById('sf-obs').value = '';
+      ['sf-ac','sf-operativa','sf-vidrios','sf-cuero','sf-rayones','sf-espejo','sf-faro','sf-frenos','sf-tapiceria','sf-ruido'].forEach(id => {
+        document.getElementById(id).checked = false;
+      });
+      [['lbl-ac','sf-ac'],['lbl-op','sf-operativa'],['lbl-vidrios','sf-vidrios'],['lbl-cuero','sf-cuero']].forEach(([l,c]) => sfStyleCheck(l,c));
+      [['lbl-rayones','sf-rayones'],['lbl-espejo','sf-espejo'],['lbl-faro','sf-faro'],['lbl-frenos','sf-frenos'],['lbl-tapiceria','sf-tapiceria'],['lbl-ruido','sf-ruido']].forEach(([l,c]) => sfStyleCheckRed(l,c));
+      document.getElementById('sf-resultado').style.display = 'none';
+      document.getElementById('sf-anio').focus();
+    }
+    </script>
+
   </main>
 </div>
 
@@ -4270,6 +5014,9 @@ const ADMIN_USERS = [
   { user: 'Mgalindo@ridery.app',   pass: '28055814', rol: 'Administrador' },  // M. Galindo
   { user: 'Marioly@ridery.app',    pass: '26214838', rol: 'Administrador' },  // Marioly
   { user: 'Srahmen@ridery.app',    pass: '29553104', rol: 'Administrador' },  // S. Rahmen
+  { user: 'Nserrano@ridery.app',   pass: '29504559', rol: 'Administrador' },  // N. Serrano
+  { user: 'Smoya@ridery.app',      pass: '27814888', rol: 'Administrador' },  // S. Moya
+  { user: 'Ycabrera@ridery.app',   pass: '30225899', rol: 'Administrador' },  // Y. Cabrera
 ];
 // ─────────────────────────────────────────────────────────────────
 
@@ -4531,11 +5278,13 @@ const PAGES = {
   'reporte-incidencia': 'Generador de Reporte · Incidencia Perfil',
   'validador':          'Administrative · Validador de Pagos',
   'guardia-vacante':    'Administrative · Guardia Vacante',
-  'gestion-usuarios':   'Administrative · Gestión de Usuarios',
   'ciudades':           'Ciudades',
   'issues':             'Issues · Reporte de Fallas',
-  'disponibilidad':     'Disponibilidad Ciudad',
-  'disponibilidad-aspirantes': 'Disponibilidad Aspirantes',
+  'disponibilidad':     'Disponibilidad · Disponibilidad Ciudad',
+  'disponibilidad-aspirantes': 'Disponibilidad · Aspirantes',
+  'kits':               'Disponibilidad · Kits',
+  'categoria':          'Simulador · Simulador de Categoría',
+  'simulacion-flota':   'Simulador · Simulación Flota Vehículo',
   'material-apoyo':     'Material de Apoyo',
 };
 
@@ -4549,7 +5298,7 @@ function navigateTo(page, el) {
   if (window.innerWidth <= 900) document.getElementById('sidebar').classList.remove('open');
   try { sessionStorage.setItem('cx_lastPage', page); } catch(e) {}
   // Hooks por módulo
-  if (page === 'gestion-usuarios') guRenderList();
+  if (page === 'kits') kitsInit && kitsInit();
 }
 
 function toggleNav(id, headerEl) {
