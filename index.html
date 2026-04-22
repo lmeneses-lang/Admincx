@@ -5826,22 +5826,22 @@ function ciRender(query = '') {
         </div>
         <div class="ci-card-body">
           <div class="ci-field">
-            <div class="ci-field-label" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
-              <span><span class="fli">📍</span> Dirección</span>
-              <button onclick="ciCopiarDireccion(event)" data-dir="${c.direccion}" style="background:var(--negro);color:var(--verde);border:1px solid rgba(56,206,166,.25);border-radius:6px;padding:3px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--font-secondary);letter-spacing:.05em;flex-shrink:0">📋</button>
+            <div class="ci-field-label"><span class="fli">🗺️</span> Estado</div>
+            <div class="ci-field-value">
+              <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:1.5px;color:var(--negro)">${hl(c.estado)}</div>
+              <div style="font-family:var(--font-secondary);font-size:.75rem;color:var(--gris-3);margin-top:4px;font-weight:600">${filtered.length > 1 ? '' : 'Venezuela'}</div>
             </div>
-            <div class="ci-field-value">${hl(c.direccion)}</div>
           </div>
           <div class="ci-field">
             <div class="ci-field-label"><span class="fli">👤</span> Coordinador</div>
             <div class="ci-field-value">${coord}</div>
           </div>
           <div class="ci-field">
-            <div class="ci-field-label"><span class="fli">🗺️</span> Estado</div>
-            <div class="ci-field-value">
-              <div style="font-family:var(--font-display);font-size:1.1rem;letter-spacing:1.5px;color:var(--negro)">${hl(c.estado)}</div>
-              <div style="font-family:var(--font-secondary);font-size:.75rem;color:var(--gris-3);margin-top:4px;font-weight:600">${filtered.length > 1 ? '' : 'Venezuela'}</div>
+            <div class="ci-field-label" style="display:flex;align-items:center;justify-content:space-between;gap:8px">
+              <span><span class="fli">📍</span> Dirección</span>
+              <button onclick="ciCopiarDireccion(event)" data-dir="${c.direccion}" style="background:var(--negro);color:var(--verde);border:1px solid rgba(56,206,166,.25);border-radius:6px;padding:3px 10px;font-size:.72rem;font-weight:700;cursor:pointer;font-family:var(--font-secondary);letter-spacing:.05em;flex-shrink:0">📋</button>
             </div>
+            <div class="ci-field-value">${hl(c.direccion)}</div>
           </div>
         </div>
       </div>`;
