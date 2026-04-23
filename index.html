@@ -7032,6 +7032,10 @@
                                     <span class="nav-sub-dot"></span>
                                     Validador de Pagos
                                 </div>
+                                <div class="nav-sub-item" onclick="navigateTo('calidad-agente', this)">
+                                    <span class="nav-sub-dot"></span>
+                                    Calidad Agente
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -8270,6 +8274,329 @@
                         </div>
                     </div>
                 </div>
+                <!-- ══ PÁGINA: CALIDAD AGENTE ══ -->
+                <!-- ══ PÁGINA: CALIDAD AGENTE ══ -->
+                <div class="page-content" id="page-calidad-agente" style="position:relative">
+                    <!-- LOGIN OVERLAY ESPECIALISTA -->
+                    <div class="adm-login-overlay" id="ca-login-overlay">
+                        <div class="adm-login-card">
+                            <div class="adm-login-ico">⭐</div>
+                            <h2 class="adm-login-title">CALIDAD AGENTE</h2>
+                            <p class="adm-login-sub">Módulo restringido — Solo Administradores</p>
+                            <div class="adm-login-field">
+                                <label>Usuario</label>
+                                <input type="text" id="ca-adm-user" placeholder="Admin" autocomplete="username">
+                            </div>
+                            <div class="adm-login-field">
+                                <label>Contraseña</label>
+                                <input type="password" id="ca-adm-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')admLogin('ca')">
+                            </div>
+                            <button class="adm-login-btn" onclick="admLogin('ca')">INGRESAR</button>
+                            <div class="adm-login-err" id="ca-adm-err">Usuario o contraseña incorrectos</div>
+                        </div>
+                    </div>
+
+                    <!-- CONTENIDO PRINCIPAL -->
+                    <div style="padding:28px 28px 60px">
+
+                        <!-- HEADER -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px">
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <span style="font-size:2rem">⭐</span>
+                                <div>
+                                    <h2 style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:2px;color:var(--negro);line-height:1">CALIDAD AGENTE</h2>
+                                    <p style="color:var(--gris-4);font-size:.8rem;font-weight:600;margin-top:4px">Gestión y seguimiento de calidad del equipo de agentes remotos</p>
+                                </div>
+                            </div>
+                            <!-- TABS VISTA -->
+                            <div style="display:flex;gap:8px;background:var(--gris-1);border-radius:var(--radius-s);padding:4px">
+                                <button id="ca-tab-esp" onclick="caSetTab('especialista')" style="padding:8px 18px;border:none;border-radius:8px;font-family:var(--font-main);font-weight:700;font-size:.8rem;cursor:pointer;background:var(--verde);color:var(--negro);transition:all .2s">⚙️ Especialista</button>
+                                <button id="ca-tab-age" onclick="caSetTab('agente')" style="padding:8px 18px;border:none;border-radius:8px;font-family:var(--font-main);font-weight:700;font-size:.8rem;cursor:pointer;background:transparent;color:var(--gris-4);transition:all .2s">👤 Vista Agente</button>
+                            </div>
+                        </div>
+
+                        <!-- ═══════════════════════════
+                             VISTA ESPECIALISTA
+                        ═══════════════════════════ -->
+                        <div id="ca-panel-especialista">
+
+                            <!-- FÓRMULAS REFERENCIA -->
+                            <details style="background:var(--azul-p);border:1px solid rgba(39,40,131,.18);border-radius:var(--radius);padding:16px 20px;margin-bottom:24px;cursor:pointer">
+                                <summary style="font-weight:800;font-size:.85rem;color:var(--azul);letter-spacing:.04em">📐 REFERENCIA DE FÓRMULAS — Sistema de Auditoría</summary>
+                                <div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+                                    <!-- Pilar Empatía -->
+                                    <div style="background:var(--blanco);border-radius:var(--radius-s);padding:16px;border:1px solid var(--borde)">
+                                        <div style="font-weight:800;font-size:.78rem;color:var(--azul);margin-bottom:10px;letter-spacing:.06em">🤝 PILAR EMPATÍA (50 pts)</div>
+                                        <div style="font-size:.75rem;color:var(--gris-4);margin-bottom:8px">6 criterios × 8.33 pts c/u</div>
+                                        <table style="width:100%;border-collapse:collapse;font-size:.72rem">
+                                            <tr style="background:var(--azul-p)"><th style="padding:4px 8px;text-align:left;color:var(--azul)">Criterio</th><th style="padding:4px 8px;text-align:right;color:var(--azul)">Pts</th></tr>
+                                            <tr><td style="padding:4px 8px;border-top:1px solid var(--borde)">Método RIDED</td><td style="padding:4px 8px;border-top:1px solid var(--borde);text-align:right;font-weight:700">8.33</td></tr>
+                                            <tr><td style="padding:4px 8px;border-top:1px solid var(--borde)">Lenguaje Positivo</td><td style="padding:4px 8px;border-top:1px solid var(--borde);text-align:right;font-weight:700">8.33</td></tr>
+                                            <tr><td style="padding:4px 8px;border-top:1px solid var(--borde)">Acompañamiento</td><td style="padding:4px 8px;border-top:1px solid var(--borde);text-align:right;font-weight:700">8.33</td></tr>
+                                            <tr><td style="padding:4px 8px;border-top:1px solid var(--borde)">Personalización</td><td style="padding:4px 8px;border-top:1px solid var(--borde);text-align:right;font-weight:700">8.33</td></tr>
+                                            <tr><td style="padding:4px 8px;border-top:1px solid var(--borde)">Estructura</td><td style="padding:4px 8px;border-top:1px solid var(--borde);text-align:right;font-weight:700">8.33</td></tr>
+                                            <tr><td style="padding:4px 8px;border-top:1px solid var(--borde)">Uso de IA y Ortografía</td><td style="padding:4px 8px;border-top:1px solid var(--borde);text-align:right;font-weight:700">8.33</td></tr>
+                                        </table>
+                                        <div style="margin-top:8px;background:var(--azul-p);border-radius:6px;padding:6px 10px;font-size:.7rem;color:var(--azul);font-weight:700">Puntaje = Criterios cumplidos × 8.33</div>
+                                    </div>
+
+                                    <!-- Pilar Gestión -->
+                                    <div style="background:var(--blanco);border-radius:var(--radius-s);padding:16px;border:1px solid var(--borde)">
+                                        <div style="font-weight:800;font-size:.78rem;color:var(--verde);margin-bottom:10px;letter-spacing:.06em">⚙️ PILAR GESTIÓN (50 pts)</div>
+                                        <div style="font-size:.72rem;color:var(--gris-4);margin-bottom:6px;font-weight:700">Grupo 1 — Ticket (~16.66 pts) · 7 criterios × 2.38</div>
+                                        <div style="font-size:.7rem;color:var(--gris-3);margin-bottom:8px">Estados · Ausencia · Historial · Tipificación · Retención · T.Respuesta · T.Gestión</div>
+                                        <div style="font-size:.72rem;color:var(--gris-4);margin-bottom:6px;font-weight:700">Grupo 2 — Conocimiento (~16.68 pts) · 4 criterios × 4.17</div>
+                                        <div style="font-size:.7rem;color:var(--gris-3);margin-bottom:8px">Servicios · Información Veraz · Parlamentos · Honestidad</div>
+                                        <div style="font-size:.72rem;color:var(--gris-4);margin-bottom:6px;font-weight:700">Grupo 3 — Herramientas (~16.68 pts) · 6 criterios × 2.78</div>
+                                        <div style="font-size:.7rem;color:var(--gris-3);margin-bottom:8px">Ridery Office · Admin/Zendesk · Drive · Slack · Reportes · Incidencias</div>
+                                    </div>
+
+                                    <!-- Clasificación -->
+                                    <div style="background:var(--blanco);border-radius:var(--radius-s);padding:16px;border:1px solid var(--borde)">
+                                        <div style="font-weight:800;font-size:.78rem;color:var(--negro);margin-bottom:10px;letter-spacing:.06em">🏅 CLASIFICACIÓN DE PUNTAJE</div>
+                                        <table style="width:100%;border-collapse:collapse;font-size:.75rem">
+                                            <tr><td style="padding:5px 8px;border-top:1px solid var(--borde)">⭐ Excelente</td><td style="padding:5px 8px;border-top:1px solid var(--borde);font-weight:800;color:#059669;text-align:right">95 – 100</td></tr>
+                                            <tr><td style="padding:5px 8px;border-top:1px solid var(--borde)">✅ Bueno</td><td style="padding:5px 8px;border-top:1px solid var(--borde);font-weight:800;color:#2563eb;text-align:right">80 – 94</td></tr>
+                                            <tr><td style="padding:5px 8px;border-top:1px solid var(--borde)">⚠️ Regular</td><td style="padding:5px 8px;border-top:1px solid var(--borde);font-weight:800;color:var(--amber);text-align:right">60 – 79</td></tr>
+                                            <tr><td style="padding:5px 8px;border-top:1px solid var(--borde)">❌ Debe Mejorar</td><td style="padding:5px 8px;border-top:1px solid var(--borde);font-weight:800;color:var(--rosa);text-align:right">0 – 59</td></tr>
+                                        </table>
+                                    </div>
+
+                                    <!-- Métricas -->
+                                    <div style="background:var(--blanco);border-radius:var(--radius-s);padding:16px;border:1px solid var(--borde)">
+                                        <div style="font-weight:800;font-size:.78rem;color:var(--negro);margin-bottom:10px;letter-spacing:.06em">📊 MÉTRICAS SEMANALES</div>
+                                        <div style="font-size:.72rem;color:var(--gris-4);line-height:1.7">
+                                            <div><b>% Satisfacción</b> = (Tickets buenos ÷ Total resueltos) × 100</div>
+                                            <div><b>% Calificados</b> = ((Buenos + Malos) ÷ Total) × 100</div>
+                                            <div><b>T. 1ra Respuesta</b> = Suma tiempos ÷ N° tickets (en min)</div>
+                                            <div><b>T. Resolución</b> = Suma tiempos resolución ÷ N° tickets</div>
+                                            <div><b>% Calidad Mensual</b> = Suma puntajes ÷ N° auditorías</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </details>
+
+                            <!-- GRID FORMULARIOS -->
+                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+
+                                <!-- CARD: NUEVA AUDITORÍA -->
+                                <div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:22px;box-shadow:var(--shadow)">
+                                    <div style="font-weight:800;font-size:.85rem;letter-spacing:.06em;color:var(--negro);margin-bottom:16px;display:flex;align-items:center;gap:8px">
+                                        📋 NUEVA AUDITORÍA
+                                        <span style="font-size:.65rem;font-weight:700;background:var(--verde-p);color:var(--verde);padding:2px 8px;border-radius:999px">Especialista</span>
+                                    </div>
+
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+                                        <div>
+                                            <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">AGENTE</label>
+                                            <input id="ca-aud-agente" type="text" placeholder="Nombre del agente" style="width:100%;padding:8px 10px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.82rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">FECHA</label>
+                                            <input id="ca-aud-fecha" type="date" style="width:100%;padding:8px 10px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.82rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">TIPIFICACIÓN</label>
+                                            <select id="ca-aud-tipo" style="width:100%;padding:8px 10px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.82rem;outline:none;background:var(--fondo)">
+                                                <option value="">Seleccionar...</option>
+                                                <option>Consulta General</option>
+                                                <option>Soporte Técnico</option>
+                                                <option>Pagos y Facturación</option>
+                                                <option>Incidencia</option>
+                                                <option>Reclamo</option>
+                                                <option>Otro</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">N° TICKET</label>
+                                            <input id="ca-aud-ticket" type="text" placeholder="#12345" style="width:100%;padding:8px 10px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.82rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                    </div>
+
+                                    <!-- PILARES -->
+                                    <div style="font-size:.72rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;margin-bottom:8px">🤝 EMPATÍA — Marcar criterios cumplidos</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:14px" id="ca-empatia-checks">
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-emp" value="8.33"> Método RIDED</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-emp" value="8.33"> Lenguaje Positivo</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-emp" value="8.33"> Acompañamiento</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-emp" value="8.33"> Personalización</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-emp" value="8.33"> Estructura</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.75rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-emp" value="8.33"> IA y Ortografía</label>
+                                    </div>
+
+                                    <div style="font-size:.72rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;margin-bottom:8px">⚙️ GESTIÓN — Marcar criterios cumplidos</div>
+                                    <div style="font-size:.68rem;font-weight:700;color:var(--gris-3);margin-bottom:6px">Grupo 1 · Ticket (2.38 pts c/u)</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px">
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> Estados Ticket</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> Ausencia Cliente</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> Validación Historial</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> Tipificación</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> Retención Tickets</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> T. Respuesta</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.38"> T. Gestión</label>
+                                    </div>
+                                    <div style="font-size:.68rem;font-weight:700;color:var(--gris-3);margin-bottom:6px">Grupo 2 · Conocimiento (4.17 pts c/u)</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px">
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="4.17"> Servicios y Promo.</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="4.17"> Información Veraz</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="4.17"> Parlamentos</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="4.17"> Honestidad</label>
+                                    </div>
+                                    <div style="font-size:.68rem;font-weight:700;color:var(--gris-3);margin-bottom:6px">Grupo 3 · Herramientas (2.78 pts c/u)</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:14px">
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.78"> Ridery Office</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.78"> Admin y Zendesk</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.78"> Drive y Manuales</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.78"> Slack</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.78"> Generación Reportes</label>
+                                        <label style="display:flex;align-items:center;gap:6px;font-size:.73rem;cursor:pointer;padding:5px 8px;border-radius:6px;border:1px solid var(--borde);background:var(--fondo)"><input type="checkbox" class="ca-ges" value="2.78"> Carga Incidencias</label>
+                                    </div>
+
+                                    <!-- PUNTAJE CALCULADO -->
+                                    <div id="ca-score-preview" style="background:var(--negro);border-radius:var(--radius-s);padding:12px 16px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between">
+                                        <div>
+                                            <div style="font-size:.65rem;font-weight:700;color:rgba(255,255,255,.5);letter-spacing:.08em">PUNTAJE CALCULADO</div>
+                                            <div style="font-size:2rem;font-weight:900;color:var(--verde);line-height:1;margin-top:2px" id="ca-score-num">0.00</div>
+                                        </div>
+                                        <div style="text-align:right">
+                                            <div style="font-size:.65rem;color:rgba(255,255,255,.4)">Empatía: <span id="ca-score-emp" style="color:var(--verde)">0.00</span></div>
+                                            <div style="font-size:.65rem;color:rgba(255,255,255,.4)">Gestión: <span id="ca-score-ges" style="color:var(--verde)">0.00</span></div>
+                                            <div id="ca-score-badge" style="margin-top:6px;font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.5)">—</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- OBSERVACIONES -->
+                                    <div style="margin-bottom:14px">
+                                        <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">OBSERVACIONES DEL ESPECIALISTA</label>
+                                        <textarea id="ca-aud-obs" rows="3" placeholder="Detalla los puntos de mejora, fortalezas y recomendaciones para el agente..." style="width:100%;padding:8px 10px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.8rem;resize:vertical;outline:none;background:var(--fondo)"></textarea>
+                                    </div>
+
+                                    <!-- MÉTRICAS SEMANALES -->
+                                    <div style="font-size:.72rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;margin-bottom:8px">📊 MÉTRICAS SEMANALES (opcional)</div>
+                                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:700;color:var(--gris-3);display:block;margin-bottom:3px">% SATISFACCIÓN</label>
+                                            <input id="ca-met-sat" type="number" min="0" max="100" step="0.01" placeholder="85.00" style="width:100%;padding:7px 8px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.8rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:700;color:var(--gris-3);display:block;margin-bottom:3px">% CALIFICADOS</label>
+                                            <input id="ca-met-cal" type="number" min="0" max="100" step="0.01" placeholder="50.00" style="width:100%;padding:7px 8px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.8rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:700;color:var(--gris-3);display:block;margin-bottom:3px">T. 1RA RESP (min)</label>
+                                            <input id="ca-met-t1r" type="number" min="0" step="0.1" placeholder="2.5" style="width:100%;padding:7px 8px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.8rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:700;color:var(--gris-3);display:block;margin-bottom:3px">T. RESOLUCIÓN (min)</label>
+                                            <input id="ca-met-tres" type="number" min="0" step="0.1" placeholder="10.0" style="width:100%;padding:7px 8px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.8rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:700;color:var(--gris-3);display:block;margin-bottom:3px">TICKETS / HORA</label>
+                                            <input id="ca-met-tph" type="number" min="0" step="0.1" placeholder="4.5" style="width:100%;padding:7px 8px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.8rem;outline:none;background:var(--fondo)">
+                                        </div>
+                                        <div>
+                                            <label style="font-size:.65rem;font-weight:700;color:var(--gris-3);display:block;margin-bottom:3px">TURNO</label>
+                                            <select id="ca-met-turno" style="width:100%;padding:7px 8px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.78rem;outline:none;background:var(--fondo)">
+                                                <option value="">—</option>
+                                                <option>AM Semana</option>
+                                                <option>PM Semana</option>
+                                                <option>Madrugada Semana</option>
+                                                <option>Madrugada Fin de Semana</option>
+                                                <option>Fin de Semana AM</option>
+                                                <option>Fin de Semana PM</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <button onclick="caGuardarAuditoria()" style="width:100%;padding:11px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.85rem;cursor:pointer;color:var(--negro);letter-spacing:.04em;transition:opacity .2s">💾 GUARDAR AUDITORÍA</button>
+                                    <div id="ca-save-msg" style="margin-top:8px;text-align:center;font-size:.75rem;font-weight:700;color:var(--verde);display:none">✅ Auditoría guardada correctamente</div>
+                                </div>
+
+                                <!-- CARD: HISTORIAL / RESUMEN -->
+                                <div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:22px;box-shadow:var(--shadow)">
+                                    <div style="font-weight:800;font-size:.85rem;letter-spacing:.06em;color:var(--negro);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+                                        <span>📊 HISTORIAL DE AUDITORÍAS</span>
+                                        <div style="display:flex;gap:6px">
+                                            <input id="ca-hist-filtro" type="text" placeholder="Buscar agente..." oninput="caRenderHistorial()" style="padding:5px 10px;border:1.5px solid var(--borde);border-radius:6px;font-family:var(--font-main);font-size:.75rem;outline:none;width:130px;background:var(--fondo)">
+                                            <button onclick="caExportarCSV()" style="padding:5px 10px;background:var(--azul-p);color:var(--azul);border:none;border-radius:6px;font-family:var(--font-main);font-weight:700;font-size:.72rem;cursor:pointer">⬇ CSV</button>
+                                        </div>
+                                    </div>
+
+                                    <!-- RESUMEN ESTADÍSTICAS -->
+                                    <div id="ca-stats-bar" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px">
+                                        <div style="background:var(--verde-p);border-radius:var(--radius-s);padding:10px;text-align:center">
+                                            <div style="font-size:1.4rem;font-weight:900;color:var(--verde)" id="ca-stat-prom">—</div>
+                                            <div style="font-size:.62rem;font-weight:700;color:var(--gris-4)">Prom. Calidad</div>
+                                        </div>
+                                        <div style="background:var(--azul-p);border-radius:var(--radius-s);padding:10px;text-align:center">
+                                            <div style="font-size:1.4rem;font-weight:900;color:var(--azul)" id="ca-stat-total">0</div>
+                                            <div style="font-size:.62rem;font-weight:700;color:var(--gris-4)">Auditorías</div>
+                                        </div>
+                                        <div style="background:var(--amber-p);border-radius:var(--radius-s);padding:10px;text-align:center">
+                                            <div style="font-size:1.4rem;font-weight:900;color:var(--amber)" id="ca-stat-exc">0</div>
+                                            <div style="font-size:.62rem;font-weight:700;color:var(--gris-4)">Excelentes</div>
+                                        </div>
+                                        <div style="background:var(--rosa-p);border-radius:var(--radius-s);padding:10px;text-align:center">
+                                            <div style="font-size:1.4rem;font-weight:900;color:var(--rosa)" id="ca-stat-mej">0</div>
+                                            <div style="font-size:.62rem;font-weight:700;color:var(--gris-4)">Debe Mejorar</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- TABLA HISTORIAL -->
+                                    <div style="overflow-x:auto;max-height:480px;overflow-y:auto">
+                                        <table style="width:100%;border-collapse:collapse;font-size:.75rem" id="ca-tabla-historial">
+                                            <thead>
+                                                <tr style="position:sticky;top:0;background:var(--fondo)">
+                                                    <th style="padding:6px 8px;text-align:left;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">AGENTE</th>
+                                                    <th style="padding:6px 8px;text-align:left;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">FECHA</th>
+                                                    <th style="padding:6px 8px;text-align:center;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">PUNTAJE</th>
+                                                    <th style="padding:6px 8px;text-align:center;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">CLASIFICACIÓN</th>
+                                                    <th style="padding:6px 8px;text-align:center;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">ACCIÓN</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ca-historial-body">
+                                                <tr><td colspan="5" style="padding:30px;text-align:center;color:var(--gris-3);font-size:.8rem">No hay auditorías registradas</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- MODAL DETALLE AUDITORÍA -->
+                            <div id="ca-modal" style="display:none;position:fixed;inset:0;background:rgba(15,17,30,.6);z-index:10000;align-items:center;justify-content:center">
+                                <div style="background:var(--blanco);border-radius:var(--radius);padding:28px;max-width:560px;width:90%;max-height:80vh;overflow-y:auto;position:relative">
+                                    <button onclick="document.getElementById('ca-modal').style.display='none'" style="position:absolute;top:14px;right:14px;background:var(--gris-1);border:none;border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;font-weight:700">✕</button>
+                                    <div id="ca-modal-content"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ═══════════════════════════
+                             VISTA AGENTE
+                        ═══════════════════════════ -->
+                        <div id="ca-panel-agente" style="display:none">
+                            <div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:22px;box-shadow:var(--shadow);margin-bottom:20px">
+                                <div style="font-weight:800;font-size:.85rem;letter-spacing:.06em;color:var(--negro);margin-bottom:14px">👤 VER RESULTADOS DEL AGENTE</div>
+                                <div style="display:flex;gap:10px;align-items:flex-end">
+                                    <div style="flex:1">
+                                        <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">NOMBRE DEL AGENTE</label>
+                                        <input id="ca-age-busca" type="text" placeholder="Escribe el nombre del agente..." oninput="caFiltrarAgente()" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;outline:none;background:var(--fondo)">
+                                    </div>
+                                    <button onclick="caFiltrarAgente()" style="padding:9px 18px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.8rem;cursor:pointer;color:var(--negro)">🔍 Buscar</button>
+                                </div>
+                            </div>
+
+                            <div id="ca-age-resultados">
+                                <div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:40px;text-align:center;color:var(--gris-3)">
+                                    <div style="font-size:2.5rem;margin-bottom:12px">🔍</div>
+                                    <p style="font-weight:700;font-size:.9rem;color:var(--gris-4)">Ingresa el nombre del agente para ver sus resultados</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div><!-- /padding wrap -->
+                </div><!-- /page-calidad-agente -->
                 <!-- ══════════════════════════════════════
          CIUDADES
     ══════════════════════════════════════ -->
@@ -9740,6 +10067,7 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 'reporte-incidencia': 'Generador de Reporte · Incidencia Perfil',
                 'validador': 'Administrative · Validador de Pagos',
                 'guardia-vacante': 'Administrative · Guardia Vacante',
+                'calidad-agente': 'Administrative · Calidad Agente',
                 'ciudades': 'Ciudades',
                 'issues': 'Issues · Reporte de Fallas',
                 'disponibilidad': 'Disponibilidad · Disponibilidad Ciudad',
@@ -14245,6 +14573,245 @@ ${contexto}
 
             // Init on load
             // (catInit already called in window.onload above)
+
+            // ═══════════════════════════════════════════
+            //  MÓDULO: CALIDAD AGENTE
+            // ═══════════════════════════════════════════
+
+            var CA_DATA = []; // Array de auditorías en memoria
+
+            function caSetTab(tab) {
+                var isEsp = tab === 'especialista';
+                document.getElementById('ca-panel-especialista').style.display = isEsp ? '' : 'none';
+                document.getElementById('ca-panel-agente').style.display = isEsp ? 'none' : '';
+                var btnEsp = document.getElementById('ca-tab-esp');
+                var btnAge = document.getElementById('ca-tab-age');
+                btnEsp.style.background = isEsp ? 'var(--verde)' : 'transparent';
+                btnEsp.style.color = isEsp ? 'var(--negro)' : 'var(--gris-4)';
+                btnAge.style.background = !isEsp ? 'var(--verde)' : 'transparent';
+                btnAge.style.color = !isEsp ? 'var(--negro)' : 'var(--gris-4)';
+            }
+
+            function caCalcScore() {
+                var empSum = 0;
+                document.querySelectorAll('.ca-emp:checked').forEach(function(c){ empSum += parseFloat(c.value); });
+                var gesSum = 0;
+                document.querySelectorAll('.ca-ges:checked').forEach(function(c){ gesSum += parseFloat(c.value); });
+                var total = Math.min(empSum + gesSum, 100);
+                document.getElementById('ca-score-num').textContent = total.toFixed(2);
+                document.getElementById('ca-score-emp').textContent = empSum.toFixed(2);
+                document.getElementById('ca-score-ges').textContent = gesSum.toFixed(2);
+                var badge = document.getElementById('ca-score-badge');
+                var cls = caClasificar(total);
+                badge.textContent = cls.label;
+                badge.style.background = cls.bg;
+                badge.style.color = cls.color;
+                return { total: total, empatia: empSum, gestion: gesSum };
+            }
+
+            // Attach live score update
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('ca-emp') || e.target.classList.contains('ca-ges')) {
+                    caCalcScore();
+                }
+            });
+
+            function caClasificar(pts) {
+                if (pts >= 95) return { label: '⭐ Excelente', bg: '#d1fae5', color: '#059669' };
+                if (pts >= 80) return { label: '✅ Bueno', bg: 'var(--azul-p)', color: 'var(--azul)' };
+                if (pts >= 60) return { label: '⚠️ Regular', bg: 'var(--amber-p)', color: 'var(--amber)' };
+                return { label: '❌ Debe Mejorar', bg: 'var(--rosa-p)', color: 'var(--rosa)' };
+            }
+
+            function caGuardarAuditoria() {
+                var agente = document.getElementById('ca-aud-agente').value.trim();
+                var fecha   = document.getElementById('ca-aud-fecha').value;
+                var tipo    = document.getElementById('ca-aud-tipo').value;
+                var ticket  = document.getElementById('ca-aud-ticket').value.trim();
+                var obs     = document.getElementById('ca-aud-obs').value.trim();
+                if (!agente || !fecha) { alert('Completa al menos el nombre del agente y la fecha.'); return; }
+
+                var score = caCalcScore();
+
+                // Criterios marcados
+                var empCriterios = [];
+                document.querySelectorAll('.ca-emp').forEach(function(c) {
+                    if (c.checked) empCriterios.push(c.closest('label').textContent.trim());
+                });
+                var gesCriterios = [];
+                document.querySelectorAll('.ca-ges').forEach(function(c) {
+                    if (c.checked) gesCriterios.push(c.closest('label').textContent.trim());
+                });
+
+                var registro = {
+                    id: Date.now(),
+                    agente: agente,
+                    fecha: fecha,
+                    tipo: tipo,
+                    ticket: ticket,
+                    obs: obs,
+                    puntaje: score.total,
+                    empatia: score.empatia,
+                    gestion: score.gestion,
+                    empCriterios: empCriterios,
+                    gesCriterios: gesCriterios,
+                    sat:    document.getElementById('ca-met-sat').value,
+                    cal:    document.getElementById('ca-met-cal').value,
+                    t1r:    document.getElementById('ca-met-t1r').value,
+                    tres:   document.getElementById('ca-met-tres').value,
+                    tph:    document.getElementById('ca-met-tph').value,
+                    turno:  document.getElementById('ca-met-turno').value
+                };
+
+                CA_DATA.unshift(registro);
+                caRenderHistorial();
+
+                // Limpiar form
+                document.getElementById('ca-aud-agente').value = '';
+                document.getElementById('ca-aud-fecha').value = '';
+                document.getElementById('ca-aud-tipo').value = '';
+                document.getElementById('ca-aud-ticket').value = '';
+                document.getElementById('ca-aud-obs').value = '';
+                document.querySelectorAll('.ca-emp,.ca-ges').forEach(function(c){ c.checked = false; });
+                ['ca-met-sat','ca-met-cal','ca-met-t1r','ca-met-tres','ca-met-tph'].forEach(function(id){ document.getElementById(id).value = ''; });
+                document.getElementById('ca-met-turno').value = '';
+                caCalcScore();
+
+                var msg = document.getElementById('ca-save-msg');
+                msg.style.display = 'block';
+                setTimeout(function(){ msg.style.display = 'none'; }, 2500);
+            }
+
+            function caRenderHistorial() {
+                var filtro = (document.getElementById('ca-hist-filtro').value || '').toLowerCase().trim();
+                var datos = filtro ? CA_DATA.filter(function(r){ return r.agente.toLowerCase().includes(filtro); }) : CA_DATA;
+
+                // Stats
+                var total = datos.length;
+                var prom = total ? (datos.reduce(function(a,r){ return a + r.puntaje; }, 0) / total) : 0;
+                var exc  = datos.filter(function(r){ return r.puntaje >= 95; }).length;
+                var mej  = datos.filter(function(r){ return r.puntaje < 60; }).length;
+                document.getElementById('ca-stat-prom').textContent  = total ? prom.toFixed(2) : '—';
+                document.getElementById('ca-stat-total').textContent = total;
+                document.getElementById('ca-stat-exc').textContent   = exc;
+                document.getElementById('ca-stat-mej').textContent   = mej;
+
+                var tbody = document.getElementById('ca-historial-body');
+                if (!datos.length) {
+                    tbody.innerHTML = '<tr><td colspan="5" style="padding:30px;text-align:center;color:var(--gris-3);font-size:.8rem">No hay auditorías' + (filtro ? ' para ese agente' : ' registradas') + '</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = datos.map(function(r) {
+                    var cls = caClasificar(r.puntaje);
+                    return '<tr style="border-top:1px solid var(--borde)">' +
+                        '<td style="padding:7px 8px;font-weight:700">' + r.agente + '</td>' +
+                        '<td style="padding:7px 8px;color:var(--gris-4)">' + r.fecha + '</td>' +
+                        '<td style="padding:7px 8px;text-align:center;font-weight:900;font-size:.95rem">' + r.puntaje.toFixed(2) + '</td>' +
+                        '<td style="padding:7px 8px;text-align:center"><span style="font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:999px;background:' + cls.bg + ';color:' + cls.color + '">' + cls.label + '</span></td>' +
+                        '<td style="padding:7px 8px;text-align:center"><button onclick="caVerDetalle(' + r.id + ')" style="padding:4px 10px;background:var(--azul-p);color:var(--azul);border:none;border-radius:6px;font-family:var(--font-main);font-weight:700;font-size:.7rem;cursor:pointer">Ver</button></td>' +
+                        '</tr>';
+                }).join('');
+            }
+
+            function caVerDetalle(id) {
+                var r = CA_DATA.find(function(x){ return x.id === id; });
+                if (!r) return;
+                var cls = caClasificar(r.puntaje);
+                var html = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">' +
+                    '<span style="font-size:1.6rem">📋</span>' +
+                    '<div><div style="font-weight:800;font-size:1rem">' + r.agente + '</div>' +
+                    '<div style="font-size:.75rem;color:var(--gris-4)">' + r.fecha + (r.tipo ? ' · ' + r.tipo : '') + (r.ticket ? ' · #' + r.ticket : '') + '</div></div></div>' +
+
+                    '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px">' +
+                    '<div style="background:var(--fondo);border-radius:8px;padding:10px;text-align:center"><div style="font-size:1.4rem;font-weight:900;color:' + cls.color + '">' + r.puntaje.toFixed(2) + '</div><div style="font-size:.65rem;color:var(--gris-4);font-weight:700">PUNTAJE TOTAL</div></div>' +
+                    '<div style="background:var(--azul-p);border-radius:8px;padding:10px;text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--azul)">' + r.empatia.toFixed(2) + '</div><div style="font-size:.65rem;color:var(--gris-4);font-weight:700">EMPATÍA</div></div>' +
+                    '<div style="background:var(--verde-p);border-radius:8px;padding:10px;text-align:center"><div style="font-size:1.4rem;font-weight:900;color:var(--verde)">' + r.gestion.toFixed(2) + '</div><div style="font-size:.65rem;color:var(--gris-4);font-weight:700">GESTIÓN</div></div>' +
+                    '</div>' +
+
+                    (r.empCriterios.length || r.gesCriterios.length ?
+                        '<div style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:800;color:var(--gris-4);margin-bottom:6px">✅ CRITERIOS CUMPLIDOS</div>' +
+                        '<div style="display:flex;flex-wrap:wrap;gap:4px">' +
+                        [...r.empCriterios, ...r.gesCriterios].map(function(c){ return '<span style="font-size:.68rem;padding:3px 8px;background:var(--verde-p);color:var(--verde);border-radius:999px;font-weight:700">' + c + '</span>'; }).join('') +
+                        '</div></div>' : '') +
+
+                    (r.obs ? '<div style="margin-bottom:14px"><div style="font-size:.72rem;font-weight:800;color:var(--gris-4);margin-bottom:6px">📝 OBSERVACIONES</div><div style="background:var(--fondo);border-radius:8px;padding:12px;font-size:.8rem;line-height:1.5;color:var(--negro)">' + r.obs + '</div></div>' : '') +
+
+                    (r.sat || r.cal || r.t1r || r.tres || r.tph ?
+                        '<div><div style="font-size:.72rem;font-weight:800;color:var(--gris-4);margin-bottom:8px">📊 MÉTRICAS SEMANALES</div>' +
+                        '<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' +
+                        (r.sat  ? '<div style="background:var(--fondo);border-radius:6px;padding:8px"><span style="font-size:.65rem;color:var(--gris-4);font-weight:700">% Satisfacción</span><div style="font-weight:900;color:var(--negro)">' + r.sat + '%</div></div>' : '') +
+                        (r.cal  ? '<div style="background:var(--fondo);border-radius:6px;padding:8px"><span style="font-size:.65rem;color:var(--gris-4);font-weight:700">% Calificados</span><div style="font-weight:900;color:var(--negro)">' + r.cal + '%</div></div>' : '') +
+                        (r.t1r  ? '<div style="background:var(--fondo);border-radius:6px;padding:8px"><span style="font-size:.65rem;color:var(--gris-4);font-weight:700">T. 1ra Respuesta</span><div style="font-weight:900;color:var(--negro)">' + r.t1r + ' min</div></div>' : '') +
+                        (r.tres ? '<div style="background:var(--fondo);border-radius:6px;padding:8px"><span style="font-size:.65rem;color:var(--gris-4);font-weight:700">T. Resolución</span><div style="font-weight:900;color:var(--negro)">' + r.tres + ' min</div></div>' : '') +
+                        (r.tph  ? '<div style="background:var(--fondo);border-radius:6px;padding:8px"><span style="font-size:.65rem;color:var(--gris-4);font-weight:700">Tickets / Hora</span><div style="font-weight:900;color:var(--negro)">' + r.tph + '</div></div>' : '') +
+                        (r.turno? '<div style="background:var(--fondo);border-radius:6px;padding:8px"><span style="font-size:.65rem;color:var(--gris-4);font-weight:700">Turno</span><div style="font-weight:900;color:var(--negro)">' + r.turno + '</div></div>' : '') +
+                        '</div></div>' : '');
+
+                document.getElementById('ca-modal-content').innerHTML = html;
+                document.getElementById('ca-modal').style.display = 'flex';
+            }
+
+            function caFiltrarAgente() {
+                var q = (document.getElementById('ca-age-busca').value || '').toLowerCase().trim();
+                var cont = document.getElementById('ca-age-resultados');
+                if (!q) {
+                    cont.innerHTML = '<div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:40px;text-align:center;color:var(--gris-3)"><div style="font-size:2.5rem;margin-bottom:12px">🔍</div><p style="font-weight:700;font-size:.9rem;color:var(--gris-4)">Ingresa el nombre del agente para ver sus resultados</p></div>';
+                    return;
+                }
+                var datos = CA_DATA.filter(function(r){ return r.agente.toLowerCase().includes(q); });
+                if (!datos.length) {
+                    cont.innerHTML = '<div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:40px;text-align:center;color:var(--gris-3)"><div style="font-size:2rem;margin-bottom:10px">😶</div><p style="font-weight:700;font-size:.9rem;color:var(--gris-4)">No se encontraron auditorías para "' + q + '"</p></div>';
+                    return;
+                }
+
+                var prom = datos.reduce(function(a,r){ return a + r.puntaje; }, 0) / datos.length;
+                var cls  = caClasificar(prom);
+
+                // Auditorías recientes del agente
+                var filas = datos.map(function(r) {
+                    var rc = caClasificar(r.puntaje);
+                    return '<tr style="border-top:1px solid var(--borde)">' +
+                        '<td style="padding:8px 10px">' + r.fecha + '</td>' +
+                        '<td style="padding:8px 10px">' + (r.tipo || '—') + '</td>' +
+                        '<td style="padding:8px 10px;text-align:center;font-weight:900">' + r.puntaje.toFixed(2) + '</td>' +
+                        '<td style="padding:8px 10px;text-align:center"><span style="font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:999px;background:' + rc.bg + ';color:' + rc.color + '">' + rc.label + '</span></td>' +
+                        '<td style="padding:8px 10px;font-size:.78rem;color:var(--gris-4)">' + (r.obs ? r.obs.substring(0,60) + (r.obs.length > 60 ? '…' : '') : '—') + '</td>' +
+                        '</tr>';
+                }).join('');
+
+                cont.innerHTML = '<div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:22px;box-shadow:var(--shadow)">' +
+                    '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px">' +
+                    '<div style="display:flex;align-items:center;gap:12px">' +
+                    '<div style="width:48px;height:48px;border-radius:50%;background:var(--verde-p);display:flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:900;color:var(--verde)">' + datos[0].agente.charAt(0).toUpperCase() + '</div>' +
+                    '<div><div style="font-weight:800;font-size:1.1rem">' + datos[0].agente + '</div><div style="font-size:.75rem;color:var(--gris-4)">' + datos.length + ' auditoría' + (datos.length !== 1 ? 's' : '') + ' registrada' + (datos.length !== 1 ? 's' : '') + '</div></div></div>' +
+                    '<div style="display:flex;gap:10px">' +
+                    '<div style="background:var(--fondo);border-radius:var(--radius-s);padding:10px 16px;text-align:center"><div style="font-size:1.5rem;font-weight:900;color:' + cls.color + '">' + prom.toFixed(2) + '</div><div style="font-size:.65rem;font-weight:700;color:var(--gris-4)">PROM. CALIDAD</div></div>' +
+                    '<div style="background:var(--fondo);border-radius:var(--radius-s);padding:10px 16px;text-align:center"><div style="font-size:.9rem;font-weight:900">' + cls.label + '</div><div style="font-size:.65rem;font-weight:700;color:var(--gris-4)">CLASIFICACIÓN</div></div>' +
+                    '</div></div>' +
+                    '<div style="overflow-x:auto"><table style="width:100%;border-collapse:collapse;font-size:.78rem">' +
+                    '<thead><tr style="background:var(--fondo)"><th style="padding:8px 10px;text-align:left;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">FECHA</th><th style="padding:8px 10px;text-align:left;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">TIPO</th><th style="padding:8px 10px;text-align:center;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">PUNTAJE</th><th style="padding:8px 10px;text-align:center;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">NIVEL</th><th style="padding:8px 10px;text-align:left;font-size:.65rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">OBSERVACIONES</th></tr></thead>' +
+                    '<tbody>' + filas + '</tbody></table></div></div>';
+            }
+
+            function caExportarCSV() {
+                if (!CA_DATA.length) { alert('No hay auditorías para exportar.'); return; }
+                var cabecera = ['Agente','Fecha','Tipificación','Ticket','Puntaje','Empatía','Gestión','Clasificación','% Satisfacción','% Calificados','T.1ra Resp(min)','T.Resolución(min)','Tickets/Hora','Turno','Observaciones'];
+                var filas = CA_DATA.map(function(r) {
+                    return [r.agente, r.fecha, r.tipo, r.ticket, r.puntaje.toFixed(2), r.empatia.toFixed(2), r.gestion.toFixed(2), caClasificar(r.puntaje).label.replace(/[⭐✅⚠️❌]/g,'').trim(), r.sat, r.cal, r.t1r, r.tres, r.tph, r.turno, '"' + (r.obs || '').replace(/"/g,'""') + '"'].join(',');
+                });
+                var csv = [cabecera.join(','), ...filas].join('\n');
+                var a = document.createElement('a');
+                a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent('\uFEFF' + csv);
+                a.download = 'calidad_agentes_' + new Date().toISOString().slice(0,10) + '.csv';
+                a.click();
+            }
+
+            // Cerrar modal al hacer click fuera
+            document.addEventListener('click', function(e) {
+                var modal = document.getElementById('ca-modal');
+                if (modal && e.target === modal) modal.style.display = 'none';
+            });
         </script>
     </body>
 </html>
