@@ -30,7 +30,7 @@ export default function handler(req, res) {
     { user: 'Smoya@ridery.app', pass: '27814888', rol: 'Administrador' },
     { user: 'Ycabrera@ridery.app', pass: '30225899', rol: 'Administrador' },
     { user: 'Ccarrillo@ridery.app', pass: '18466236', rol: 'Administrador' },
-    { user: 'Remoto', pass: 'Remoto2026', rol: 'Agente Remoto' }
+    { user: 'Remoto', pass: 'Remoto2026', rol: 'Remoto' }
   ];
 
   const found = USERS.find(u => u.user.toLowerCase() === user?.toLowerCase() && u.pass === pass);
