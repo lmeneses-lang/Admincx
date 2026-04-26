@@ -8364,16 +8364,22 @@
                     }).join('');
                 }
 
-                function hcEliminar(idx) {
+                async function hcEliminar(idx) {
                     if (!confirm('¿Eliminar este registro?')) return;
-                    HC_DATA.splice(idx, 1);
-                    hcSave();
-                    hcRenderTabla();
+                    const id = HC_DATA[idx]._id;
+                    try {
+                        const res = await fetch('/api/auditorias?id=' + id, { method: 'DELETE' });
+                        const json = await res.json();
+                        if (!json.ok) { alert('❌ Error al eliminar: ' + json.error); return; }
+                        await hcCargarDeMongo();
+                    } catch(e) {
+                        alert('❌ No se pudo conectar con el servidor');
+                    }
                 }
 
                 function hcAbrirEditar(idx) {
                     const r = HC_DATA[idx];
-                    document.getElementById('hc-edit-idx').value = idx;
+                    document.getElementById('hc-edit-idx').value = r._id;
                     document.getElementById('hc-edit-agente').value = r.agente;
                     document.getElementById('hc-edit-semana').value = r.semana;
                     document.getElementById('hc-edit-turno').value = r.turno + '|' + r.esperadas;
@@ -8386,8 +8392,8 @@
                     document.getElementById('hc-edit-modal').style.display = 'none';
                 }
 
-                function hcGuardarEdicion() {
-                    const idx       = parseInt(document.getElementById('hc-edit-idx').value);
+                async function hcGuardarEdicion() {
+                    const id        = document.getElementById('hc-edit-idx').value;
                     const agente    = document.getElementById('hc-edit-agente').value.trim();
                     const semana    = document.getElementById('hc-edit-semana').value;
                     const turnoVal  = document.getElementById('hc-edit-turno').value;
@@ -8395,10 +8401,26 @@
                     const obs       = document.getElementById('hc-edit-obs').value.trim();
                     if (!agente || !semana || isNaN(conectado)) { alert('Completa todos los campos.'); return; }
                     const [turno, esp] = turnoVal.split('|');
-                    HC_DATA[idx] = { ...HC_DATA[idx], agente, semana, turno, esperadas: parseFloat(esp), conectado, obs };
-                    hcSave();
-                    hcCerrarModal();
-                    hcRenderTabla();
+                    try {
+                        const res = await fetch('/api/auditorias?id=' + id, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                agente,
+                                fecha: semana,
+                                tipo: turno,
+                                puntaje: conectado,
+                                observaciones: obs,
+                                metricas: { turno, ticketsPorHora: parseFloat(esp) }
+                            })
+                        });
+                        const json = await res.json();
+                        if (!json.ok) { alert('❌ Error al editar: ' + json.error); return; }
+                        await hcCargarDeMongo();
+                        hcCerrarModal();
+                    } catch(e) {
+                        alert('❌ No se pudo conectar con el servidor');
+                    }
                 }
 
                 function hcFiltrarAgente() {
