@@ -8025,109 +8025,490 @@
                 <!-- ══════════════════════════════════════
          GUARDIA VACANTE
     ══════════════════════════════════════ -->
-                <!-- ══ PÁGINA: GESTIÓN DE USUARIOS (MongoDB) ══ -->
-                <div class="page-content" id="page-gestion-usuarios" style="position:relative">
-                    <div style="padding:0 28px 40px">
-                        <div style="margin-bottom:18px">
-                            <h2 style="font-size:1.3rem;font-weight:800;color:var(--negro)">👥 GESTIÓN DE USUARIOS</h2>
-                            <p style="color:var(--gris-4);font-size:.85rem">Crea, consulta y elimina usuarios del sistema · Solo visible para Administradores</p>
+                <!-- ══ PÁGINA: GESTIÓN DE USUARIOS ══ -->
+                <div class="page-content" id="page-gestion-usuarios">
+                    <div class="gu-wrap">
+                        <!-- Header -->
+                        <div class="gu-header-card">
+                            <div class="gu-header-ico">👥</div>
+                            <div class="gu-header-text">
+                                <h2>GESTIÓN DE USUARIOS</h2>
+                                <p>Crea, consulta y elimina usuarios del sistema · Solo visible para Administradores</p>
+                            </div>
                         </div>
-                        <div id="gu2-loading" style="padding:24px;text-align:center;color:var(--gris-4)">Cargando usuarios...</div>
-                        <table id="gu2-tabla" style="display:none;width:100%;border-collapse:collapse">
-                            <thead>
-                                <tr style="background:var(--gris-1)">
-                                    <th style="padding:10px 12px;text-align:left;font-size:.78rem;color:var(--gris-4)">Usuario</th>
-                                    <th style="padding:10px 12px;text-align:left;font-size:.78rem;color:var(--gris-4)">Nombre</th>
-                                    <th style="padding:10px 12px;text-align:center;font-size:.78rem;color:var(--gris-4)">Rol</th>
-                                    <th style="padding:10px 12px;text-align:center;font-size:.78rem;color:var(--gris-4)">Acción</th>
-                                </tr>
-                            </thead>
-                            <tbody id="gu2-tbody"></tbody>
-                        </table>
-                        <!-- Formulario nuevo usuario -->
-                        <div style="margin-top:28px;background:var(--blanco);border-radius:var(--radius);padding:20px;box-shadow:var(--sombra-s)">
-                            <div style="font-weight:800;font-size:.95rem;margin-bottom:14px">➕ Nuevo Usuario</div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                                <div>
-                                    <label style="font-size:.75rem;font-weight:700;color:var(--gris-4);display:block;margin-bottom:4px">USUARIO / CORREO</label>
-                                    <input type="text" id="gu2-new-user" placeholder="ejemplo@ridery.app" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;box-sizing:border-box">
+                        <!-- Lista de usuarios -->
+                        <div class="gu-table-card">
+                            <div class="gu-table-head">
+                                <span class="gu-table-head-title">Usuarios registrados</span>
+                                <span class="gu-count-badge" id="gu-count">—</span>
+                            </div>
+                            <div id="gu-user-list">
+                            <!-- se renderiza por JS -->
+                            </div>
+                        </div>
+                        <!-- Formulario crear usuario -->
+                        <div class="gu-form-card">
+                            <div class="gu-form-title">➕ Nuevo Usuario</div>
+                            <div class="gu-form-grid">
+                                <div class="gu-field">
+                                    <label>Usuario / Correo</label>
+                                    <input type="text" id="gu-new-user" placeholder="ejemplo@ridery.app">
                                 </div>
-                                <div>
-                                    <label style="font-size:.75rem;font-weight:700;color:var(--gris-4);display:block;margin-bottom:4px">CONTRASEÑA</label>
-                                    <input type="password" id="gu2-new-pass" placeholder="Mínimo 6 caracteres" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;box-sizing:border-box">
+                                <div class="gu-field">
+                                    <label>Contraseña</label>
+                                    <input type="password" id="gu-new-pass" placeholder="Mínimo 6 caracteres">
                                 </div>
-                                <div>
-                                    <label style="font-size:.75rem;font-weight:700;color:var(--gris-4);display:block;margin-bottom:4px">NOMBRE (REFERENCIA OPCIONAL)</label>
-                                    <input type="text" id="gu2-new-nombre" placeholder="Ej: María García" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;box-sizing:border-box">
-                                </div>
-                                <div>
-                                    <label style="font-size:.75rem;font-weight:700;color:var(--gris-4);display:block;margin-bottom:4px">ROL</label>
-                                    <select id="gu2-new-rol" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;box-sizing:border-box">
-                                        <option value="Agente Remoto">Agente Remoto</option>
-                                        <option value="Administrador">Administrador</option>
-                                        <option value="Especialista Calidad">Especialista Calidad</option>
-                                    </select>
+                                <div class="gu-field" style="grid-column: 1 / -1">
+                                    <label>Nombre (referencia opcional)</label>
+                                    <input type="text" id="gu-new-nombre" placeholder="Ej: María García">
                                 </div>
                             </div>
-                            <div id="gu2-modal-err" style="display:none;color:var(--rosa);font-size:.8rem;margin-top:8px;font-weight:700"></div>
-                            <button onclick="gu2CrearUsuario()" style="width:100%;padding:11px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.85rem;cursor:pointer;color:var(--negro);margin-top:14px">CREAR USUARIO</button>
+                            <button class="gu-btn-crear" onclick="guCrearUsuario()">CREAR USUARIO</button>
+                            <div class="gu-toast" id="gu-toast"></div>
                         </div>
                     </div>
-                </div><!-- /page-gestion-usuarios -->
+                </div>
+                </div>
                 <!-- ══ PÁGINA: CALIDAD ══ -->
-                <div class="page-content" id="page-calidad" style="position:relative">
-                    <div class="page-header">
-                        <h1 class="page-title">📊 Módulo de Calidad</h1>
-                        <p style="color:var(--gris-4);font-size:.85rem">Seguimiento y control de calidad del equipo CX · Visible para Especialistas de Calidad y Administradores</p>
-                    </div>
-                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:24px">
-                        <!-- Card: Evaluación de Agentes -->
-                        <div style="background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
-                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                                <span style="font-size:1.8rem">🎯</span>
-                                <div>
-                                    <div style="font-weight:800;font-size:1rem;color:var(--negro)">Evaluación de Agentes</div>
-                                    <div style="font-size:.75rem;color:var(--gris-4);font-weight:600">Registro de monitoreos y feedback</div>
-                                </div>
+                <div class="page-content" id="page-calidad">
+                <div class="page-header">
+                    <h1 class="page-title">📊 Módulo de Calidad</h1>
+                    <p style="color:var(--gris-4);font-size:.85rem">Auditorías, métricas de rendimiento y control de incidencias · Solo visible para Especialistas de Calidad y Administradores</p>
+                </div>
+
+                <!-- TABS -->
+                <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap" id="cal-tabs">
+                    <button class="cal-tab active" onclick="calTab('auditoria',this)">🎯 Auditoría</button>
+                    <button class="cal-tab" onclick="calTab('metricas',this)">📈 Métricas Semanales</button>
+                    <button class="cal-tab" onclick="calTab('incidencia',this)">⚠️ Control Incidencias</button>
+                    <button class="cal-tab" onclick="calTab('horas',this)">⏰ Horas Conexión</button>
+                    <button class="cal-tab" onclick="calTab('formulas',this)">📋 Referencia Fórmulas</button>
+                </div>
+
+                <style>
+                .cal-tab{background:var(--gris-1);border:1px solid var(--borde);border-radius:999px;padding:8px 20px;font-family:var(--font-main);font-size:.82rem;font-weight:700;color:var(--gris-4);cursor:pointer;transition:.15s}
+                .cal-tab.active,.cal-tab:hover{background:var(--verde);color:var(--negro);border-color:var(--verde)}
+                .cal-panel{display:none}.cal-panel.active{display:block}
+                .cal-card{background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde);margin-bottom:16px}
+                .cal-card h3{font-size:.9rem;font-weight:800;color:var(--negro);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+                .cal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+                .cal-field label{display:block;font-size:.72rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px}
+                .cal-field input,.cal-field select{width:100%;padding:10px 14px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.88rem;font-weight:600;color:var(--negro);background:var(--fondo);outline:none;transition:.15s}
+                .cal-field input:focus,.cal-field select:focus{border-color:var(--verde);background:var(--blanco)}
+                .cal-btn{background:var(--negro);color:var(--blanco);border:none;border-radius:var(--radius-s);padding:11px 24px;font-family:var(--font-main);font-size:.85rem;font-weight:800;cursor:pointer;margin-top:16px;transition:.15s}
+                .cal-btn:hover{background:var(--verde);color:var(--negro)}
+                .cal-result{background:var(--verde-p);border:1.5px solid var(--verde);border-radius:var(--radius-s);padding:16px 20px;margin-top:16px;display:none}
+                .cal-result.show{display:block}
+                .cal-result-title{font-size:.72rem;font-weight:800;color:var(--verde);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+                .cal-result-val{font-size:2rem;font-weight:900;color:var(--negro);line-height:1}
+                .cal-result-sub{font-size:.8rem;font-weight:600;color:var(--gris-4);margin-top:6px}
+                .cal-badge{display:inline-block;padding:4px 14px;border-radius:999px;font-size:.78rem;font-weight:800}
+                .cal-badge.excelente{background:#d1fae5;color:#065f46}
+                .cal-badge.bueno{background:#dbeafe;color:#1e3a8a}
+                .cal-badge.regular{background:#fef3c7;color:#92400e}
+                .cal-badge.mejorar{background:#fee2e2;color:#991b1b}
+                .cal-criterio-row{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-radius:8px;margin-bottom:6px;background:var(--fondo);border:1px solid var(--borde)}
+                .cal-criterio-row label{font-size:.82rem;font-weight:600;color:var(--negro);cursor:pointer;flex:1}
+                .cal-criterio-row .pts{font-size:.75rem;font-weight:800;color:var(--gris-4)}
+                .cal-check{width:18px;height:18px;accent-color:var(--verde);margin-right:10px;cursor:pointer}
+                .cal-tabla{width:100%;border-collapse:collapse;font-size:.82rem}
+                .cal-tabla th{background:var(--negro);color:var(--blanco);padding:10px 12px;font-size:.72rem;font-weight:800;text-align:left}
+                .cal-tabla td{padding:10px 12px;border-bottom:1px solid var(--borde);font-weight:600}
+                .cal-tabla tr:last-child td{border-bottom:none}
+                .cal-tabla tr:nth-child(even) td{background:var(--fondo)}
+                .cal-impact{padding:10px 16px;border-radius:8px;font-size:.82rem;font-weight:700;margin-top:10px}
+                .cal-impact.alto{background:#fee2e2;color:#991b1b;border:1px solid #fca5a5}
+                .cal-impact.medio{background:#fef3c7;color:#92400e;border:1px solid #fcd34d}
+                .cal-impact.bajo{background:#d1fae5;color:#065f46;border:1px solid #6ee7b7}
+                </style>
+
+                <!-- PANEL 1: AUDITORÍA -->
+                <div id="cal-panel-auditoria" class="cal-panel active" style="margin-top:20px">
+                    <div class="cal-card">
+                        <h3>🎯 Calculadora de Puntaje de Auditoría</h3>
+                        <p style="font-size:.8rem;color:var(--gris-4);margin-bottom:18px;font-weight:600">Marca los criterios cumplidos. El puntaje total se calcula automáticamente (máx. 100 pts).</p>
+
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+                            <!-- EMPATÍA -->
+                            <div>
+                                <div style="font-size:.78rem;font-weight:900;color:var(--verde);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--verde)">🤝 Pilar Empatía — máx. 50 pts</div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check emp-check" data-pts="8.33" id="e1" onchange="calAudit()"><label for="e1">Método RIDED</label><span class="pts">8.33</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check emp-check" data-pts="8.33" id="e2" onchange="calAudit()"><label for="e2">Lenguaje Positivo</label><span class="pts">8.33</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check emp-check" data-pts="8.33" id="e3" onchange="calAudit()"><label for="e3">Acompañamiento</label><span class="pts">8.33</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check emp-check" data-pts="8.33" id="e4" onchange="calAudit()"><label for="e4">Personalización</label><span class="pts">8.33</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check emp-check" data-pts="8.33" id="e5" onchange="calAudit()"><label for="e5">Estructura</label><span class="pts">8.33</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check emp-check" data-pts="8.33" id="e6" onchange="calAudit()"><label for="e6">Uso de IA y Ortografía</label><span class="pts">8.33</span></div>
+                                <div style="text-align:right;margin-top:8px;font-size:.82rem;font-weight:800;color:var(--negro)">Subtotal Empatía: <span id="cal-sub-emp" style="color:var(--verde)">0.00</span> pts</div>
                             </div>
-                            <div style="background:var(--verde-p);border-radius:var(--radius-s);padding:14px;font-size:.82rem;color:var(--gris-4);font-weight:600">
-                                📌 Módulo en construcción — Próximamente podrás registrar evaluaciones, asignar puntuaciones y generar reportes por agente.
+                            <!-- GESTIÓN -->
+                            <div>
+                                <div style="font-size:.78rem;font-weight:900;color:var(--azul);text-transform:uppercase;letter-spacing:.07em;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid var(--azul)">⚙️ Pilar Gestión — máx. 50 pts</div>
+                                <div style="font-size:.7rem;font-weight:800;color:var(--gris-4);margin:6px 0 4px">Grupo 1 · Gestión de Ticket (~16.66 pts)</div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g1" onchange="calAudit()"><label for="g1">Estados del Ticket</label><span class="pts">2.38</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g2" onchange="calAudit()"><label for="g2">Ausencia del Cliente</label><span class="pts">2.38</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g3" onchange="calAudit()"><label for="g3">Validación del Historial</label><span class="pts">2.38</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g4" onchange="calAudit()"><label for="g4">Tipificación</label><span class="pts">2.38</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g5" onchange="calAudit()"><label for="g5">Retención de Tickets</label><span class="pts">2.38</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g6" onchange="calAudit()"><label for="g6">Tiempo de Respuesta</label><span class="pts">2.38</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.38" id="g7" onchange="calAudit()"><label for="g7">Tiempo de Gestión</label><span class="pts">2.38</span></div>
+                                <div style="font-size:.7rem;font-weight:800;color:var(--gris-4);margin:10px 0 4px">Grupo 2 · Conocimiento Integral (~16.68 pts)</div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="4.17" id="g8" onchange="calAudit()"><label for="g8">Servicios y Promociones</label><span class="pts">4.17</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="4.17" id="g9" onchange="calAudit()"><label for="g9">Información Veraz</label><span class="pts">4.17</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="4.17" id="g10" onchange="calAudit()"><label for="g10">Parlamentos de Contingencia</label><span class="pts">4.17</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="4.17" id="g11" onchange="calAudit()"><label for="g11">Honestidad y Transparencia</label><span class="pts">4.17</span></div>
+                                <div style="font-size:.7rem;font-weight:800;color:var(--gris-4);margin:10px 0 4px">Grupo 3 · Uso de Herramientas (~16.68 pts)</div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.78" id="g12" onchange="calAudit()"><label for="g12">Ridery Office</label><span class="pts">2.78</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.78" id="g13" onchange="calAudit()"><label for="g13">Admin y Zendesk</label><span class="pts">2.78</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.78" id="g14" onchange="calAudit()"><label for="g14">Drive y Manuales</label><span class="pts">2.78</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.78" id="g15" onchange="calAudit()"><label for="g15">Slack</label><span class="pts">2.78</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.78" id="g16" onchange="calAudit()"><label for="g16">Generación de Reportes</label><span class="pts">2.78</span></div>
+                                <div class="cal-criterio-row"><input type="checkbox" class="cal-check ges-check" data-pts="2.78" id="g17" onchange="calAudit()"><label for="g17">Carga de Incidencias</label><span class="pts">2.78</span></div>
+                                <div style="text-align:right;margin-top:8px;font-size:.82rem;font-weight:800;color:var(--negro)">Subtotal Gestión: <span id="cal-sub-ges" style="color:var(--azul)">0.00</span> pts</div>
                             </div>
                         </div>
-                        <!-- Card: Monitoreo de Tickets -->
-                        <div style="background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
-                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                                <span style="font-size:1.8rem">🎧</span>
-                                <div>
-                                    <div style="font-weight:800;font-size:1rem;color:var(--negro)">Monitoreo de Tickets</div>
-                                    <div style="font-size:.75rem;color:var(--gris-4);font-weight:600">Revisión de interacciones CX</div>
-                                </div>
+
+                        <div class="cal-result show" id="cal-audit-result" style="margin-top:20px">
+                            <div class="cal-result-title">Puntaje Total</div>
+                            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+                                <div class="cal-result-val"><span id="cal-audit-total">0.00</span> <span style="font-size:1rem;color:var(--gris-4)">/100</span></div>
+                                <span class="cal-badge" id="cal-audit-badge">—</span>
                             </div>
-                            <div style="background:var(--azul-p);border-radius:var(--radius-s);padding:14px;font-size:.82rem;color:var(--gris-4);font-weight:600">
-                                📌 Módulo en construcción — Aquí podrás registrar tickets revisados, anotar observaciones y hacer seguimiento de mejoras.
-                            </div>
+                            <div class="cal-result-sub">Empatía: <strong id="cal-r-emp">0.00</strong> pts · Gestión: <strong id="cal-r-ges">0.00</strong> pts</div>
                         </div>
-                        <!-- Card: Indicadores -->
-                        <div style="background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
-                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                                <span style="font-size:1.8rem">📈</span>
-                                <div>
-                                    <div style="font-weight:800;font-size:1rem;color:var(--negro)">Indicadores de Calidad</div>
-                                    <div style="font-size:.75rem;color:var(--gris-4);font-weight:600">Métricas y KPIs del equipo</div>
-                                </div>
-                            </div>
-                            <div style="background:var(--amber-p);border-radius:var(--radius-s);padding:14px;font-size:.82rem;color:var(--gris-4);font-weight:600">
-                                📌 Módulo en construcción — Panel de KPIs: CSAT, FCR, AHT y más, por agente y por período.
-                            </div>
+                        <button class="cal-btn" onclick="calAuditReset()" style="background:var(--gris-2);color:var(--negro);margin-top:10px;margin-left:8px">↺ Limpiar</button>
+                    </div>
+
+                    <!-- Promedio mensual -->
+                    <div class="cal-card">
+                        <h3>📅 Promedio de Calidad Mensual</h3>
+                        <p style="font-size:.8rem;color:var(--gris-4);margin-bottom:14px;font-weight:600">Ingresa los puntajes de las auditorías del agente separados por coma (ej: 85, 90, 88)</p>
+                        <div class="cal-field"><label>Puntajes de auditorías</label><input type="text" id="cal-puntajes" placeholder="85, 90, 88, 92"></div>
+                        <button class="cal-btn" onclick="calPromedio()">Calcular Promedio</button>
+                        <div class="cal-result" id="cal-prom-result">
+                            <div class="cal-result-title">% Calidad Mensual</div>
+                            <div class="cal-result-val"><span id="cal-prom-val">—</span>%</div>
+                            <div class="cal-result-sub" id="cal-prom-sub"></div>
                         </div>
                     </div>
-                    <div style="margin-top:24px;background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
-                        <div style="font-weight:800;font-size:.95rem;color:var(--negro);margin-bottom:8px">ℹ️ Sobre este módulo</div>
-                        <p style="font-size:.83rem;color:var(--gris-4);font-weight:600;line-height:1.6">
-                            Este es el módulo exclusivo para el equipo de <strong>Especialistas de Calidad</strong>. Desde aquí podrás gestionar evaluaciones de agentes, registrar monitoreos de interacciones y consultar los indicadores de desempeño del equipo CX.<br><br>
-                            Si necesitas agregar funcionalidades específicas a este módulo, comunícalo al administrador del sistema.
-                        </p>
+                </div>
+
+                <!-- PANEL 2: MÉTRICAS -->
+                <div id="cal-panel-metricas" class="cal-panel" style="margin-top:20px">
+                    <div class="cal-card">
+                        <h3>✅ % de Satisfacción</h3>
+                        <div class="cal-grid">
+                            <div class="cal-field"><label>Tickets con calificación BUENA</label><input type="number" id="m-buenos" placeholder="85"></div>
+                            <div class="cal-field"><label>Total de tickets resueltos</label><input type="number" id="m-total" placeholder="100"></div>
+                        </div>
+                        <button class="cal-btn" onclick="calSatisf()">Calcular</button>
+                        <div class="cal-result" id="m-satisf-result">
+                            <div class="cal-result-title">% Satisfacción</div>
+                            <div class="cal-result-val"><span id="m-satisf-val">—</span>%</div>
+                            <div class="cal-result-sub" id="m-satisf-sub"></div>
+                        </div>
                     </div>
+                    <div class="cal-card">
+                        <h3>📋 % de Tickets Calificados</h3>
+                        <div class="cal-grid">
+                            <div class="cal-field"><label>Tickets buenos</label><input type="number" id="m-cal-buenos" placeholder="40"></div>
+                            <div class="cal-field"><label>Tickets malos</label><input type="number" id="m-cal-malos" placeholder="10"></div>
+                            <div class="cal-field"><label>Total de tickets resueltos</label><input type="number" id="m-cal-total" placeholder="100"></div>
+                        </div>
+                        <button class="cal-btn" onclick="calCalificados()">Calcular</button>
+                        <div class="cal-result" id="m-cal-result">
+                            <div class="cal-result-title">% Tickets Calificados</div>
+                            <div class="cal-result-val"><span id="m-cal-val">—</span>%</div>
+                            <div class="cal-result-sub" id="m-cal-sub"></div>
+                        </div>
+                    </div>
+                    <div class="cal-card">
+                        <h3>⏱️ Tiempo de Primera Respuesta</h3>
+                        <p style="font-size:.8rem;color:var(--gris-4);margin-bottom:14px;font-weight:600">Ingresa los tiempos en segundos separados por coma (ej: 120, 180, 150)</p>
+                        <div class="cal-field"><label>Tiempos en segundos</label><input type="text" id="m-tiempos" placeholder="120, 180, 150"></div>
+                        <button class="cal-btn" onclick="calTiempo()">Calcular</button>
+                        <div class="cal-result" id="m-tiempo-result">
+                            <div class="cal-result-title">Tiempo Promedio 1ra Respuesta</div>
+                            <div class="cal-result-val"><span id="m-tiempo-val">—</span></div>
+                            <div class="cal-result-sub" id="m-tiempo-sub"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 3: INCIDENCIAS -->
+                <div id="cal-panel-incidencia" class="cal-panel" style="margin-top:20px">
+                    <div class="cal-card">
+                        <h3>⚠️ Comparación Con / Sin Incidencia</h3>
+                        <p style="font-size:.8rem;color:var(--gris-4);margin-bottom:18px;font-weight:600">Ingresa las métricas del período completo y las del día con incidencia para ver el impacto.</p>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+                            <div>
+                                <div style="font-size:.78rem;font-weight:900;color:var(--negro);margin-bottom:10px">📊 Período Completo (Real)</div>
+                                <div class="cal-field" style="margin-bottom:10px"><label>Total tickets</label><input type="number" id="inc-total-t" placeholder="280"></div>
+                                <div class="cal-field" style="margin-bottom:10px"><label>Tickets buenos</label><input type="number" id="inc-total-b" placeholder="220"></div>
+                                <div class="cal-field"><label>Tiempo 1ra resp. prom. (seg)</label><input type="number" id="inc-total-tr" placeholder="150"></div>
+                            </div>
+                            <div>
+                                <div style="font-size:.78rem;font-weight:900;color:var(--rosa);margin-bottom:10px">⚠️ Día con Incidencia</div>
+                                <div class="cal-field" style="margin-bottom:10px"><label>Tickets del día</label><input type="number" id="inc-dia-t" placeholder="80"></div>
+                                <div class="cal-field" style="margin-bottom:10px"><label>Buenos del día</label><input type="number" id="inc-dia-b" placeholder="40"></div>
+                                <div class="cal-field"><label>Tiempo 1ra resp. del día (seg)</label><input type="number" id="inc-dia-tr" placeholder="300"></div>
+                            </div>
+                        </div>
+                        <div class="cal-field" style="margin-top:14px"><label>Tiempo resolución completa prom. real (seg)</label><input type="number" id="inc-total-res" placeholder="600"></div>
+                        <div class="cal-field" style="margin-top:10px"><label>Tiempo resolución día incidencia (seg)</label><input type="number" id="inc-dia-res" placeholder="1200"></div>
+                        <button class="cal-btn" onclick="calIncidencia()">Calcular Impacto</button>
+                        <div class="cal-result" id="inc-result">
+                            <div class="cal-result-title">Resultado de Impacto</div>
+                            <div id="inc-result-body"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 4: HORAS -->
+                <div id="cal-panel-horas" class="cal-panel" style="margin-top:20px">
+                    <div class="cal-card">
+                        <h3>⏰ Balance de Horas de Conexión</h3>
+                        <div class="cal-grid">
+                            <div class="cal-field">
+                                <label>Turno</label>
+                                <select id="h-turno" onchange="calHorasEsperadas()">
+                                    <option value="40">AM Semana (40h/sem)</option>
+                                    <option value="40">PM Semana (40h/sem)</option>
+                                    <option value="30">Madrugada Semana (30h/sem)</option>
+                                    <option value="12">Madrugada Fin de Semana (12h/sem)</option>
+                                    <option value="16">Fin de Semana AM (16h/sem)</option>
+                                    <option value="16">Fin de Semana PM (16h/sem)</option>
+                                </select>
+                            </div>
+                            <div class="cal-field"><label>Horas trabajadas (decimal, ej: 38.5)</label><input type="number" id="h-trabajadas" placeholder="38.5" step="0.01"></div>
+                            <div class="cal-field"><label>Horas esperadas</label><input type="number" id="h-esperadas" placeholder="40" step="0.01"></div>
+                        </div>
+                        <p style="font-size:.75rem;color:var(--gris-4);margin-top:10px;font-weight:600">💡 Para convertir segundos a horas: segundos ÷ 3600</p>
+                        <button class="cal-btn" onclick="calHoras()">Calcular Balance</button>
+                        <div class="cal-result" id="h-result">
+                            <div class="cal-result-title">Balance de Horas</div>
+                            <div class="cal-result-val"><span id="h-result-val">—</span></div>
+                            <div class="cal-result-sub" id="h-result-sub"></div>
+                        </div>
+                    </div>
+                    <div class="cal-card">
+                        <h3>🕐 Convertir Segundos a H:MM:SS</h3>
+                        <div class="cal-field"><label>Segundos totales</label><input type="number" id="seg-input" placeholder="5400"></div>
+                        <button class="cal-btn" onclick="calConvertirSeg()">Convertir</button>
+                        <div class="cal-result" id="seg-result">
+                            <div class="cal-result-title">Tiempo</div>
+                            <div class="cal-result-val" id="seg-result-val">—</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL 5: FÓRMULAS REFERENCIA -->
+                <div id="cal-panel-formulas" class="cal-panel" style="margin-top:20px">
+                    <div class="cal-card">
+                        <h3>📋 Clasificación del Puntaje</h3>
+                        <table class="cal-tabla">
+                            <thead><tr><th>Rango</th><th>Clasificación</th></tr></thead>
+                            <tbody>
+                                <tr><td>95 – 100</td><td><span class="cal-badge excelente">⭐ Excelente</span></td></tr>
+                                <tr><td>80 – 94</td><td><span class="cal-badge bueno">✅ Bueno</span></td></tr>
+                                <tr><td>60 – 79</td><td><span class="cal-badge regular">⚠️ Regular</span></td></tr>
+                                <tr><td>0 – 59</td><td><span class="cal-badge mejorar">❌ Debe Mejorar</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cal-card">
+                        <h3>🤝 Criterios Pilar Empatía (50 pts)</h3>
+                        <table class="cal-tabla">
+                            <thead><tr><th>Criterio</th><th>Puntos</th><th>Descripción</th></tr></thead>
+                            <tbody>
+                                <tr><td>Método RIDED</td><td>8.33</td><td>Recepción, Indagación, Desarrollo, Espera y Despedida</td></tr>
+                                <tr><td>Lenguaje Positivo</td><td>8.33</td><td>Cortesía y reconocimiento del contexto del cliente</td></tr>
+                                <tr><td>Acompañamiento</td><td>8.33</td><td>No abandonar al cliente, gestionar tiempos de espera</td></tr>
+                                <tr><td>Personalización</td><td>8.33</td><td>Adaptar respuestas, evitar copiar y pegar</td></tr>
+                                <tr><td>Estructura</td><td>8.33</td><td>Mensajes claros y buen ritmo de conversación</td></tr>
+                                <tr><td>Uso de IA y Ortografía</td><td>8.33</td><td>Escritura correcta y uso adecuado de herramientas</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cal-card">
+                        <h3>⚙️ Criterios Pilar Gestión (50 pts)</h3>
+                        <table class="cal-tabla">
+                            <thead><tr><th>Grupo</th><th>Criterio</th><th>Puntos</th></tr></thead>
+                            <tbody>
+                                <tr><td rowspan="7" style="font-weight:800;color:var(--negro)">Gestión Ticket<br><small style="color:var(--gris-4);font-weight:600">~16.66 pts</small></td><td>Estados del Ticket</td><td>2.38</td></tr>
+                                <tr><td>Ausencia del Cliente</td><td>2.38</td></tr>
+                                <tr><td>Validación del Historial</td><td>2.38</td></tr>
+                                <tr><td>Tipificación</td><td>2.38</td></tr>
+                                <tr><td>Retención de Tickets</td><td>2.38</td></tr>
+                                <tr><td>Tiempo de Respuesta</td><td>2.38</td></tr>
+                                <tr><td>Tiempo de Gestión</td><td>2.38</td></tr>
+                                <tr><td rowspan="4" style="font-weight:800;color:var(--negro)">Conocimiento<br><small style="color:var(--gris-4);font-weight:600">~16.68 pts</small></td><td>Servicios y Promociones</td><td>4.17</td></tr>
+                                <tr><td>Información Veraz</td><td>4.17</td></tr>
+                                <tr><td>Parlamentos de Contingencia</td><td>4.17</td></tr>
+                                <tr><td>Honestidad y Transparencia</td><td>4.17</td></tr>
+                                <tr><td rowspan="6" style="font-weight:800;color:var(--negro)">Herramientas<br><small style="color:var(--gris-4);font-weight:600">~16.68 pts</small></td><td>Ridery Office</td><td>2.78</td></tr>
+                                <tr><td>Admin y Zendesk</td><td>2.78</td></tr>
+                                <tr><td>Drive y Manuales</td><td>2.78</td></tr>
+                                <tr><td>Slack</td><td>2.78</td></tr>
+                                <tr><td>Generación de Reportes</td><td>2.78</td></tr>
+                                <tr><td>Carga de Incidencias</td><td>2.78</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cal-card">
+                        <h3>⏰ Horas por Turno</h3>
+                        <table class="cal-tabla">
+                            <thead><tr><th>Turno</th><th>Horas/Día</th><th>Días/Semana</th><th>Horas/Semana</th></tr></thead>
+                            <tbody>
+                                <tr><td>AM Semana</td><td>8h</td><td>5</td><td>40h</td></tr>
+                                <tr><td>PM Semana</td><td>8h</td><td>5</td><td>40h</td></tr>
+                                <tr><td>Madrugada Semana</td><td>6h</td><td>5</td><td>30h</td></tr>
+                                <tr><td>Madrugada Fin de Semana</td><td>6h</td><td>2</td><td>12h</td></tr>
+                                <tr><td>Fin de Semana AM</td><td>8h</td><td>2</td><td>16h</td></tr>
+                                <tr><td>Fin de Semana PM</td><td>8h</td><td>2</td><td>16h</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="cal-card">
+                        <h3>🔴 Clasificación de Impacto por Incidencia</h3>
+                        <table class="cal-tabla">
+                            <thead><tr><th>Condición</th><th>Impacto</th></tr></thead>
+                            <tbody>
+                                <tr><td>Dif. satisfacción ≥ 10% · O · Tiempo 1ra resp ≥ 5 min · O · Tiempo resolución ≥ 10 min</td><td><span class="cal-badge mejorar">🔴 Alto</span></td></tr>
+                                <tr><td>Dif. satisfacción ≥ 5% · O · Tiempo 1ra resp ≥ 2 min · O · Tiempo resolución ≥ 5 min</td><td><span class="cal-badge regular">🟡 Medio</span></td></tr>
+                                <tr><td>Menor a los valores anteriores</td><td><span class="cal-badge bueno">🟢 Bajo</span></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <script>
+                function calTab(id, btn) {
+                    document.querySelectorAll('.cal-panel').forEach(p => p.classList.remove('active'));
+                    document.querySelectorAll('.cal-tab').forEach(b => b.classList.remove('active'));
+                    document.getElementById('cal-panel-' + id).classList.add('active');
+                    btn.classList.add('active');
+                }
+                function calBadge(pts) {
+                    if (pts >= 95) return ['excelente','⭐ Excelente'];
+                    if (pts >= 80) return ['bueno','✅ Bueno'];
+                    if (pts >= 60) return ['regular','⚠️ Regular'];
+                    return ['mejorar','❌ Debe Mejorar'];
+                }
+                function calAudit() {
+                    var emp = 0, ges = 0;
+                    document.querySelectorAll('.emp-check:checked').forEach(c => emp += parseFloat(c.dataset.pts));
+                    document.querySelectorAll('.ges-check:checked').forEach(c => ges += parseFloat(c.dataset.pts));
+                    var total = Math.min(emp + ges, 100);
+                    document.getElementById('cal-sub-emp').textContent = emp.toFixed(2);
+                    document.getElementById('cal-sub-ges').textContent = ges.toFixed(2);
+                    document.getElementById('cal-audit-total').textContent = total.toFixed(2);
+                    document.getElementById('cal-r-emp').textContent = emp.toFixed(2);
+                    document.getElementById('cal-r-ges').textContent = ges.toFixed(2);
+                    var [cls, lbl] = calBadge(total);
+                    var badge = document.getElementById('cal-audit-badge');
+                    badge.className = 'cal-badge ' + cls;
+                    badge.textContent = lbl;
+                }
+                function calAuditReset() {
+                    document.querySelectorAll('.cal-check').forEach(c => c.checked = false);
+                    calAudit();
+                }
+                function calPromedio() {
+                    var raw = document.getElementById('cal-puntajes').value;
+                    var nums = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+                    if (!nums.length) return;
+                    var prom = nums.reduce((a,b) => a+b, 0) / nums.length;
+                    document.getElementById('cal-prom-val').textContent = prom.toFixed(2);
+                    var [cls, lbl] = calBadge(prom);
+                    document.getElementById('cal-prom-sub').innerHTML = nums.length + ' auditorías · Clasificación: <span class="cal-badge ' + cls + '" style="font-size:.72rem">' + lbl + '</span>';
+                    document.getElementById('cal-prom-result').classList.add('show');
+                }
+                function calSatisf() {
+                    var b = parseFloat(document.getElementById('m-buenos').value) || 0;
+                    var t = parseFloat(document.getElementById('m-total').value) || 1;
+                    var pct = (b / t) * 100;
+                    document.getElementById('m-satisf-val').textContent = pct.toFixed(2);
+                    document.getElementById('m-satisf-sub').textContent = b + ' buenos de ' + t + ' tickets resueltos';
+                    document.getElementById('m-satisf-result').classList.add('show');
+                }
+                function calCalificados() {
+                    var b = parseFloat(document.getElementById('m-cal-buenos').value) || 0;
+                    var m = parseFloat(document.getElementById('m-cal-malos').value) || 0;
+                    var t = parseFloat(document.getElementById('m-cal-total').value) || 1;
+                    var pct = ((b + m) / t) * 100;
+                    document.getElementById('m-cal-val').textContent = pct.toFixed(2);
+                    document.getElementById('m-cal-sub').textContent = (b + m) + ' calificados (' + b + ' buenos + ' + m + ' malos) de ' + t + ' totales';
+                    document.getElementById('m-cal-result').classList.add('show');
+                }
+                function calTiempo() {
+                    var raw = document.getElementById('m-tiempos').value;
+                    var nums = raw.split(',').map(s => parseFloat(s.trim())).filter(n => !isNaN(n));
+                    if (!nums.length) return;
+                    var prom = nums.reduce((a,b) => a+b, 0) / nums.length;
+                    var mins = (prom / 60).toFixed(2);
+                    document.getElementById('m-tiempo-val').textContent = prom.toFixed(0) + ' seg';
+                    document.getElementById('m-tiempo-sub').textContent = mins + ' minutos promedio · ' + nums.length + ' tickets';
+                    document.getElementById('m-tiempo-result').classList.add('show');
+                }
+                function calIncidencia() {
+                    var tt = parseFloat(document.getElementById('inc-total-t').value) || 0;
+                    var tb = parseFloat(document.getElementById('inc-total-b').value) || 0;
+                    var ttr = parseFloat(document.getElementById('inc-total-tr').value) || 0;
+                    var dt = parseFloat(document.getElementById('inc-dia-t').value) || 0;
+                    var db = parseFloat(document.getElementById('inc-dia-b').value) || 0;
+                    var dtr = parseFloat(document.getElementById('inc-dia-tr').value) || 0;
+                    var tres = parseFloat(document.getElementById('inc-total-res').value) || 0;
+                    var dres = parseFloat(document.getElementById('inc-dia-res').value) || 0;
+
+                    var satisfReal = tt > 0 ? (tb / tt * 100) : 0;
+                    var satisfAdj = (tt - dt) > 0 ? ((tb - db) / (tt - dt) * 100) : 0;
+                    var difSatisf = satisfAdj - satisfReal;
+
+                    var trReal = ttr / 60;
+                    var trAdj = dtr / 60;
+                    var difTR = trAdj - trReal;
+
+                    var resReal = tres / 60;
+                    var resAdj = dres / 60;
+                    var difRes = resAdj - resReal;
+
+                    var impacto = 'bajo', impactoLbl = '🟢 Bajo', impactoCls = 'bajo';
+                    if (Math.abs(difSatisf) >= 10 || Math.abs(difTR) >= 5 || Math.abs(difRes) >= 10) {
+                        impacto = 'alto'; impactoLbl = '🔴 Alto'; impactoCls = 'mejorar';
+                    } else if (Math.abs(difSatisf) >= 5 || Math.abs(difTR) >= 2 || Math.abs(difRes) >= 5) {
+                        impacto = 'medio'; impactoLbl = '🟡 Medio'; impactoCls = 'regular';
+                    }
+
+                    document.getElementById('inc-result-body').innerHTML =
+                        '<table class="cal-tabla" style="margin-bottom:12px"><thead><tr><th>Métrica</th><th>Real (con incidencia)</th><th>Ajustado (sin incidencia)</th><th>Diferencia</th></tr></thead><tbody>' +
+                        '<tr><td>% Satisfacción</td><td>' + satisfReal.toFixed(2) + '%</td><td>' + satisfAdj.toFixed(2) + '%</td><td><strong>' + (difSatisf >= 0 ? '+' : '') + difSatisf.toFixed(2) + '%</strong></td></tr>' +
+                        '<tr><td>Tiempo 1ra Resp.</td><td>' + trReal.toFixed(2) + ' min</td><td>' + trAdj.toFixed(2) + ' min</td><td><strong>' + (difTR >= 0 ? '+' : '') + difTR.toFixed(2) + ' min</strong></td></tr>' +
+                        '<tr><td>Tiempo Resolución</td><td>' + resReal.toFixed(2) + ' min</td><td>' + resAdj.toFixed(2) + ' min</td><td><strong>' + (difRes >= 0 ? '+' : '') + difRes.toFixed(2) + ' min</strong></td></tr>' +
+                        '</tbody></table>' +
+                        '<div class="cal-impact ' + (impacto === 'alto' ? 'alto' : impacto === 'medio' ? 'medio' : 'bajo') + '">Impacto de la incidencia: <strong>' + impactoLbl + '</strong></div>';
+                    document.getElementById('inc-result').classList.add('show');
+                }
+                function calHoras() {
+                    var trabajadas = parseFloat(document.getElementById('h-trabajadas').value) || 0;
+                    var esperadas = parseFloat(document.getElementById('h-esperadas').value) || 0;
+                    var balance = trabajadas - esperadas;
+                    document.getElementById('h-result-val').textContent = (balance >= 0 ? '+' : '') + balance.toFixed(2) + 'h';
+                    document.getElementById('h-result-sub').textContent = trabajadas + 'h trabajadas vs ' + esperadas + 'h esperadas · ' + (balance >= 0 ? 'Sin déficit' : 'Déficit de ' + Math.abs(balance).toFixed(2) + 'h');
+                    document.getElementById('h-result').classList.add('show');
+                }
+                function calHorasEsperadas() {
+                    var val = document.getElementById('h-turno').value;
+                    document.getElementById('h-esperadas').value = val;
+                }
+                function calConvertirSeg() {
+                    var s = parseInt(document.getElementById('seg-input').value) || 0;
+                    var h = Math.floor(s / 3600);
+                    var m = Math.floor((s % 3600) / 60);
+                    var sec = s % 60;
+                    document.getElementById('seg-result-val').textContent = h + ':' + String(m).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+                    document.getElementById('seg-result').classList.add('show');
+                }
+                </script>
                 </div><!-- /page-calidad -->
                 <div class="page-content" id="page-guardia-vacante" style="position:relative">
                     <!-- Login overlay Guardia Vacante -->
@@ -9545,13 +9926,7 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                         data = {};
                     }
                     if (data.success) {
-                        if (data.rol === 'Agente Remoto') {
-                            loginType = 'remoto';
-                        } else if (data.rol === 'Especialista Calidad') {
-                            loginType = 'calidad';
-                        } else {
-                            loginType = 'admin';
-                        }
+                        loginType = data.rol === 'Agente Remoto' ? 'remoto' : data.rol === 'Especialista Calidad' ? 'calidad' : 'admin';
                         currentUser = data.user;
                         currentRol = data.rol;
                         try {
@@ -9581,7 +9956,6 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 const adminSection = document.getElementById('nav-admin-section');
                 if (adminSection)
                     adminSection.style.display = isAdmin ? '' : 'none';
-
                 const calidadSection = document.getElementById('nav-calidad-section');
                 if (calidadSection)
                     calidadSection.style.display = (isAdmin || isCalidad) ? '' : 'none';
@@ -9648,85 +10022,174 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
             }
 
             // ═══════════════════════════════════════════
+            //  NAVEGACIÓN
+            // ═══════════════════════════════════════════
+            // ╔══════════════════════════════════════════════════════════════════╗
+            // ║          GESTIÓN DE USUARIOS — MÓDULO JS (con localStorage)     ║
+            // ╠══════════════════════════════════════════════════════════════════╣
+            // ║  Los usuarios del código (ADMIN_USERS) son la BASE FIJA.        ║
+            // ║  Los usuarios creados desde el módulo se guardan en             ║
+            // ║  localStorage bajo la clave 'cx_extra_users' y persisten        ║
+            // ║  entre recargas en el mismo navegador/servidor.                 ║
+            // ╚══════════════════════════════════════════════════════════════════╝
 
-            // ══ GESTIÓN DE USUARIOS — MÓDULO JS (MongoDB) ══
-            async function gu2CargarUsuarios() {
-                document.getElementById('gu2-loading').style.display = 'block';
-                document.getElementById('gu2-tabla').style.display = 'none';
+            const GU_STORAGE_KEY = 'cx_extra_users';
+
+            // Carga usuarios extra desde localStorage
+            function guLoadExtra() {
                 try {
-                    const res = await fetch('/api/usuarios');
-                    const data = await res.json();
-                    if (data.success) gu2RenderTabla(data.data);
-                    else document.getElementById('gu2-loading').textContent = 'Error al cargar usuarios.';
-                } catch (err) {
-                    document.getElementById('gu2-loading').textContent = 'Error de conexion.';
+                    const raw = localStorage.getItem(GU_STORAGE_KEY);
+                    return raw ? JSON.parse(raw) : [];
+                } catch (e) {
+                    return [];
                 }
             }
 
-            function gu2RenderTabla(usuarios) {
-                document.getElementById('gu2-loading').style.display = 'none';
-                const tabla = document.getElementById('gu2-tabla');
-                const tbody = document.getElementById('gu2-tbody');
-                tabla.style.display = '';
-                const rolColor = {
-                    'Administrador':        { bg: 'var(--azul-p)',  color: 'var(--azul)'  },
-                    'Agente Remoto':        { bg: 'var(--verde-p)', color: 'var(--verde)' },
-                    'Especialista Calidad': { bg: 'var(--amber-p)', color: 'var(--amber)' },
-                };
-                tbody.innerHTML = usuarios.map(function(u) {
-                    var rc = rolColor[u.rol] || { bg: 'var(--gris-1)', color: 'var(--gris-4)' };
-                    return '<tr style="border-top:1px solid var(--borde)">' +
-                        '<td style="padding:10px 12px;font-weight:700">' + u.user + '</td>' +
-                        '<td style="padding:10px 12px;color:var(--gris-4)">' + (u.nombre || '—') + '</td>' +
-                        '<td style="padding:10px 12px;text-align:center"><span style="font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:999px;background:' + rc.bg + ';color:' + rc.color + '">' + u.rol + '</span></td>' +
-                        '<td style="padding:10px 12px;text-align:center"><button onclick="gu2EliminarUsuario(" + JSON.stringify(u._id) + "," + JSON.stringify(u.user) + ")" style="padding:4px 12px;background:var(--rosa-p);color:var(--rosa);border:none;border-radius:6px;font-family:var(--font-main);font-weight:700;font-size:.72rem;cursor:pointer">Eliminar</button></td>' +
-                        '</tr>';
-                }).join('');
-            }
-
-            async function gu2CrearUsuario() {
-                var user   = document.getElementById('gu2-new-user').value.trim();
-                var nombre = document.getElementById('gu2-new-nombre').value.trim();
-                var pass   = document.getElementById('gu2-new-pass').value.trim();
-                var rol    = document.getElementById('gu2-new-rol').value;
-                var errEl  = document.getElementById('gu2-modal-err');
-
-                if (!user || !pass) { errEl.textContent = 'Usuario y contraseña son obligatorios.'; errEl.style.display = 'block'; return; }
-                if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display = 'block'; return; }
-
+            // Guarda usuarios extra en localStorage
+            function guSaveExtra(extras) {
                 try {
-                    var res = await fetch('/api/usuarios', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ user: user, nombre: nombre, pass: pass, rol: rol })
-                    });
-                    var data = await res.json();
-                    if (data.success) {
-                        document.getElementById('gu2-new-user').value = '';
-                        document.getElementById('gu2-new-pass').value = '';
-                        document.getElementById('gu2-new-nombre').value = '';
-                        errEl.style.display = 'none';
-                        gu2CargarUsuarios();
-                    } else { errEl.textContent = data.message || 'Error al crear usuario.'; errEl.style.display = 'block'; }
-                } catch (err) { errEl.textContent = 'Error de conexion.'; errEl.style.display = 'block'; }
+                    localStorage.setItem(GU_STORAGE_KEY, JSON.stringify(extras));
+                } catch (e) {}
             }
 
-            async function gu2EliminarUsuario(id, user) {
-                if (!confirm('¿Eliminar al usuario "' + user + '"?')) return;
-                try {
-                    var res = await fetch('/api/usuarios?id=' + id, { method: 'DELETE' });
-                    var data = await res.json();
-                    if (data.success) gu2CargarUsuarios();
-                    else alert('Error al eliminar: ' + data.message);
-                } catch (err) { alert('Error de conexion.'); }
+            // Devuelve lista completa: base fija + extras guardados
+            function guGetAllAdmins() {
+                const extras = guLoadExtra();
+                // Marcar los de base fija como no eliminables
+                const base = ADMIN_USERS.map(u => ({
+                    ...u,
+                    tipo: 'admin',
+                    base: true
+                }));
+                const extra = extras.map(u => ({
+                    ...u,
+                    tipo: 'admin',
+                    base: false
+                }));
+                return [...base, ...extra];
             }
 
-            document.addEventListener('click', function(e) {
-                var item = e.target.closest && e.target.closest('.nav-sub-item');
-                if (item && (item.getAttribute('onclick') || '').includes('gestion-usuarios')) {
-                    setTimeout(gu2CargarUsuarios, 300);
+            // Al iniciar el login también cargamos los extras para que funcionen
+            function guGetAdminForLogin(userLower, pass) {
+                const extras = guLoadExtra();
+                return extras.find(u => u.user.toLowerCase() === userLower && u.pass === pass) || null;
+            }
+
+            function guRenderList() {
+                const list = document.getElementById('gu-user-list');
+                const countEl = document.getElementById('gu-count');
+                if (!list)
+                    return;
+
+                const admins = guGetAllAdmins();
+                const todos = [...admins, {
+                    user: CREDENCIALES_REMOTO.user,
+                    pass: CREDENCIALES_REMOTO.pass,
+                    rol: CREDENCIALES_REMOTO.rol,
+                    tipo: 'remoto',
+                    base: true
+                }];
+
+                countEl.textContent = todos.length + ' usuario' + (todos.length !== 1 ? 's' : '');
+
+                list.innerHTML = todos.map( (u, globalIdx) => {
+                    const inicial = (u.user[0] || '?').toUpperCase();
+                    const esRemoto = u.tipo === 'remoto';
+                    const rolLabel = esRemoto ? 'Agente Remoto' : 'Administrador';
+                    const rolCls = esRemoto ? 'remoto' : 'admin';
+                    const esPropio = u.user.toLowerCase() === (currentUser || '').toLowerCase();
+                    const puedeEliminar = !u.base && !esRemoto && !esPropio;
+                    const disabledAttr = puedeEliminar ? '' : 'disabled';
+                    const titleAttr = u.base ? 'Usuario base del sistema — no se puede eliminar' : esPropio ? 'No puedes eliminarte a ti mismo' : '';
+                    const badgeBase = u.base ? '<span style="font-size:.65rem;background:rgba(217,119,6,.12);color:#b45309;border-radius:999px;padding:2px 8px;font-family:var(--font-secondary);font-weight:800;margin-left:8px">BASE</span>' : '';
+
+                    return `<div class="gu-user-row">
+      <div class="gu-avatar ${rolCls}">${inicial}</div>
+      <div class="gu-user-info">
+        <div class="gu-user-email">${u.user}${badgeBase}</div>
+        <div class="gu-user-meta">${u.nombre ? u.nombre + ' · ' : ''}Contraseña: ${'•'.repeat(Math.min(u.pass.length, 8))}</div>
+      </div>
+      <span class="gu-rol-badge ${rolCls}">${rolLabel}</span>
+      <button class="gu-del-btn" onclick="guEliminar('${u.user}')" ${disabledAttr} title="${titleAttr}">🗑</button>
+    </div>`;
                 }
-            });
+                ).join('');
+            }
+
+            function guEliminar(userEmail) {
+                const extras = guLoadExtra();
+                const idx = extras.findIndex(u => u.user === userEmail);
+                if (idx === -1) {
+                    guToast('❌ Este usuario es parte de la base del sistema y no puede eliminarse desde aquí.', 'err');
+                    return;
+                }
+                if (userEmail.toLowerCase() === (currentUser || '').toLowerCase()) {
+                    guToast('❌ No puedes eliminar tu propio usuario mientras tienes sesión activa.', 'err');
+                    return;
+                }
+                if (!confirm('¿Seguro que deseas eliminar "' + userEmail + '"? Esta acción no se puede deshacer.'))
+                    return;
+                extras.splice(idx, 1);
+                guSaveExtra(extras);
+                guRenderList();
+                guToast('✅ Usuario "' + userEmail + '" eliminado correctamente.', 'ok');
+            }
+
+            function guCrearUsuario() {
+                const userVal = document.getElementById('gu-new-user').value.trim();
+                const passVal = document.getElementById('gu-new-pass').value.trim();
+                const nombreVal = document.getElementById('gu-new-nombre').value.trim();
+
+                if (!userVal) {
+                    guToast('⚠️ El campo Usuario es obligatorio.', 'err');
+                    return;
+                }
+                if (!passVal) {
+                    guToast('⚠️ El campo Contraseña es obligatorio.', 'err');
+                    return;
+                }
+                if (passVal.length < 6) {
+                    guToast('⚠️ La contraseña debe tener al menos 6 caracteres.', 'err');
+                    return;
+                }
+
+                // Verificar duplicado entre base + extras + remoto
+                const extras = guLoadExtra();
+                const yaExiste = ADMIN_USERS.some(u => u.user.toLowerCase() === userVal.toLowerCase()) || extras.some(u => u.user.toLowerCase() === userVal.toLowerCase()) || CREDENCIALES_REMOTO.user.toLowerCase() === userVal.toLowerCase();
+                if (yaExiste) {
+                    guToast('❌ Ya existe un usuario con ese correo.', 'err');
+                    return;
+                }
+
+                // Guardar nuevo usuario en localStorage
+                extras.push({
+                    user: userVal,
+                    pass: passVal,
+                    rol: 'Administrador',
+                    nombre: nombreVal
+                });
+                guSaveExtra(extras);
+
+                document.getElementById('gu-new-user').value = '';
+                document.getElementById('gu-new-pass').value = '';
+                document.getElementById('gu-new-nombre').value = '';
+
+                guRenderList();
+                guToast('✅ Usuario "' + userVal + '" creado y guardado correctamente.', 'ok');
+            }
+
+            function guToast(msg, tipo) {
+                const t = document.getElementById('gu-toast');
+                if (!t)
+                    return;
+                t.textContent = msg;
+                t.className = 'gu-toast ' + tipo;
+                clearTimeout(t._timer);
+                t._timer = setTimeout( () => {
+                    t.className = 'gu-toast';
+                }
+                , 5000);
+            }
 
             const PAGES = {
                 'home': 'Panel Principal',
@@ -9739,7 +10202,6 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 'reporte-incidencia': 'Generador de Reporte · Incidencia Perfil',
                 'validador': 'Administrative · Validador de Pagos',
                 'guardia-vacante': 'Administrative · Guardia Vacante',
-                'gestion-usuarios': 'Administrative · Gestión de Usuarios',
                 'calidad': 'Calidad · Módulo de Calidad',
                 'ciudades': 'Ciudades',
                 'issues': 'Issues · Reporte de Fallas',
