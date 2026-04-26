@@ -8062,12 +8062,19 @@
                                     <label>Nombre (referencia opcional)</label>
                                     <input type="text" id="gu-new-nombre" placeholder="Ej: María García">
                                 </div>
+                                <div class="gu-field" style="grid-column: 1 / -1">
+                                    <label>Rol</label>
+                                    <select id="gu-new-rol" style="width:100%;padding:10px 14px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.88rem;font-weight:600;color:var(--negro);background:var(--fondo);outline:none">
+                                        <option value="Administrador">Administrador</option>
+                                        <option value="Especialista Calidad">Especialista Calidad</option>
+                                        <option value="Agente Remoto">Agente Remoto</option>
+                                    </select>
+                                </div>
                             </div>
                             <button class="gu-btn-crear" onclick="guCrearUsuario()">CREAR USUARIO</button>
                             <div class="gu-toast" id="gu-toast"></div>
                         </div>
                     </div>
-                </div>
                 </div>
                 <!-- ══ PÁGINA: CALIDAD ══ -->
                 <div class="page-content" id="page-calidad">
@@ -10025,170 +10032,97 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
             //  NAVEGACIÓN
             // ═══════════════════════════════════════════
             // ╔══════════════════════════════════════════════════════════════════╗
-            // ║          GESTIÓN DE USUARIOS — MÓDULO JS (con localStorage)     ║
-            // ╠══════════════════════════════════════════════════════════════════╣
-            // ║  Los usuarios del código (ADMIN_USERS) son la BASE FIJA.        ║
-            // ║  Los usuarios creados desde el módulo se guardan en             ║
-            // ║  localStorage bajo la clave 'cx_extra_users' y persisten        ║
-            // ║  entre recargas en el mismo navegador/servidor.                 ║
+            // ║          GESTIÓN DE USUARIOS — MÓDULO JS (MongoDB/API)          ║
             // ╚══════════════════════════════════════════════════════════════════╝
 
-            const GU_STORAGE_KEY = 'cx_extra_users';
-
-            // Carga usuarios extra desde localStorage
-            function guLoadExtra() {
-                try {
-                    const raw = localStorage.getItem(GU_STORAGE_KEY);
-                    return raw ? JSON.parse(raw) : [];
-                } catch (e) {
-                    return [];
-                }
-            }
-
-            // Guarda usuarios extra en localStorage
-            function guSaveExtra(extras) {
-                try {
-                    localStorage.setItem(GU_STORAGE_KEY, JSON.stringify(extras));
-                } catch (e) {}
-            }
-
-            // Devuelve lista completa: base fija + extras guardados
-            function guGetAllAdmins() {
-                const extras = guLoadExtra();
-                // Marcar los de base fija como no eliminables
-                const base = ADMIN_USERS.map(u => ({
-                    ...u,
-                    tipo: 'admin',
-                    base: true
-                }));
-                const extra = extras.map(u => ({
-                    ...u,
-                    tipo: 'admin',
-                    base: false
-                }));
-                return [...base, ...extra];
-            }
-
-            // Al iniciar el login también cargamos los extras para que funcionen
-            function guGetAdminForLogin(userLower, pass) {
-                const extras = guLoadExtra();
-                return extras.find(u => u.user.toLowerCase() === userLower && u.pass === pass) || null;
-            }
-
-            function guRenderList() {
+            async function guRenderList() {
                 const list = document.getElementById('gu-user-list');
                 const countEl = document.getElementById('gu-count');
-                if (!list)
-                    return;
-
-                const admins = guGetAllAdmins();
-                const todos = [...admins, {
-                    user: CREDENCIALES_REMOTO.user,
-                    pass: CREDENCIALES_REMOTO.pass,
-                    rol: CREDENCIALES_REMOTO.rol,
-                    tipo: 'remoto',
-                    base: true
-                }];
-
-                countEl.textContent = todos.length + ' usuario' + (todos.length !== 1 ? 's' : '');
-
-                list.innerHTML = todos.map( (u, globalIdx) => {
-                    const inicial = (u.user[0] || '?').toUpperCase();
-                    const esRemoto = u.tipo === 'remoto';
-                    const rolLabel = esRemoto ? 'Agente Remoto' : 'Administrador';
-                    const rolCls = esRemoto ? 'remoto' : 'admin';
-                    const esPropio = u.user.toLowerCase() === (currentUser || '').toLowerCase();
-                    const puedeEliminar = !u.base && !esRemoto && !esPropio;
-                    const disabledAttr = puedeEliminar ? '' : 'disabled';
-                    const titleAttr = u.base ? 'Usuario base del sistema — no se puede eliminar' : esPropio ? 'No puedes eliminarte a ti mismo' : '';
-                    const badgeBase = u.base ? '<span style="font-size:.65rem;background:rgba(217,119,6,.12);color:#b45309;border-radius:999px;padding:2px 8px;font-family:var(--font-secondary);font-weight:800;margin-left:8px">BASE</span>' : '';
-
-                    return `<div class="gu-user-row">
+                if (!list) return;
+                list.innerHTML = '<div style="padding:16px;color:var(--gris-4);font-weight:600;font-size:.85rem">Cargando usuarios...</div>';
+                try {
+                    const res = await fetch('/api/usuarios');
+                    const data = await res.json();
+                    if (!data.success) throw new Error(data.error || 'Error');
+                    const usuarios = data.usuarios || [];
+                    countEl.textContent = usuarios.length + ' usuario' + (usuarios.length !== 1 ? 's' : '');
+                    list.innerHTML = usuarios.map(u => {
+                        const inicial = (u.user[0] || '?').toUpperCase();
+                        const rolCls = u.rol === 'Agente Remoto' ? 'remoto' : 'admin';
+                        const esPropio = u.user.toLowerCase() === (currentUser || '').toLowerCase();
+                        const puedeEliminar = !esPropio;
+                        const disabledAttr = puedeEliminar ? '' : 'disabled';
+                        const titleAttr = esPropio ? 'No puedes eliminarte a ti mismo' : 'Eliminar usuario';
+                        return `<div class="gu-user-row">
       <div class="gu-avatar ${rolCls}">${inicial}</div>
       <div class="gu-user-info">
-        <div class="gu-user-email">${u.user}${badgeBase}</div>
-        <div class="gu-user-meta">${u.nombre ? u.nombre + ' · ' : ''}Contraseña: ${'•'.repeat(Math.min(u.pass.length, 8))}</div>
+        <div class="gu-user-email">${u.user}</div>
+        <div class="gu-user-meta">${u.nombre ? u.nombre + ' · ' : ''}${u.rol}</div>
       </div>
-      <span class="gu-rol-badge ${rolCls}">${rolLabel}</span>
-      <button class="gu-del-btn" onclick="guEliminar('${u.user}')" ${disabledAttr} title="${titleAttr}">🗑</button>
+      <span class="gu-rol-badge ${rolCls}">${u.rol}</span>
+      <button class="gu-del-btn" onclick="guEliminar('${u._id || u.user}')" ${disabledAttr} title="${titleAttr}">🗑</button>
     </div>`;
+                    }).join('') || '<div style="padding:16px;color:var(--gris-4);font-weight:600;font-size:.85rem">No hay usuarios registrados.</div>';
+                } catch (e) {
+                    list.innerHTML = '<div style="padding:16px;color:var(--rosa);font-weight:600;font-size:.85rem">❌ Error al cargar usuarios. Verifica la conexión con el servidor.</div>';
                 }
-                ).join('');
             }
 
-            function guEliminar(userEmail) {
-                const extras = guLoadExtra();
-                const idx = extras.findIndex(u => u.user === userEmail);
-                if (idx === -1) {
-                    guToast('❌ Este usuario es parte de la base del sistema y no puede eliminarse desde aquí.', 'err');
-                    return;
+            async function guEliminar(idOrUser) {
+                if (!confirm('¿Seguro que deseas eliminar este usuario? Esta acción no se puede deshacer.')) return;
+                try {
+                    const res = await fetch('/api/usuarios?id=' + encodeURIComponent(idOrUser), { method: 'DELETE' });
+                    const data = await res.json();
+                    if (data.success) {
+                        guToast('✅ Usuario eliminado correctamente.', 'ok');
+                        guRenderList();
+                    } else {
+                        guToast('❌ ' + (data.error || 'Error al eliminar.'), 'err');
+                    }
+                } catch (e) {
+                    guToast('❌ No se pudo conectar con el servidor.', 'err');
                 }
-                if (userEmail.toLowerCase() === (currentUser || '').toLowerCase()) {
-                    guToast('❌ No puedes eliminar tu propio usuario mientras tienes sesión activa.', 'err');
-                    return;
-                }
-                if (!confirm('¿Seguro que deseas eliminar "' + userEmail + '"? Esta acción no se puede deshacer.'))
-                    return;
-                extras.splice(idx, 1);
-                guSaveExtra(extras);
-                guRenderList();
-                guToast('✅ Usuario "' + userEmail + '" eliminado correctamente.', 'ok');
             }
 
-            function guCrearUsuario() {
+            async function guCrearUsuario() {
                 const userVal = document.getElementById('gu-new-user').value.trim();
                 const passVal = document.getElementById('gu-new-pass').value.trim();
                 const nombreVal = document.getElementById('gu-new-nombre').value.trim();
+                const rolEl = document.getElementById('gu-new-rol');
+                const rolVal = rolEl ? rolEl.value : 'Administrador';
 
-                if (!userVal) {
-                    guToast('⚠️ El campo Usuario es obligatorio.', 'err');
-                    return;
+                if (!userVal) { guToast('⚠️ El campo Usuario es obligatorio.', 'err'); return; }
+                if (!passVal) { guToast('⚠️ El campo Contraseña es obligatorio.', 'err'); return; }
+                if (passVal.length < 6) { guToast('⚠️ La contraseña debe tener al menos 6 caracteres.', 'err'); return; }
+
+                try {
+                    const res = await fetch('/api/usuarios', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user: userVal, pass: passVal, nombre: nombreVal, rol: rolVal })
+                    });
+                    const data = await res.json();
+                    if (data.success) {
+                        document.getElementById('gu-new-user').value = '';
+                        document.getElementById('gu-new-pass').value = '';
+                        document.getElementById('gu-new-nombre').value = '';
+                        guRenderList();
+                        guToast('✅ Usuario "' + userVal + '" creado correctamente.', 'ok');
+                    } else {
+                        guToast('❌ ' + (data.error || 'Error al crear usuario.'), 'err');
+                    }
+                } catch (e) {
+                    guToast('❌ No se pudo conectar con el servidor.', 'err');
                 }
-                if (!passVal) {
-                    guToast('⚠️ El campo Contraseña es obligatorio.', 'err');
-                    return;
-                }
-                if (passVal.length < 6) {
-                    guToast('⚠️ La contraseña debe tener al menos 6 caracteres.', 'err');
-                    return;
-                }
-
-                // Verificar duplicado entre base + extras + remoto
-                const extras = guLoadExtra();
-                const yaExiste = ADMIN_USERS.some(u => u.user.toLowerCase() === userVal.toLowerCase()) || extras.some(u => u.user.toLowerCase() === userVal.toLowerCase()) || CREDENCIALES_REMOTO.user.toLowerCase() === userVal.toLowerCase();
-                if (yaExiste) {
-                    guToast('❌ Ya existe un usuario con ese correo.', 'err');
-                    return;
-                }
-
-                // Guardar nuevo usuario en localStorage
-                extras.push({
-                    user: userVal,
-                    pass: passVal,
-                    rol: 'Administrador',
-                    nombre: nombreVal
-                });
-                guSaveExtra(extras);
-
-                document.getElementById('gu-new-user').value = '';
-                document.getElementById('gu-new-pass').value = '';
-                document.getElementById('gu-new-nombre').value = '';
-
-                guRenderList();
-                guToast('✅ Usuario "' + userVal + '" creado y guardado correctamente.', 'ok');
             }
 
             function guToast(msg, tipo) {
                 const t = document.getElementById('gu-toast');
-                if (!t)
-                    return;
+                if (!t) return;
                 t.textContent = msg;
                 t.className = 'gu-toast ' + tipo;
                 clearTimeout(t._timer);
-                t._timer = setTimeout( () => {
-                    t.className = 'gu-toast';
-                }
-                , 5000);
+                t._timer = setTimeout(() => { t.className = 'gu-toast'; }, 5000);
             }
 
             const PAGES = {
@@ -10230,6 +10164,8 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 // Hooks por módulo
                 if (page === 'kits')
                     kitsInit && kitsInit();
+                if (page === 'gestion-usuarios')
+                    typeof guRenderList === 'function' && guRenderList();
             }
 
             function toggleNav(id, headerEl) {
