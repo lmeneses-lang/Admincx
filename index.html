@@ -10211,17 +10211,11 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                     sessionStorage.setItem('cx_lastPage', page);
                 } catch (e) {}
                 // Hooks por módulo
-                if (page === 'kits')
-                    kitsInit && kitsInit();
                 if (page === 'gestion-usuarios')
                     typeof guRenderList === 'function' && guRenderList();
                 if (page === 'material-apoyo') {
                     maCargarContenido();
                     maInyectarBotonesEdicion();
-                }
-                if (page === 'indumentaria') {
-                    kitCargarContenido();
-                    kitInyectarBotonesAdmin();
                 }
                 if (page === 'kits') {
                     kitCargarContenido();
