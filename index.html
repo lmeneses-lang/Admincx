@@ -8232,11 +8232,28 @@
                 </div>
 
                 <script>
-                // ── ALMACENAMIENTO LOCAL DE HORAS (hasta conectar API) ──
-                var HC_DATA = JSON.parse(localStorage.getItem('hc_registros') || '[]');
+                // ── ALMACENAMIENTO EN MONGODB ──
+                var HC_DATA = [];
 
-                function hcSave() {
-                    localStorage.setItem('hc_registros', JSON.stringify(HC_DATA));
+                function hcSave() {} // guardado en Mongo, no localStorage
+
+                async function hcCargarDeMongo() {
+                    try {
+                        const res = await fetch('/api/auditoria');
+                        const json = await res.json();
+                        if (json.ok) {
+                            HC_DATA = json.data.map(r => ({
+                                _id: r._id,
+                                agente: r.agente,
+                                semana: r.fecha,
+                                turno: r.tipo,
+                                esperadas: r.metricas && r.metricas.ticketsPorHora ? r.metricas.ticketsPorHora : 0,
+                                conectado: r.puntaje,
+                                obs: r.observaciones
+                            }));
+                            hcRenderTabla();
+                        }
+                    } catch(e) { console.error('Error cargando auditorías:', e); }
                 }
 
                 function hcSetTab(tab) {
@@ -8270,7 +8287,7 @@
                     return '<span class="hc-badge-err">❌ Déficit</span>';
                 }
 
-                function hcGuardar() {
+                async function hcGuardar() {
                     const agente    = document.getElementById('hc-agente').value.trim();
                     const semana    = document.getElementById('hc-semana').value;
                     const turnoVal  = document.getElementById('hc-turno').value;
@@ -8283,9 +8300,28 @@
                     }
 
                     const [turno, esp] = turnoVal.split('|');
-                    HC_DATA.unshift({ id: Date.now(), agente, semana, turno, esperadas: parseFloat(esp), conectado, obs });
-                    hcSave();
-                    hcRenderTabla();
+
+                    try {
+                        const res = await fetch('/api/auditoria', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                agente,
+                                fecha: semana,
+                                tipo: turno,
+                                puntaje: conectado,
+                                observaciones: obs,
+                                metricas: { turno, ticketsPorHora: parseFloat(esp) }
+                            })
+                        });
+                        const json = await res.json();
+                        if (!json.ok) { alert('❌ Error al guardar: ' + json.error); return; }
+                    } catch(e) {
+                        alert('❌ No se pudo conectar con el servidor');
+                        return;
+                    }
+
+                    await hcCargarDeMongo();
 
                     // Limpiar form
                     document.getElementById('hc-agente').value = '';
@@ -8398,8 +8434,8 @@
                     if (e.target === this) hcCerrarModal();
                 });
 
-                // Init: render tabla al cargar
-                hcRenderTabla();
+                // Init: cargar desde MongoDB
+                hcCargarDeMongo();
                 </script>
                 </div><!-- /page-calidad -->
                 <div class="page-content" id="page-guardia-vacante" style="position:relative">
