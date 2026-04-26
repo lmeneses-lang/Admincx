@@ -7014,6 +7014,15 @@
                             <span class="nav-label">Material de Apoyo</span>
                         </div>
                     </div>
+                    <div id="nav-calidad-section" style="display:none">
+                        <div class="nav-section-label" style="margin-top:10px;border-top:1px solid rgba(56,206,166,.12);padding-top:10px">Calidad</div>
+                        <div class="nav-item">
+                            <div class="nav-item-header" onclick="navigateTo('calidad', this)">
+                                <span class="nav-icon">📊</span>
+                                <span class="nav-label">Módulo Calidad</span>
+                            </div>
+                        </div>
+                    </div>
                     <div id="nav-admin-section" style="display:none">
                         <!-- ADMINISTRATIVE -->
                         <div class="nav-section-label" style="margin-top:10px;border-top:1px solid rgba(56,206,166,.12);padding-top:10px">Administrative</div>
@@ -7031,6 +7040,10 @@
                                 <div class="nav-sub-item" onclick="navigateTo('validador', this)">
                                     <span class="nav-sub-dot"></span>
                                     Validador de Pagos
+                                </div>
+                                <div class="nav-sub-item" onclick="navigateTo('gestion-usuarios', this)">
+                                    <span class="nav-sub-dot"></span>
+                                    Gestión de Usuarios
                                 </div>
                             </div>
                         </div>
@@ -8061,6 +8074,61 @@
                         </div>
                     </div>
                 </div><!-- /page-gestion-usuarios -->
+                <!-- ══ PÁGINA: CALIDAD ══ -->
+                <div class="page-content" id="page-calidad" style="position:relative">
+                    <div class="page-header">
+                        <h1 class="page-title">📊 Módulo de Calidad</h1>
+                        <p style="color:var(--gris-4);font-size:.85rem">Seguimiento y control de calidad del equipo CX · Visible para Especialistas de Calidad y Administradores</p>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin-top:24px">
+                        <!-- Card: Evaluación de Agentes -->
+                        <div style="background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                                <span style="font-size:1.8rem">🎯</span>
+                                <div>
+                                    <div style="font-weight:800;font-size:1rem;color:var(--negro)">Evaluación de Agentes</div>
+                                    <div style="font-size:.75rem;color:var(--gris-4);font-weight:600">Registro de monitoreos y feedback</div>
+                                </div>
+                            </div>
+                            <div style="background:var(--verde-p);border-radius:var(--radius-s);padding:14px;font-size:.82rem;color:var(--gris-4);font-weight:600">
+                                📌 Módulo en construcción — Próximamente podrás registrar evaluaciones, asignar puntuaciones y generar reportes por agente.
+                            </div>
+                        </div>
+                        <!-- Card: Monitoreo de Tickets -->
+                        <div style="background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                                <span style="font-size:1.8rem">🎧</span>
+                                <div>
+                                    <div style="font-weight:800;font-size:1rem;color:var(--negro)">Monitoreo de Tickets</div>
+                                    <div style="font-size:.75rem;color:var(--gris-4);font-weight:600">Revisión de interacciones CX</div>
+                                </div>
+                            </div>
+                            <div style="background:var(--azul-p);border-radius:var(--radius-s);padding:14px;font-size:.82rem;color:var(--gris-4);font-weight:600">
+                                📌 Módulo en construcción — Aquí podrás registrar tickets revisados, anotar observaciones y hacer seguimiento de mejoras.
+                            </div>
+                        </div>
+                        <!-- Card: Indicadores -->
+                        <div style="background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
+                            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+                                <span style="font-size:1.8rem">📈</span>
+                                <div>
+                                    <div style="font-weight:800;font-size:1rem;color:var(--negro)">Indicadores de Calidad</div>
+                                    <div style="font-size:.75rem;color:var(--gris-4);font-weight:600">Métricas y KPIs del equipo</div>
+                                </div>
+                            </div>
+                            <div style="background:var(--amber-p);border-radius:var(--radius-s);padding:14px;font-size:.82rem;color:var(--gris-4);font-weight:600">
+                                📌 Módulo en construcción — Panel de KPIs: CSAT, FCR, AHT y más, por agente y por período.
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:24px;background:var(--blanco);border-radius:var(--radius);padding:24px;box-shadow:var(--shadow);border:1px solid var(--borde)">
+                        <div style="font-weight:800;font-size:.95rem;color:var(--negro);margin-bottom:8px">ℹ️ Sobre este módulo</div>
+                        <p style="font-size:.83rem;color:var(--gris-4);font-weight:600;line-height:1.6">
+                            Este es el módulo exclusivo para el equipo de <strong>Especialistas de Calidad</strong>. Desde aquí podrás gestionar evaluaciones de agentes, registrar monitoreos de interacciones y consultar los indicadores de desempeño del equipo CX.<br><br>
+                            Si necesitas agregar funcionalidades específicas a este módulo, comunícalo al administrador del sistema.
+                        </p>
+                    </div>
+                </div><!-- /page-calidad -->
                 <div class="page-content" id="page-guardia-vacante" style="position:relative">
                     <!-- Login overlay Guardia Vacante -->
                     <div class="adm-login-overlay" id="gv-login-overlay">
@@ -9477,7 +9545,13 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                         data = {};
                     }
                     if (data.success) {
-                        loginType = data.rol === 'Agente Remoto' ? 'remoto' : 'admin';
+                        if (data.rol === 'Agente Remoto') {
+                            loginType = 'remoto';
+                        } else if (data.rol === 'Especialista Calidad') {
+                            loginType = 'calidad';
+                        } else {
+                            loginType = 'admin';
+                        }
                         currentUser = data.user;
                         currentRol = data.rol;
                         try {
@@ -9503,9 +9577,14 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 document.getElementById('home-username').textContent = ', ' + currentUser;
 
                 const isAdmin = (loginType === 'admin');
+                const isCalidad = (loginType === 'calidad');
                 const adminSection = document.getElementById('nav-admin-section');
                 if (adminSection)
                     adminSection.style.display = isAdmin ? '' : 'none';
+
+                const calidadSection = document.getElementById('nav-calidad-section');
+                if (calidadSection)
+                    calidadSection.style.display = (isAdmin || isCalidad) ? '' : 'none';
 
                 if (isAdmin) {
                     document.querySelectorAll('.adm-login-overlay').forEach(function(el) {
@@ -9557,6 +9636,9 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 const adminSection = document.getElementById('nav-admin-section');
                 if (adminSection)
                     adminSection.style.display = 'none';
+                const calidadSection = document.getElementById('nav-calidad-section');
+                if (calidadSection)
+                    calidadSection.style.display = 'none';
                 // Restaurar sidebar
                 document.getElementById('sidebar').classList.remove('collapsed');
                 document.querySelector('.main').classList.remove('sidebar-collapsed');
@@ -9658,6 +9740,7 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 'validador': 'Administrative · Validador de Pagos',
                 'guardia-vacante': 'Administrative · Guardia Vacante',
                 'gestion-usuarios': 'Administrative · Gestión de Usuarios',
+                'calidad': 'Calidad · Módulo de Calidad',
                 'ciudades': 'Ciudades',
                 'issues': 'Issues · Reporte de Fallas',
                 'disponibilidad': 'Disponibilidad · Disponibilidad Ciudad',
