@@ -1,7 +1,26 @@
-import { connectDB } from '../lib/mongodb.js';
-import Usuario from '../models/Usuario.js';
+const mongoose = require('mongoose');
 
-export default async function handler(req, res) {
+let cached = global._mongoConn || { conn: null, promise: null };
+global._mongoConn = cached;
+
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+  cached.promise = cached.promise || mongoose.connect(process.env.MONGODB_URI);
+  cached.conn = await cached.promise;
+  return cached.conn;
+}
+
+const UsuarioSchema = new mongoose.Schema({
+  user:   { type: String, required: true, unique: true, trim: true, lowercase: true },
+  pass:   { type: String, required: true },
+  nombre: { type: String, default: '' },
+  rol:    { type: String, default: 'Agente Remoto' },
+  activo: { type: Boolean, default: true },
+}, { timestamps: true });
+
+const Usuario = mongoose.models.Usuario || mongoose.model('Usuario', UsuarioSchema);
+
+module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -19,7 +38,12 @@ export default async function handler(req, res) {
       const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
       const existe = await Usuario.findOne({ user: body.user.toLowerCase() });
       if (existe) return res.status(400).json({ success: false, message: 'El usuario ya existe' });
-      const nuevo = await Usuario.create({ user: body.user.toLowerCase(), pass: body.pass, nombre: body.nombre || '', rol: body.rol || 'Agente Remoto' });
+      const nuevo = await Usuario.create({
+        user: body.user.toLowerCase(),
+        pass: body.pass,
+        nombre: body.nombre || '',
+        rol: body.rol || 'Agente Remoto'
+      });
       return res.status(201).json({ success: true, data: { _id: nuevo._id, user: nuevo.user, rol: nuevo.rol } });
     }
 
@@ -30,7 +54,8 @@ export default async function handler(req, res) {
     }
 
     return res.status(405).json({ success: false, message: 'Metodo no permitido' });
+
   } catch (err) {
     return res.status(500).json({ success: false, message: 'Error interno', error: err.message });
   }
-}
+};
