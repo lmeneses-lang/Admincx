@@ -14284,8 +14284,17 @@ ${contexto}
                 document.getElementById('ma-index-list').innerHTML = indexHtml;
 
                 // Construir secciones
+                var isAdmin = (typeof loginType !== 'undefined') && loginType === 'admin';
                 var sectionsHtml = guia.secciones.map(function(s, i) {
-                    return '<div class="ma-guia-section" id="ma-sec-' + i + '">' + '<div class="ma-guia-section-title">' + s.ico + ' ' + s.titulo + '</div>' + '<div class="ma-guia-section-sub">' + s.sub + '</div>' + '<div class="ma-sec-content">' + s.html + '</div>' + '</div>';
+                    var editBtn = isAdmin
+                        ? '<button onclick="maOpenSecEdit(\'' + key + '\',' + i + ')" style="margin-top:10px;padding:5px 13px;border:1.5px solid #272883;border-radius:7px;background:#fff;color:#272883;font-size:.78rem;font-weight:800;cursor:pointer;">✏️ Editar sección</button>'
+                        : '';
+                    return '<div class="ma-guia-section" id="ma-sec-' + i + '">'
+                        + '<div class="ma-guia-section-title">' + s.ico + ' ' + s.titulo + '</div>'
+                        + '<div class="ma-guia-section-sub">' + s.sub + '</div>'
+                        + '<div class="ma-sec-content">' + s.html + '</div>'
+                        + editBtn
+                        + '</div>';
                 }).join('');
                 document.getElementById('ma-sections-container').innerHTML = sectionsHtml;
 
@@ -14677,6 +14686,154 @@ ${contexto}
             // Init on load
             // (catInit already called in window.onload above)
         </script>
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <!--  MODAL EDICIÓN SECCIÓN DE GUÍA (solo admin)               -->
+        <!-- ═══════════════════════════════════════════════════════════ -->
+        <div id="ma-sec-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:18px;padding:32px;width:min(560px,94vw);max-height:88vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.25)">
+                <h3 style="margin:0 0 4px;font-size:1.05rem;font-weight:800;color:#0F111E">✏️ Editar sección</h3>
+                <p style="margin:0 0 22px;font-size:.8rem;color:#9BB5AC;font-weight:600">Editá el ícono, título y subtítulo. El contenido interno se actualiza para todos.</p>
+
+                <label style="font-size:.78rem;font-weight:700;color:#5A7A70;display:block;margin-bottom:4px">Ícono (emoji)</label>
+                <input id="ma-sec-edit-ico" type="text" maxlength="4"
+                    style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:1.5rem;margin-bottom:16px;outline:none;font-family:inherit">
+
+                <label style="font-size:.78rem;font-weight:700;color:#5A7A70;display:block;margin-bottom:4px">Título de la sección</label>
+                <input id="ma-sec-edit-titulo" type="text"
+                    style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.95rem;margin-bottom:16px;outline:none;font-family:inherit">
+
+                <label style="font-size:.78rem;font-weight:700;color:#5A7A70;display:block;margin-bottom:4px">Subtítulo <span style="font-weight:400;color:#9BB5AC">(descripción corta debajo del título)</span></label>
+                <textarea id="ma-sec-edit-sub" rows="2"
+                    style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.88rem;resize:vertical;margin-bottom:22px;outline:none;font-family:inherit"></textarea>
+
+                <div id="ma-sec-edit-error" style="display:none;background:#FFF0F3;border:1px solid #FFB3C1;border-radius:8px;padding:10px 14px;font-size:.83rem;font-weight:600;color:#C0392B;margin-bottom:16px"></div>
+
+                <div style="display:flex;gap:10px;justify-content:flex-end">
+                    <button onclick="maCloseSecEdit()"
+                        style="padding:10px 22px;border:1.5px solid #E2E8F0;border-radius:9px;background:#fff;cursor:pointer;font-weight:700;font-size:.88rem;color:#5A7A70">
+                        Cancelar
+                    </button>
+                    <button id="ma-sec-edit-save-btn" onclick="maGuardarSecEdit()"
+                        style="padding:10px 22px;border:none;border-radius:9px;background:#0F111E;color:#fff;cursor:pointer;font-weight:700;font-size:.88rem">
+                        💾 Guardar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+        // ═══════════════════════════════════════════════════════════
+        //  EDICIÓN DE SECCIONES DENTRO DE LAS GUÍAS
+        // ═══════════════════════════════════════════════════════════
+        var maSecEditKey = null;   // ej: 'supply'
+        var maSecEditIdx = null;   // índice de la sección
+
+        function maOpenSecEdit(guiaKey, secIdx) {
+            var guia = MA_GUIAS[guiaKey];
+            if (!guia) return;
+            var sec = guia.secciones[secIdx];
+            if (!sec) return;
+
+            maSecEditKey = guiaKey;
+            maSecEditIdx = secIdx;
+
+            document.getElementById('ma-sec-edit-ico').value    = sec.ico  || '';
+            document.getElementById('ma-sec-edit-titulo').value = sec.titulo || '';
+            document.getElementById('ma-sec-edit-sub').value    = sec.sub   || '';
+            document.getElementById('ma-sec-edit-error').style.display = 'none';
+
+            document.getElementById('ma-sec-edit-modal').style.display = 'flex';
+        }
+
+        function maCloseSecEdit() {
+            document.getElementById('ma-sec-edit-modal').style.display = 'none';
+            maSecEditKey = null;
+            maSecEditIdx = null;
+        }
+
+        async function maGuardarSecEdit() {
+            var saveBtn = document.getElementById('ma-sec-edit-save-btn');
+            var errEl   = document.getElementById('ma-sec-edit-error');
+            errEl.style.display = 'none';
+            saveBtn.textContent = '⏳ Guardando...';
+            saveBtn.disabled = true;
+
+            var ico    = document.getElementById('ma-sec-edit-ico').value.trim();
+            var titulo = document.getElementById('ma-sec-edit-titulo').value.trim();
+            var sub    = document.getElementById('ma-sec-edit-sub').value.trim();
+
+            try {
+                var res = await fetch('/api/contenido', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        seccion: 'guia-seccion',
+                        key:     maSecEditKey + '-' + maSecEditIdx,
+                        emoji:   ico,
+                        titulo:  titulo,
+                        desc:    sub
+                    })
+                });
+
+                var json = await res.json();
+                if (json.success) {
+                    // Actualizar el objeto MA_GUIAS en memoria
+                    MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].ico    = ico;
+                    MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].titulo = titulo;
+                    MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].sub    = sub;
+
+                    // Actualizar el DOM de la sección
+                    var secEl = document.getElementById('ma-sec-' + maSecEditIdx);
+                    if (secEl) {
+                        secEl.querySelector('.ma-guia-section-title').textContent = ico + ' ' + titulo;
+                        secEl.querySelector('.ma-guia-section-sub').textContent   = sub;
+                    }
+
+                    maCloseSecEdit();
+                } else {
+                    errEl.textContent = 'Error: ' + (json.message || 'Algo salió mal');
+                    errEl.style.display = 'block';
+                }
+            } catch(e) {
+                errEl.textContent = 'Error de conexión. Revisá tu internet e intentá de nuevo.';
+                errEl.style.display = 'block';
+            } finally {
+                saveBtn.textContent = '💾 Guardar';
+                saveBtn.disabled = false;
+            }
+        }
+
+        // También cargar cambios guardados al abrir una guía
+        var _maVerGuiaOriginal = maVerGuia;
+        // Sobreescribimos para cargar overrides desde MongoDB al abrir
+        async function maCargarOverridesSecciones(key) {
+            try {
+                var res = await fetch('/api/contenido?seccion=guia-seccion&guia=' + key);
+                if (!res.ok) return;
+                var json = await res.json();
+                if (!json.success || !json.data) return;
+                json.data.forEach(function(doc) {
+                    // key formato: 'supply-0', 'supply-1', etc.
+                    var parts = doc.key.split('-');
+                    var guiaKey = parts.slice(0, -1).join('-');
+                    var idx = parseInt(parts[parts.length - 1]);
+                    if (guiaKey !== key) return;
+                    if (!MA_GUIAS[guiaKey] || !MA_GUIAS[guiaKey].secciones[idx]) return;
+                    if (doc.emoji)  MA_GUIAS[guiaKey].secciones[idx].ico    = doc.emoji;
+                    if (doc.titulo) MA_GUIAS[guiaKey].secciones[idx].titulo = doc.titulo;
+                    if (doc.desc)   MA_GUIAS[guiaKey].secciones[idx].sub    = doc.desc;
+                });
+            } catch(e) {
+                console.warn('[MA] No se pudieron cargar overrides de secciones:', e.message);
+            }
+        }
+
+        // Cerrar modal al click fuera
+        document.getElementById('ma-sec-edit-modal').addEventListener('click', function(e) {
+            if (e.target === this) maCloseSecEdit();
+        });
+        </script>
+
         <!-- ═══════════════════════════════════════════════════════════ -->
         <!--  MODAL EDICIÓN MATERIAL DE APOYO (solo admin)             -->
         <!-- ═══════════════════════════════════════════════════════════ -->
