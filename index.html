@@ -7036,6 +7036,10 @@
                                     <span class="nav-sub-dot"></span>
                                     Calidad Agente
                                 </div>
+                                <div class="nav-sub-item" onclick="navigateTo('gestion-usuarios', this)">
+                                    <span class="nav-sub-dot"></span>
+                                    Gestión de Usuarios
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -8597,6 +8601,96 @@
 
                     </div><!-- /padding wrap -->
                 </div><!-- /page-calidad-agente -->
+
+                <!-- ══ PÁGINA: GESTIÓN DE USUARIOS ══ -->
+                <div class="page-content" id="page-gestion-usuarios" style="position:relative">
+                    <div class="adm-login-overlay" id="gu2-login-overlay">
+                        <div class="adm-login-card">
+                            <div class="adm-login-ico">👥</div>
+                            <h2 class="adm-login-title">GESTIÓN DE USUARIOS</h2>
+                            <p class="adm-login-sub">Módulo restringido — Solo Administradores</p>
+                            <div class="adm-login-field">
+                                <label>Usuario</label>
+                                <input type="text" id="gu2-adm-user" placeholder="Admin" autocomplete="username">
+                            </div>
+                            <div class="adm-login-field">
+                                <label>Contraseña</label>
+                                <input type="password" id="gu2-adm-pass" placeholder="••••••••" onkeydown="if(event.key==='Enter')admLogin('gu2')">
+                            </div>
+                            <button class="adm-login-btn" onclick="admLogin('gu2')">INGRESAR</button>
+                            <div class="adm-login-err" id="gu2-adm-err">Usuario o contraseña incorrectos</div>
+                        </div>
+                    </div>
+
+                    <div style="padding:28px 28px 60px">
+                        <!-- HEADER -->
+                        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:28px">
+                            <div style="display:flex;align-items:center;gap:12px">
+                                <span style="font-size:2rem">👥</span>
+                                <div>
+                                    <h2 style="font-family:var(--font-display);font-size:1.6rem;letter-spacing:2px;color:var(--negro);line-height:1">GESTIÓN DE USUARIOS</h2>
+                                    <p style="color:var(--gris-4);font-size:.8rem;font-weight:600;margin-top:4px">Administra los usuarios del sistema</p>
+                                </div>
+                            </div>
+                            <button onclick="gu2OpenModal()" style="padding:10px 20px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.82rem;cursor:pointer;color:var(--negro)">+ Nuevo Usuario</button>
+                        </div>
+
+                        <!-- LISTA DE USUARIOS -->
+                        <div style="background:var(--blanco);border-radius:var(--radius);border:1px solid var(--borde);padding:22px;box-shadow:var(--shadow)">
+                            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+                                <div style="font-weight:800;font-size:.85rem;letter-spacing:.06em;color:var(--negro)">USUARIOS ACTIVOS</div>
+                                <button onclick="gu2CargarUsuarios()" style="padding:6px 14px;background:var(--azul-p);color:var(--azul);border:none;border-radius:6px;font-family:var(--font-main);font-weight:700;font-size:.75rem;cursor:pointer">↻ Actualizar</button>
+                            </div>
+                            <div id="gu2-loading" style="text-align:center;padding:30px;color:var(--gris-3);font-size:.85rem">Cargando usuarios...</div>
+                            <div style="overflow-x:auto">
+                                <table style="width:100%;border-collapse:collapse;font-size:.82rem;display:none" id="gu2-tabla">
+                                    <thead>
+                                        <tr style="background:var(--fondo)">
+                                            <th style="padding:8px 12px;text-align:left;font-size:.68rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">USUARIO</th>
+                                            <th style="padding:8px 12px;text-align:left;font-size:.68rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">NOMBRE</th>
+                                            <th style="padding:8px 12px;text-align:center;font-size:.68rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">ROL</th>
+                                            <th style="padding:8px 12px;text-align:center;font-size:.68rem;color:var(--gris-4);font-weight:800;border-bottom:2px solid var(--borde)">ACCIÓN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="gu2-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MODAL NUEVO USUARIO -->
+                    <div id="gu2-modal" style="display:none;position:fixed;inset:0;background:rgba(15,17,30,.6);z-index:10000;align-items:center;justify-content:center">
+                        <div style="background:var(--blanco);border-radius:var(--radius);padding:28px;max-width:420px;width:90%;position:relative">
+                            <button onclick="gu2CloseModal()" style="position:absolute;top:14px;right:14px;background:var(--gris-1);border:none;border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;font-weight:700">✕</button>
+                            <div style="font-weight:800;font-size:1rem;letter-spacing:.06em;color:var(--negro);margin-bottom:18px">➕ NUEVO USUARIO</div>
+                            <div style="display:grid;gap:12px">
+                                <div>
+                                    <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">CORREO / USUARIO</label>
+                                    <input id="gu2-new-user" type="text" placeholder="usuario@ridery.app" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;outline:none;background:var(--fondo);box-sizing:border-box">
+                                </div>
+                                <div>
+                                    <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">NOMBRE COMPLETO</label>
+                                    <input id="gu2-new-nombre" type="text" placeholder="Nombre Apellido" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;outline:none;background:var(--fondo);box-sizing:border-box">
+                                </div>
+                                <div>
+                                    <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">CONTRASEÑA</label>
+                                    <input id="gu2-new-pass" type="password" placeholder="Mínimo 6 caracteres" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;outline:none;background:var(--fondo);box-sizing:border-box">
+                                </div>
+                                <div>
+                                    <label style="font-size:.68rem;font-weight:800;color:var(--gris-4);letter-spacing:.06em;display:block;margin-bottom:4px">ROL</label>
+                                    <select id="gu2-new-rol" style="width:100%;padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;outline:none;background:var(--fondo)">
+                                        <option value="Administrador">Administrador</option>
+                                        <option value="Agente Remoto">Agente Remoto</option>
+                                        <option value="Especialista Calidad">Especialista Calidad</option>
+                                    </select>
+                                </div>
+                                <div id="gu2-modal-err" style="display:none;background:var(--rosa-p);color:var(--rosa);padding:8px 12px;border-radius:6px;font-size:.78rem;font-weight:700"></div>
+                                <button onclick="gu2CrearUsuario()" style="width:100%;padding:11px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.85rem;cursor:pointer;color:var(--negro)">CREAR USUARIO</button>
+                            </div>
+                        </div>
+                    </div>
+                </div><!-- /page-gestion-usuarios -->
+
                 <!-- ══════════════════════════════════════
          CIUDADES
     ══════════════════════════════════════ -->
@@ -10066,6 +10160,7 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 'validador': 'Administrative · Validador de Pagos',
                 'guardia-vacante': 'Administrative · Guardia Vacante',
                 'calidad-agente': 'Administrative · Calidad Agente',
+                'gestion-usuarios': 'Administrative · Gestión de Usuarios',
                 'ciudades': 'Ciudades',
                 'issues': 'Issues · Reporte de Fallas',
                 'disponibilidad': 'Disponibilidad · Disponibilidad Ciudad',
@@ -14809,6 +14904,99 @@ ${contexto}
             document.addEventListener('click', function(e) {
                 var modal = document.getElementById('ca-modal');
                 if (modal && e.target === modal) modal.style.display = 'none';
+            });
+
+            // ═══════════════════════════════════════════
+            //  MÓDULO: GESTIÓN DE USUARIOS
+            // ═══════════════════════════════════════════
+
+            function gu2OpenModal() {
+                document.getElementById('gu2-new-user').value = '';
+                document.getElementById('gu2-new-nombre').value = '';
+                document.getElementById('gu2-new-pass').value = '';
+                document.getElementById('gu2-new-rol').value = 'Administrador';
+                document.getElementById('gu2-modal-err').style.display = 'none';
+                document.getElementById('gu2-modal').style.display = 'flex';
+            }
+
+            function gu2CloseModal() {
+                document.getElementById('gu2-modal').style.display = 'none';
+            }
+
+            async function gu2CargarUsuarios() {
+                document.getElementById('gu2-loading').style.display = 'block';
+                document.getElementById('gu2-tabla').style.display = 'none';
+                try {
+                    const res = await fetch('/api/usuarios');
+                    const data = await res.json();
+                    if (data.success) gu2RenderTabla(data.data);
+                    else document.getElementById('gu2-loading').textContent = 'Error al cargar usuarios.';
+                } catch (err) {
+                    document.getElementById('gu2-loading').textContent = 'Error de conexion.';
+                }
+            }
+
+            function gu2RenderTabla(usuarios) {
+                document.getElementById('gu2-loading').style.display = 'none';
+                const tabla = document.getElementById('gu2-tabla');
+                const tbody = document.getElementById('gu2-tbody');
+                tabla.style.display = '';
+                const rolColor = {
+                    'Administrador':       { bg: 'var(--azul-p)',  color: 'var(--azul)'  },
+                    'Agente Remoto':       { bg: 'var(--verde-p)', color: 'var(--verde)' },
+                    'Especialista Calidad':{ bg: 'var(--amber-p)', color: 'var(--amber)' },
+                };
+                tbody.innerHTML = usuarios.map(function(u) {
+                    var rc = rolColor[u.rol] || { bg: 'var(--gris-1)', color: 'var(--gris-4)' };
+                    return '<tr style="border-top:1px solid var(--borde)">' +
+                        '<td style="padding:10px 12px;font-weight:700">' + u.user + '</td>' +
+                        '<td style="padding:10px 12px;color:var(--gris-4)">' + (u.nombre || '—') + '</td>' +
+                        '<td style="padding:10px 12px;text-align:center"><span style="font-size:.7rem;font-weight:800;padding:3px 10px;border-radius:999px;background:' + rc.bg + ';color:' + rc.color + '">' + u.rol + '</span></td>' +
+                        '<td style="padding:10px 12px;text-align:center"><button onclick="gu2EliminarUsuario(\'' + u._id + '\',\'' + u.user + '\')" style="padding:4px 12px;background:var(--rosa-p);color:var(--rosa);border:none;border-radius:6px;font-family:var(--font-main);font-weight:700;font-size:.72rem;cursor:pointer">🗑 Eliminar</button></td>' +
+                        '</tr>';
+                }).join('');
+            }
+
+            async function gu2CrearUsuario() {
+                var user   = document.getElementById('gu2-new-user').value.trim();
+                var nombre = document.getElementById('gu2-new-nombre').value.trim();
+                var pass   = document.getElementById('gu2-new-pass').value.trim();
+                var rol    = document.getElementById('gu2-new-rol').value;
+                var errEl  = document.getElementById('gu2-modal-err');
+
+                if (!user || !pass) { errEl.textContent = 'Usuario y contraseña son obligatorios.'; errEl.style.display = 'block'; return; }
+                if (pass.length < 6) { errEl.textContent = 'La contraseña debe tener al menos 6 caracteres.'; errEl.style.display = 'block'; return; }
+
+                try {
+                    var res = await fetch('/api/usuarios', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user: user, nombre: nombre, pass: pass, rol: rol })
+                    });
+                    var data = await res.json();
+                    if (data.success) { gu2CloseModal(); gu2CargarUsuarios(); }
+                    else { errEl.textContent = data.message || 'Error al crear usuario.'; errEl.style.display = 'block'; }
+                } catch (err) { errEl.textContent = 'Error de conexion.'; errEl.style.display = 'block'; }
+            }
+
+            async function gu2EliminarUsuario(id, user) {
+                if (!confirm('¿Eliminar al usuario "' + user + '"? Esta accion no se puede deshacer.')) return;
+                try {
+                    var res = await fetch('/api/usuarios?id=' + id, { method: 'DELETE' });
+                    var data = await res.json();
+                    if (data.success) gu2CargarUsuarios();
+                    else alert('Error al eliminar: ' + data.message);
+                } catch (err) { alert('Error de conexion.'); }
+            }
+
+            // Cargar usuarios al navegar al modulo
+            document.addEventListener('click', function(e) {
+                var item = e.target.closest && e.target.closest('.nav-sub-item');
+                if (item && (item.getAttribute('onclick') || '').includes('gestion-usuarios')) {
+                    setTimeout(gu2CargarUsuarios, 300);
+                }
+                var modal = document.getElementById('gu2-modal');
+                if (modal && e.target === modal) gu2CloseModal();
             });
         </script>
     </body>
