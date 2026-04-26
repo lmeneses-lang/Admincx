@@ -29,12 +29,14 @@ const Contenido = mongoose.models.Contenido || mongoose.model('Contenido', Conte
 module.exports = async function handler(req, res) {
   await connectDB();
 
-  // ——— GET: traer todo el contenido de una sección ———
   if (req.method === 'GET') {
-    const { seccion } = req.query;
-    const docs = await Contenido.find({ seccion }).lean();
+    const { seccion, guia } = req.query;
+    let query = { seccion };
+    // Si viene el filtro de guía, filtra solo las secciones de esa guía
+    if (guia) query.key = { $regex: '^' + guia + '-' };
+    const docs = await Contenido.find(query).lean();
     return res.status(200).json({ success: true, data: docs });
-  }
+}
 
   // ——— PUT: guardar cambios (solo admins) ———
   if (req.method === 'PUT') {
