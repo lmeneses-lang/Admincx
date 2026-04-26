@@ -1,41 +1,48 @@
-// api/auth.js
-// Endpoint serverless para Vercel
+const mongoose = require('mongoose');
 
-export default function handler(req, res) {
-  if (req.method !== 'POST') {
-    res.status(405).json({ success: false, message: 'Método no permitido' });
-    return;
-  }
+let cached = global._mongoConn || { conn: null, promise: null };
+global._mongoConn = cached;
 
-  // Vercel puede requerir parseo manual del body
-  let user = '', pass = '';
-  if (req.body && typeof req.body === 'object') {
-    user = req.body.user;
-    pass = req.body.pass;
-  } else {
-    try {
-      const data = JSON.parse(req.body);
-      user = data.user;
-      pass = data.pass;
-    } catch {}
-  }
-
-  const USERS = [
-    { user: 'Lmeneses@ridery.app', pass: '26902673', rol: 'Administrador' },
-    { user: 'Lugonzales@ridery.app', pass: '21415701', rol: 'Administrador' },
-    { user: 'Mgalindo@ridery.app', pass: '28055814', rol: 'Administrador' },
-    { user: 'Marioly@ridery.app', pass: '26214838', rol: 'Administrador' },
-    { user: 'Srahmen@ridery.app', pass: '29553104', rol: 'Administrador' },
-    { user: 'Nserrano@ridery.app', pass: '29504559', rol: 'Administrador' },
-    { user: 'Smoya@ridery.app', pass: '27814888', rol: 'Administrador' },
-    { user: 'Ycabrera@ridery.app', pass: '30225899', rol: 'Administrador' },
-    { user: 'Remoto', pass: 'Remoto2026', rol: 'Agente Remoto' }
-  ];
-
-  const found = USERS.find(u => u.user.toLowerCase() === user?.toLowerCase() && u.pass === pass);
-  if (found) {
-    res.status(200).json({ success: true, user: found.user, rol: found.rol });
-  } else {
-    res.status(200).json({ success: false, message: 'Usuario o contraseña incorrectos' });
-  }
+async function connectDB() {
+  if (cached.conn) return cached.conn;
+  cached.promise = cached.promise || mongoose.connect(process.env.MONGODB_URI);
+  cached.conn = await cached.promise;
+  return cached.conn;
 }
+
+const UsuarioSchema = new mongoose.Schema({
+  user: { type: String, required: true, unique: true, trim: true, lowercase: true },
+  pass: { type: String, required: true },
+  nombre: { type: String, default: '' },
+  rol: { type: String, default: 'Agente Remoto' },
+  activo: { type: Boolean, default: true },
+}, { timestamps: true });
+
+const Usuario = mongoose.models.Usuario || mongoose.model('Usuario', UsuarioSchema);
+
+module.exports = async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, message: 'Metodo no permitido' });
+  }
+
+  let user = '', pass = '';
+  try {
+    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    user = (body.user || '').trim();
+    pass = (body.pass || '').trim();
+  } catch {
+    return res.status(400).json({ success: false, message: 'Body invalido' });
+  }
+
+  try {
+    await connectDB();
+    const found = await Usuario.findOne({ user: user.toLowerCase(), pass: pass, activo: true });
+    if (found) {
+      return res.status(200).json({ success: true, user: found.user, nombre: found.nombre, rol: found.rol });
+    } else {
+      return res.status(200).json({ success: false, message: 'Usuario o contrasena incorrectos' });
+    }
+  } catch (err) {
+    return res.status(500).json({ success: false, message: 'Error interno', error: err.message });
+  }
+};
