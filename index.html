@@ -9766,11 +9766,9 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
             //  AUTENTICACIÓN
             // ═══════════════════════════════════════════
 
-            // Credenciales locales — autenticacion sin backend (GitHub Pages)
-            const ADMIN_USERS = [
-                { user: 'Ccarrillo@ridery.app', pass: '18466236', rol: 'Administrador' }
-            ];
-            const CREDENCIALES_REMOTO = { user: 'Remoto', pass: 'Remoto2026', rol: 'Agente Remoto' };
+            // Credenciales en MongoDB — autenticacion via /api/auth
+            const ADMIN_USERS = [];
+            const CREDENCIALES_REMOTO = { user: '', pass: '', rol: 'Agente Remoto' };
 
             let loginType = 'remoto';
             let currentUser = null;
@@ -9789,42 +9787,32 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 const user = document.getElementById('loginUser').value.trim();
                 const pass = document.getElementById('loginPass').value.trim();
 
-                // Autenticacion local — funciona sin backend (GitHub Pages, etc.)
-                let matched = null;
-
-                // 1. Usuarios admin base fijos
-                const baseAdmin = typeof ADMIN_USERS !== 'undefined' ? ADMIN_USERS : [];
-                matched = baseAdmin.find(a => a.user === user && a.pass === pass) || null;
-
-                // 2. Usuarios extra guardados en localStorage
-                if (!matched) {
-                    try {
-                        const extras = JSON.parse(localStorage.getItem('cx_extra_users') || '[]');
-                        matched = extras.find(a => a.user === user && a.pass === pass) || null;
-                    } catch(e) {}
-                }
-
-                // 3. Credencial de agente remoto
-                if (!matched && typeof CREDENCIALES_REMOTO !== 'undefined') {
-                    if (CREDENCIALES_REMOTO.user === user && CREDENCIALES_REMOTO.pass === pass) {
-                        matched = { user: user, pass: pass, rol: CREDENCIALES_REMOTO.rol || 'Agente Remoto' };
+                fetch('/api/auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user, pass })
+                })
+                .then(async res => {
+                    let data;
+                    try { data = await res.json(); } catch { data = {}; }
+                    if (data.success) {
+                        loginType = data.rol === 'Agente Remoto' ? 'remoto' : 'admin';
+                        currentUser = data.user;
+                        currentRol = data.rol;
+                        try {
+                            sessionStorage.setItem('cx_user', currentUser);
+                            sessionStorage.setItem('cx_rol', currentRol);
+                            sessionStorage.setItem('cx_loginType', loginType);
+                        } catch (e) {}
+                        initApp();
+                    } else {
+                        document.getElementById('loginError').classList.add('show');
+                        document.getElementById('loginPass').value = '';
                     }
-                }
-
-                if (matched) {
-                    loginType = (matched.rol === 'Agente Remoto') ? 'remoto' : 'admin';
-                    currentUser = matched.user;
-                    currentRol = matched.rol || (loginType === 'admin' ? 'Administrador' : 'Agente Remoto');
-                    try {
-                        sessionStorage.setItem('cx_user', currentUser);
-                        sessionStorage.setItem('cx_rol', currentRol);
-                        sessionStorage.setItem('cx_loginType', loginType);
-                    } catch (e) {}
-                    initApp();
-                } else {
-                    document.getElementById('loginError').classList.add('show');
-                    document.getElementById('loginPass').value = '';
-                }
+                })
+                .catch(() => {
+                    alert('No se pudo conectar con el servidor.');
+                });
             }
 
             function initApp() {
