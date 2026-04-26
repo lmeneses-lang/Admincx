@@ -15366,48 +15366,65 @@ ${contexto}
 
         // ── Carga al navegar a la sección ─────────────────────────
         async function kitCargarContenido() {
-            // 1) Aplica overrides locales (instantáneo)
-            const local = kitLsGetAll();
-            Object.values(local).forEach(doc => kitAplicarDoc(doc));
-
-            // 2) Intenta API
+            // 1) Primero intenta API (fuente de verdad compartida)
+            let apiOk = false;
             try {
                 const res = await fetch('/api/contenido?seccion=indumentaria-kits');
-                if (!res.ok) return;
-                const json = await res.json();
-                if (json.success && json.data) {
-                    json.data.forEach(doc => {
-                        kitAplicarDoc(doc);
-                        kitLsSet(doc.key, doc);
-                    });
+                if (res.ok) {
+                    const json = await res.json();
+                    if (json.success && json.data) {
+                        apiOk = true;
+                        // Limpiar localStorage para no mezclar con lo de la DB
+                        try { localStorage.removeItem(KIT_LS_KEY); } catch(e) {}
+                        json.data.forEach(doc => {
+                            kitAplicarDoc(doc);
+                            kitLsSet(doc.key, doc);
+                        });
+                    }
                 }
             } catch(e) {
-                console.warn('[KIT] API no disponible, usando localStorage:', e.message);
+                console.warn('[KIT] API no disponible:', e.message);
+            }
+            // 2) Solo si la API falló, aplica localStorage como fallback
+            if (!apiOk) {
+                const local = kitLsGetAll();
+                Object.values(local).forEach(doc => kitAplicarDoc(doc));
             }
         }
 
         // ── Aplica datos de un doc a la card del DOM ───────────────
         function kitAplicarDoc(doc) {
-            let card = document.querySelector('[data-kit-key="' + doc.key + '"]');
-
-            // Si la card no existe en el DOM y el doc dice que es visible → crearla
-            if (!card && doc.visible !== false) {
-                card = kitCrearCardDOM(doc.key);
+            // Eliminado → remover del DOM y limpiar LS
+            if (doc.visible === false) {
+                const cardDel = document.querySelector('[data-kit-key="' + doc.key + '"]');
+                if (cardDel) {
+                    cardDel.style.transition = 'opacity .3s,transform .3s';
+                    cardDel.style.opacity    = '0';
+                    cardDel.style.transform  = 'scale(.95)';
+                    setTimeout(() => cardDel.remove(), 320);
+                }
+                kitLsDel(doc.key);
+                return;
             }
+
+            let card = document.querySelector('[data-kit-key="' + doc.key + '"]');
+            // Si no existe en el DOM, crearla
+            if (!card) card = kitCrearCardDOM(doc.key);
             if (!card) return;
 
+            // nombre (campo nuevo) o titulo (campo legacy de MA)
+            const nombreVal = doc.nombre || doc.titulo || '';
+            if (nombreVal) {
+                const el = card.querySelector('.kit-nombre');
+                if (el) el.textContent = nombreVal;
+            }
             // Emoji
             if (doc.emoji) {
                 const el = card.querySelector('.kit-emoji');
                 if (el) el.textContent = doc.emoji;
             }
-            // Nombre
-            if (doc.nombre) {
-                const el = card.querySelector('.kit-nombre');
-                if (el) el.textContent = doc.nombre;
-            }
             // Precio
-            if (doc.precio) {
+            if (doc.precio !== undefined && doc.precio !== '') {
                 const el = card.querySelector('.kit-precio');
                 if (el) {
                     el.textContent = doc.precio;
@@ -15421,13 +15438,7 @@ ${contexto}
                 if (el) el.textContent = doc.desc;
             }
             // Estado (badge + bar + opacity)
-            if (doc.estado) {
-                kitAplicarEstado(card, doc.estado);
-            }
-            // Eliminado
-            if (doc.visible === false) {
-                card.remove();
-            }
+            if (doc.estado) kitAplicarEstado(card, doc.estado);
         }
 
         // Aplica estilos de estado a una card
@@ -15630,9 +15641,8 @@ ${contexto}
 
         // ── Eliminar card ──────────────────────────────────────────
         function kitEliminar(key) {
-            if (!confirm('¿Eliminar el kit "' + key + '"? Esta acción no se puede deshacer.')) return;
-            const payload = { seccion: 'indumentaria-kits', key: key, visible: false };
-            kitLsSet(key, payload);
+            if (!confirm('¿Eliminar este kit? Esta acción no se puede deshacer.')) return;
+            // Animar y remover del DOM
             const card = document.querySelector('[data-kit-key="' + key + '"]');
             if (card) {
                 card.style.transition = 'opacity .3s,transform .3s';
@@ -15640,11 +15650,13 @@ ${contexto}
                 card.style.transform  = 'scale(.95)';
                 setTimeout(() => card.remove(), 320);
             }
-            // Intentar API
+            // Limpiar localStorage
+            kitLsDel(key);
+            // Eliminar de la DB via DELETE
             fetch('/api/contenido', {
-                method: 'PUT',
+                method: 'DELETE',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
+                body: JSON.stringify({ seccion: 'indumentaria-kits', key: key })
             }).catch(() => {});
         }
 
