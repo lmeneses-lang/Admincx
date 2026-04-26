@@ -8235,11 +8235,11 @@
                 // ── ALMACENAMIENTO EN MONGODB ──
                 var HC_DATA = [];
 
-                function hcSave() {} // guardado en Mongo, no localStorage
+                function hcSave() {} // guardado en Mongo
 
                 async function hcCargarDeMongo() {
                     try {
-                        const res = await fetch('/api/auditoria');
+                        const res = await fetch('/api/auditorias');
                         const json = await res.json();
                         if (json.ok) {
                             HC_DATA = json.data.map(r => ({
@@ -8302,7 +8302,7 @@
                     const [turno, esp] = turnoVal.split('|');
 
                     try {
-                        const res = await fetch('/api/auditoria', {
+                        const res = await fetch('/api/auditorias', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({
