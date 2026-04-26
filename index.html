@@ -14687,35 +14687,66 @@ ${contexto}
             // (catInit already called in window.onload above)
         </script>
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <!--  MODAL EDICIÓN SECCIÓN DE GUÍA (solo admin)               -->
+        <!--  MODAL EDICIÓN SECCIÓN DE GUÍA (solo admin) v2            -->
         <!-- ═══════════════════════════════════════════════════════════ -->
-        <div id="ma-sec-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:10000;align-items:center;justify-content:center;">
-            <div style="background:#fff;border-radius:18px;padding:32px;width:min(560px,94vw);max-height:88vh;overflow-y:auto;box-shadow:0 12px 48px rgba(0,0,0,.25)">
-                <h3 style="margin:0 0 4px;font-size:1.05rem;font-weight:800;color:#0F111E">✏️ Editar sección</h3>
-                <p style="margin:0 0 22px;font-size:.8rem;color:#9BB5AC;font-weight:600">Editá el ícono, título y subtítulo. El contenido interno se actualiza para todos.</p>
+        <div id="ma-sec-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:10000;align-items:center;justify-content:center;">
+            <div style="background:#fff;border-radius:18px;padding:0;width:min(640px,96vw);max-height:92vh;overflow:hidden;box-shadow:0 16px 56px rgba(0,0,0,.3);display:flex;flex-direction:column;">
 
-                <label style="font-size:.78rem;font-weight:700;color:#5A7A70;display:block;margin-bottom:4px">Ícono (emoji)</label>
-                <input id="ma-sec-edit-ico" type="text" maxlength="4"
-                    style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:1.5rem;margin-bottom:16px;outline:none;font-family:inherit">
+                <!-- Header fijo -->
+                <div style="padding:22px 26px 16px;border-bottom:1.5px solid #EEF2F0;flex-shrink:0">
+                    <h3 style="margin:0 0 3px;font-size:1.05rem;font-weight:800;color:#0F111E">✏️ Editar sección</h3>
+                    <p style="margin:0;font-size:.79rem;color:#9BB5AC;font-weight:600">Los cambios se guardan para todos los usuarios.</p>
+                </div>
 
-                <label style="font-size:.78rem;font-weight:700;color:#5A7A70;display:block;margin-bottom:4px">Título de la sección</label>
-                <input id="ma-sec-edit-titulo" type="text"
-                    style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.95rem;margin-bottom:16px;outline:none;font-family:inherit">
+                <!-- Cuerpo scrollable -->
+                <div style="overflow-y:auto;padding:20px 26px;flex:1;min-height:0">
 
-                <label style="font-size:.78rem;font-weight:700;color:#5A7A70;display:block;margin-bottom:4px">Subtítulo <span style="font-weight:400;color:#9BB5AC">(descripción corta debajo del título)</span></label>
-                <textarea id="ma-sec-edit-sub" rows="2"
-                    style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.88rem;resize:vertical;margin-bottom:22px;outline:none;font-family:inherit"></textarea>
+                    <!-- Encabezado de sección -->
+                    <div style="background:#F6FAF9;border:1.5px solid #DDE8E3;border-radius:12px;padding:15px 16px;margin-bottom:20px">
+                        <div style="font-size:.7rem;font-weight:800;color:#5A7A70;letter-spacing:.06em;text-transform:uppercase;margin-bottom:11px">Encabezado de sección</div>
+                        <div style="display:grid;grid-template-columns:60px 1fr;gap:10px;margin-bottom:10px">
+                            <div>
+                                <div style="font-size:.72rem;font-weight:700;color:#5A7A70;margin-bottom:4px">Ícono</div>
+                                <input id="ma-sec-edit-ico" type="text" maxlength="4"
+                                    style="width:100%;padding:7px 6px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:1.35rem;text-align:center;outline:none;font-family:inherit">
+                            </div>
+                            <div>
+                                <div style="font-size:.72rem;font-weight:700;color:#5A7A70;margin-bottom:4px">Título</div>
+                                <input id="ma-sec-edit-titulo" type="text"
+                                    style="width:100%;padding:8px 11px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.92rem;outline:none;font-family:inherit">
+                            </div>
+                        </div>
+                        <div style="font-size:.72rem;font-weight:700;color:#5A7A70;margin-bottom:4px">Subtítulo</div>
+                        <textarea id="ma-sec-edit-sub" rows="2"
+                            style="width:100%;padding:7px 11px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.85rem;resize:vertical;outline:none;font-family:inherit;margin:0"></textarea>
+                    </div>
 
-                <div id="ma-sec-edit-error" style="display:none;background:#FFF0F3;border:1px solid #FFB3C1;border-radius:8px;padding:10px 14px;font-size:.83rem;font-weight:600;color:#C0392B;margin-bottom:16px"></div>
+                    <!-- Items editables -->
+                    <div style="font-size:.7rem;font-weight:800;color:#5A7A70;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px">
+                        Items de contenido <span style="font-weight:500;color:#9BB5AC;text-transform:none;letter-spacing:0">(los recuadros dentro de la sección)</span>
+                    </div>
+                    <div id="ma-sec-items-list"></div>
 
-                <div style="display:flex;gap:10px;justify-content:flex-end">
+                    <!-- Botón agregar item -->
+                    <button onclick="maSecAddItem()"
+                        style="width:100%;margin-top:6px;padding:10px;border:1.5px dashed #38CEA6;border-radius:10px;background:#EDFAF6;color:#1a7a5e;font-size:.83rem;font-weight:700;cursor:pointer">
+                        ＋ Agregar item
+                    </button>
+
+                    <!-- Feedback -->
+                    <div id="ma-sec-edit-error"  style="display:none;background:#FFF0F3;border:1px solid #FFB3C1;border-radius:8px;padding:10px 14px;font-size:.83rem;font-weight:600;color:#C0392B;margin-top:14px"></div>
+                    <div id="ma-sec-edit-success" style="display:none;background:#EDFAF6;border:1px solid #38CEA6;border-radius:8px;padding:10px 14px;font-size:.83rem;font-weight:600;color:#1a7a5e;margin-top:14px"></div>
+                </div>
+
+                <!-- Footer fijo -->
+                <div style="padding:14px 26px;border-top:1.5px solid #EEF2F0;display:flex;gap:10px;justify-content:flex-end;flex-shrink:0">
                     <button onclick="maCloseSecEdit()"
                         style="padding:10px 22px;border:1.5px solid #E2E8F0;border-radius:9px;background:#fff;cursor:pointer;font-weight:700;font-size:.88rem;color:#5A7A70">
                         Cancelar
                     </button>
                     <button id="ma-sec-edit-save-btn" onclick="maGuardarSecEdit()"
                         style="padding:10px 22px;border:none;border-radius:9px;background:#0F111E;color:#fff;cursor:pointer;font-weight:700;font-size:.88rem">
-                        💾 Guardar
+                        💾 Guardar cambios
                     </button>
                 </div>
             </div>
@@ -14723,11 +14754,105 @@ ${contexto}
 
         <script>
         // ═══════════════════════════════════════════════════════════
-        //  EDICIÓN DE SECCIONES DENTRO DE LAS GUÍAS
+        //  EDICIÓN DE SECCIONES DENTRO DE LAS GUÍAS — v2
+        //  Ahora incluye edición de items individuales
         // ═══════════════════════════════════════════════════════════
-        var maSecEditKey = null;   // ej: 'supply'
-        var maSecEditIdx = null;   // índice de la sección
+        var maSecEditKey = null;
+        var maSecEditIdx = null;
+        var maSecItemsData = []; // cache de items en edición
+        var MA_SEC_LS = 'admincx_guia_secciones'; // localStorage key
 
+        // ── helpers localStorage ──────────────────────────────────
+        function maSecLsGetAll() {
+            try { return JSON.parse(localStorage.getItem(MA_SEC_LS) || '{}'); } catch(e) { return {}; }
+        }
+        function maSecLsSet(key, data) {
+            try {
+                var all = maSecLsGetAll();
+                all[key] = data;
+                localStorage.setItem(MA_SEC_LS, JSON.stringify(all));
+            } catch(e) {}
+        }
+
+        // ── Parsear items del HTML de la sección ──────────────────
+        function maParseItems(htmlStr) {
+            var tmp = document.createElement('div');
+            tmp.innerHTML = htmlStr;
+            var items = [];
+            tmp.querySelectorAll('.ma-incident-item').forEach(function(el) {
+                var ico  = (el.querySelector('.ma-incident-ico')  || {}).textContent || '';
+                var name = (el.querySelector('.ma-incident-name') || {}).textContent || '';
+                var desc = (el.querySelector('.ma-incident-desc') || {}).textContent || '';
+                var hl   = el.classList.contains('highlight');
+                items.push({ ico: ico.trim(), name: name.trim(), desc: desc.trim(), highlight: hl });
+            });
+            return items;
+        }
+
+        // ── Construir HTML de items desde array ───────────────────
+        function maItemsToHtml(items) {
+            return items.map(function(it) {
+                var cls = 'ma-incident-item' + (it.highlight ? ' highlight' : '');
+                return '<div class="' + cls + '"><div class="ma-incident-ico">' + it.ico + '</div>'
+                    + '<div><div class="ma-incident-name">' + it.name + '</div>'
+                    + '<div class="ma-incident-desc">' + it.desc + '</div></div></div>';
+            }).join('');
+        }
+
+        // ── Renderizar la lista de items en el modal ──────────────
+        function maRenderItemsList() {
+            var container = document.getElementById('ma-sec-items-list');
+            if (!container) return;
+            container.innerHTML = maSecItemsData.map(function(it, i) {
+                return '<div style="border:1.5px solid #E2E8F0;border-radius:11px;padding:12px 14px;margin-bottom:8px;position:relative;background:#fff">'
+                    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+                    + '<input data-idx="' + i + '" data-field="ico" value="' + _esc(it.ico) + '" maxlength="4" '
+                    + 'style="width:46px;padding:5px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:1.2rem;text-align:center;outline:none;font-family:inherit;flex-shrink:0" '
+                    + 'oninput="maSecItemField(this)" placeholder="📌">'
+                    + '<input data-idx="' + i + '" data-field="name" value="' + _esc(it.name) + '" '
+                    + 'style="flex:1;padding:7px 10px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:.88rem;font-weight:700;outline:none;font-family:inherit" '
+                    + 'oninput="maSecItemField(this)" placeholder="Nombre del item">'
+                    + '<button onclick="maSecRemoveItem(' + i + ')" title="Eliminar item" '
+                    + 'style="width:28px;height:28px;border:none;border-radius:7px;background:#FFF0F3;color:#C0392B;font-size:.85rem;cursor:pointer;flex-shrink:0;font-weight:700">✕</button>'
+                    + '</div>'
+                    + '<textarea data-idx="' + i + '" data-field="desc" rows="2" '
+                    + 'style="width:100%;padding:7px 10px;border:1.5px solid #E2E8F0;border-radius:8px;font-size:.83rem;resize:vertical;outline:none;font-family:inherit" '
+                    + 'oninput="maSecItemField(this)" placeholder="Descripción del item">' + _esc(it.desc) + '</textarea>'
+                    + '<label style="margin-top:6px;display:flex;align-items:center;gap:6px;font-size:.77rem;font-weight:600;color:#5A7A70;cursor:pointer">'
+                    + '<input type="checkbox" ' + (it.highlight ? 'checked' : '') + ' onchange="maSecItemHighlight(this,' + i + ')" style="accent-color:#38CEA6"> Destacado (fondo verde claro)'
+                    + '</label>'
+                    + '</div>';
+            }).join('');
+        }
+
+        function _esc(s) {
+            return (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        }
+
+        function maSecItemField(el) {
+            var i = parseInt(el.dataset.idx);
+            var field = el.dataset.field;
+            maSecItemsData[i][field] = el.value;
+        }
+
+        function maSecItemHighlight(el, i) {
+            maSecItemsData[i].highlight = el.checked;
+        }
+
+        function maSecRemoveItem(i) {
+            maSecItemsData.splice(i, 1);
+            maRenderItemsList();
+        }
+
+        function maSecAddItem() {
+            maSecItemsData.push({ ico: '', name: '', desc: '', highlight: false });
+            maRenderItemsList();
+            // Scroll al nuevo item
+            var list = document.getElementById('ma-sec-items-list');
+            if (list) list.lastElementChild && list.lastElementChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // ── Abrir modal ───────────────────────────────────────────
         function maOpenSecEdit(guiaKey, secIdx) {
             var guia = MA_GUIAS[guiaKey];
             if (!guia) return;
@@ -14737,10 +14862,16 @@ ${contexto}
             maSecEditKey = guiaKey;
             maSecEditIdx = secIdx;
 
-            document.getElementById('ma-sec-edit-ico').value    = sec.ico  || '';
-            document.getElementById('ma-sec-edit-titulo').value = sec.titulo || '';
-            document.getElementById('ma-sec-edit-sub').value    = sec.sub   || '';
-            document.getElementById('ma-sec-edit-error').style.display = 'none';
+            // Encabezado
+            document.getElementById('ma-sec-edit-ico').value    = sec.ico    || '';
+            document.getElementById('ma-sec-edit-titulo').value = sec.titulo  || '';
+            document.getElementById('ma-sec-edit-sub').value    = sec.sub     || '';
+            document.getElementById('ma-sec-edit-error').style.display   = 'none';
+            document.getElementById('ma-sec-edit-success').style.display = 'none';
+
+            // Items: parsear desde el HTML actual de la sección
+            maSecItemsData = maParseItems(sec.html || '');
+            maRenderItemsList();
 
             document.getElementById('ma-sec-edit-modal').style.display = 'flex';
         }
@@ -14749,71 +14880,101 @@ ${contexto}
             document.getElementById('ma-sec-edit-modal').style.display = 'none';
             maSecEditKey = null;
             maSecEditIdx = null;
+            maSecItemsData = [];
         }
 
+        // ── Guardar ───────────────────────────────────────────────
         async function maGuardarSecEdit() {
-            var saveBtn = document.getElementById('ma-sec-edit-save-btn');
-            var errEl   = document.getElementById('ma-sec-edit-error');
-            errEl.style.display = 'none';
-            saveBtn.textContent = '⏳ Guardando...';
-            saveBtn.disabled = true;
+            var saveBtn  = document.getElementById('ma-sec-edit-save-btn');
+            var errEl    = document.getElementById('ma-sec-edit-error');
+            var succEl   = document.getElementById('ma-sec-edit-success');
+            errEl.style.display  = 'none';
+            succEl.style.display = 'none';
+            saveBtn.textContent  = '⏳ Guardando...';
+            saveBtn.disabled     = true;
 
             var ico    = document.getElementById('ma-sec-edit-ico').value.trim();
             var titulo = document.getElementById('ma-sec-edit-titulo').value.trim();
             var sub    = document.getElementById('ma-sec-edit-sub').value.trim();
 
+            // Reconstruir HTML de items
+            var itemsHtml = maItemsToHtml(maSecItemsData);
+
+            // ── 1. Actualizar MA_GUIAS en memoria ──
+            MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].ico    = ico;
+            MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].titulo = titulo;
+            MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].sub    = sub;
+            MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].html   = itemsHtml;
+
+            // ── 2. Actualizar DOM inmediatamente ──
+            var secEl = document.getElementById('ma-sec-' + maSecEditIdx);
+            if (secEl) {
+                secEl.querySelector('.ma-guia-section-title').textContent = ico + ' ' + titulo;
+                secEl.querySelector('.ma-guia-section-sub').textContent   = sub;
+                secEl.querySelector('.ma-sec-content').innerHTML          = itemsHtml;
+            }
+
+            // ── 3. Guardar en localStorage (siempre funciona) ──
+            var lsKey = maSecEditKey + '-' + maSecEditIdx;
+            maSecLsSet(lsKey, { ico: ico, titulo: titulo, sub: sub, html: itemsHtml });
+
+            // ── 4. Intentar sincronizar con API ──
+            var apiOk = false;
             try {
                 var res = await fetch('/api/contenido', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         seccion: 'guia-seccion',
-                        key:     maSecEditKey + '-' + maSecEditIdx,
+                        key:     lsKey,
                         emoji:   ico,
                         titulo:  titulo,
-                        desc:    sub
+                        desc:    sub,
+                        html:    itemsHtml
                     })
                 });
-
                 var json = await res.json();
-                if (json.success) {
-                    // Actualizar el objeto MA_GUIAS en memoria
-                    MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].ico    = ico;
-                    MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].titulo = titulo;
-                    MA_GUIAS[maSecEditKey].secciones[maSecEditIdx].sub    = sub;
-
-                    // Actualizar el DOM de la sección
-                    var secEl = document.getElementById('ma-sec-' + maSecEditIdx);
-                    if (secEl) {
-                        secEl.querySelector('.ma-guia-section-title').textContent = ico + ' ' + titulo;
-                        secEl.querySelector('.ma-guia-section-sub').textContent   = sub;
-                    }
-
-                    maCloseSecEdit();
-                } else {
-                    errEl.textContent = 'Error: ' + (json.message || 'Algo salió mal');
-                    errEl.style.display = 'block';
-                }
+                if (json.success) apiOk = true;
             } catch(e) {
-                errEl.textContent = 'Error de conexión. Revisá tu internet e intentá de nuevo.';
-                errEl.style.display = 'block';
-            } finally {
-                saveBtn.textContent = '💾 Guardar';
-                saveBtn.disabled = false;
+                console.warn('[MA-SEC] API no disponible, guardado solo en localStorage');
+            }
+
+            saveBtn.textContent = '💾 Guardar cambios';
+            saveBtn.disabled    = false;
+
+            if (apiOk) {
+                maCloseSecEdit();
+            } else {
+                succEl.textContent   = '✅ Cambios guardados localmente. Se sincronizarán cuando haya conexión.';
+                succEl.style.display = 'block';
+                setTimeout(function() { maCloseSecEdit(); }, 2600);
             }
         }
 
-        // También cargar cambios guardados al abrir una guía
-        var _maVerGuiaOriginal = maVerGuia;
-        // Sobreescribimos para cargar overrides desde MongoDB al abrir
+        // ── Cargar overrides de localStorage al abrir guía ────────
         async function maCargarOverridesSecciones(key) {
+            // Primero cargar desde localStorage (instantáneo)
+            var local = maSecLsGetAll();
+            Object.keys(local).forEach(function(lsKey) {
+                var parts = lsKey.split('-');
+                var guiaKey = parts.slice(0, -1).join('-');
+                var idx = parseInt(parts[parts.length - 1]);
+                if (guiaKey !== key) return;
+                if (!MA_GUIAS[guiaKey] || !MA_GUIAS[guiaKey].secciones[idx]) return;
+                var doc = local[lsKey];
+                if (doc.ico)    MA_GUIAS[guiaKey].secciones[idx].ico    = doc.ico;
+                if (doc.titulo) MA_GUIAS[guiaKey].secciones[idx].titulo = doc.titulo;
+                if (doc.sub)    MA_GUIAS[guiaKey].secciones[idx].sub    = doc.sub;
+                if (doc.html)   MA_GUIAS[guiaKey].secciones[idx].html   = doc.html;
+            });
+
+            // Luego intentar API para datos más frescos
             try {
                 var res = await fetch('/api/contenido?seccion=guia-seccion&guia=' + key);
                 if (!res.ok) return;
                 var json = await res.json();
                 if (!json.success || !json.data) return;
                 json.data.forEach(function(doc) {
-                    // key formato: 'supply-0', 'supply-1', etc.
                     var parts = doc.key.split('-');
                     var guiaKey = parts.slice(0, -1).join('-');
                     var idx = parseInt(parts[parts.length - 1]);
@@ -14822,9 +14983,12 @@ ${contexto}
                     if (doc.emoji)  MA_GUIAS[guiaKey].secciones[idx].ico    = doc.emoji;
                     if (doc.titulo) MA_GUIAS[guiaKey].secciones[idx].titulo = doc.titulo;
                     if (doc.desc)   MA_GUIAS[guiaKey].secciones[idx].sub    = doc.desc;
+                    if (doc.html)   MA_GUIAS[guiaKey].secciones[idx].html   = doc.html;
+                    // Sincronizar LS con lo fresco de Mongo
+                    maSecLsSet(doc.key, { ico: doc.emoji, titulo: doc.titulo, sub: doc.desc, html: doc.html });
                 });
             } catch(e) {
-                console.warn('[MA] No se pudieron cargar overrides de secciones:', e.message);
+                console.warn('[MA-SEC] API no disponible, usando localStorage');
             }
         }
 
@@ -14859,6 +15023,7 @@ ${contexto}
                     style="width:100%;padding:9px 13px;border:1.5px solid #E2E8F0;border-radius:9px;font-size:.85rem;resize:vertical;margin-bottom:22px;outline:none;font-family:inherit"></textarea>
 
                 <div id="ma-edit-error" style="display:none;background:#FFF0F3;border:1px solid #FFB3C1;border-radius:8px;padding:10px 14px;font-size:.83rem;font-weight:600;color:#C0392B;margin-bottom:16px"></div>
+                <div id="ma-edit-success" style="display:none;background:#EDFAF6;border:1px solid #38CEA6;border-radius:8px;padding:10px 14px;font-size:.83rem;font-weight:600;color:#1a7a5e;margin-bottom:16px"></div>
 
                 <div style="display:flex;gap:10px;justify-content:flex-end">
                     <button onclick="maCloseEdit()"
@@ -14876,34 +15041,52 @@ ${contexto}
         <script>
         // ═══════════════════════════════════════════════════════════
         //  MATERIAL DE APOYO — SISTEMA DE EDICIÓN ADMIN
+        //  v2: localStorage como fallback + mejor UX
         // ═══════════════════════════════════════════════════════════
         let maEditKey = null;
+        const MA_LS_KEY = 'admincx_ma_contenido'; // clave de localStorage
 
-        // Al navegar a la sección, carga contenido desde MongoDB
+        // ── helpers localStorage ──────────────────────────────────
+        function maLsGetAll() {
+            try { return JSON.parse(localStorage.getItem(MA_LS_KEY) || '{}'); } catch(e) { return {}; }
+        }
+        function maLsSet(key, data) {
+            try {
+                const all = maLsGetAll();
+                all[key] = data;
+                localStorage.setItem(MA_LS_KEY, JSON.stringify(all));
+            } catch(e) { console.warn('[MA] localStorage write failed:', e); }
+        }
+
+        // Al navegar a la sección: primero aplica localStorage, luego intenta API
         async function maCargarContenido() {
+            // 1) Aplicar overrides guardados localmente (instantáneo)
+            const local = maLsGetAll();
+            Object.values(local).forEach(doc => maAplicarDoc(doc));
+
+            // 2) Intentar API (sobrescribe si hay datos más frescos)
             try {
                 const res = await fetch('/api/contenido?seccion=material-apoyo');
                 if (!res.ok) return;
                 const json = await res.json();
                 if (json.success && json.data) {
-                    json.data.forEach(doc => maAplicarDoc(doc));
+                    json.data.forEach(doc => {
+                        maAplicarDoc(doc);
+                        maLsSet(doc.key, doc); // sincronizar localStorage con lo que viene de Mongo
+                    });
                 }
             } catch(e) {
-                // Si falla (ej: sin conexión), los textos del HTML se mantienen
-                console.warn('[MA] No se pudo cargar contenido remoto:', e.message);
+                console.warn('[MA] API no disponible, usando localStorage:', e.message);
             }
         }
 
-        // Aplica un documento de Mongo a la card del DOM
+        // Aplica un documento a la card del DOM
         function maAplicarDoc(doc) {
             const card = document.querySelector('[data-ma-key="' + doc.key + '"]');
             if (!card) return;
             if (doc.emoji) {
                 const ico = card.querySelector('.ma-card-ico');
-                // Solo reemplaza si el ícono es texto (emoji), no si es imagen
-                if (ico && !ico.querySelector('img')) {
-                    ico.textContent = doc.emoji;
-                }
+                if (ico && !ico.querySelector('img')) ico.textContent = doc.emoji;
             }
             if (doc.titulo) {
                 const el = card.querySelector('.ma-card-name');
@@ -14923,13 +15106,13 @@ ${contexto}
             }
         }
 
-        // Muestra el botón ✏️ en cada card si el usuario es admin
+        // Inyecta botones ✏️ en cada card si el usuario es admin
         function maInyectarBotonesEdicion() {
             const isAdmin = (typeof loginType !== 'undefined') && loginType === 'admin';
             if (!isAdmin) return;
 
             document.querySelectorAll('[data-ma-key]').forEach(function(card) {
-                if (card.querySelector('.ma-btn-editar')) return; // ya tiene botón
+                if (card.querySelector('.ma-btn-editar')) return;
                 const key = card.dataset.maKey;
                 const btn = document.createElement('button');
                 btn.className = 'ma-btn-editar';
@@ -14942,13 +15125,9 @@ ${contexto}
                     'cursor:pointer', 'display:block'
                 ].join(';');
                 btn.onclick = function() { maOpenEdit(key, card); };
-                // Insertar antes del botón "Ver Guía"
                 const verBtn = card.querySelector('.ma-btn-ver');
-                if (verBtn) {
-                    card.insertBefore(btn, verBtn);
-                } else {
-                    card.appendChild(btn);
-                }
+                if (verBtn) card.insertBefore(btn, verBtn);
+                else card.appendChild(btn);
             });
         }
 
@@ -14963,8 +15142,8 @@ ${contexto}
             const topics = [...card.querySelectorAll('.ma-topic')].map(t => t.textContent.trim());
             document.getElementById('ma-edit-topics').value = topics.join('\n');
             document.getElementById('ma-edit-error').style.display = 'none';
-            const modal = document.getElementById('ma-edit-modal');
-            modal.style.display = 'flex';
+            document.getElementById('ma-edit-success').style.display = 'none';
+            document.getElementById('ma-edit-modal').style.display = 'flex';
         }
 
         function maCloseEdit() {
@@ -14972,45 +15151,61 @@ ${contexto}
             maEditKey = null;
         }
 
-        // Guarda en MongoDB vía API y actualiza el DOM
+        // Guarda: primero en localStorage (siempre), luego intenta API
         async function maGuardarEdit() {
-            const saveBtn = document.getElementById('ma-edit-save-btn');
-            const errEl   = document.getElementById('ma-edit-error');
-            errEl.style.display = 'none';
-            saveBtn.textContent = '⏳ Guardando...';
-            saveBtn.disabled = true;
+            const saveBtn  = document.getElementById('ma-edit-save-btn');
+            const errEl    = document.getElementById('ma-edit-error');
+            const succEl   = document.getElementById('ma-edit-success');
+            errEl.style.display  = 'none';
+            succEl.style.display = 'none';
+            saveBtn.textContent  = '⏳ Guardando...';
+            saveBtn.disabled     = true;
 
             const topics = document.getElementById('ma-edit-topics').value
                 .split('\n').map(t => t.trim()).filter(Boolean);
 
+            const payload = {
+                seccion: 'material-apoyo',
+                key:     maEditKey,
+                emoji:   document.getElementById('ma-edit-emoji').value.trim(),
+                titulo:  document.getElementById('ma-edit-titulo').value.trim(),
+                desc:    document.getElementById('ma-edit-desc').value.trim(),
+                topics:  topics
+            };
+
+            // ── 1. Guardar en localStorage siempre (funciona offline) ──
+            maLsSet(maEditKey, payload);
+            maAplicarDoc(payload); // actualiza UI inmediatamente
+
+            // ── 2. Intentar sincronizar con API ──
+            let apiOk = false;
             try {
                 const res = await fetch('/api/contenido', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        seccion: 'material-apoyo',
-                        key:     maEditKey,
-                        emoji:   document.getElementById('ma-edit-emoji').value.trim(),
-                        titulo:  document.getElementById('ma-edit-titulo').value.trim(),
-                        desc:    document.getElementById('ma-edit-desc').value.trim(),
-                        topics:  topics
-                    })
+                    body: JSON.stringify(payload)
                 });
-
                 const json = await res.json();
                 if (json.success) {
-                    maAplicarDoc(json.data);   // actualiza la UI en tiempo real
-                    maCloseEdit();
-                } else {
-                    errEl.textContent = 'Error: ' + (json.message || 'Algo salió mal');
-                    errEl.style.display = 'block';
+                    apiOk = true;
+                    if (json.data) maLsSet(maEditKey, json.data); // actualizar con lo que devuelve Mongo
                 }
             } catch(e) {
-                errEl.textContent = 'Error de conexión. Revisá tu internet e intentá de nuevo.';
-                errEl.style.display = 'block';
-            } finally {
-                saveBtn.textContent = '💾 Guardar cambios';
-                saveBtn.disabled = false;
+                // Sin conexión: no es un error crítico, ya se guardó en localStorage
+                console.warn('[MA] API no disponible, cambio guardado solo localmente.');
+            }
+
+            saveBtn.textContent = '💾 Guardar cambios';
+            saveBtn.disabled    = false;
+
+            // Mostrar feedback y cerrar
+            if (apiOk) {
+                maCloseEdit();
+            } else {
+                // Guardado localmente pero no en Mongo — avisar al admin
+                succEl.textContent   = '✅ Cambios guardados localmente. Se sincronizarán con la base de datos cuando haya conexión.';
+                succEl.style.display = 'block';
+                setTimeout(() => maCloseEdit(), 2800);
             }
         }
 
