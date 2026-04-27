@@ -6933,26 +6933,13 @@
                                 <span class="nav-sub-dot"></span>
                                 Cambio de Monto Cash
                             </div>
-                        </div>
-                    </div>
-                    <!-- Generador de Reporte -->
-                    <div class="nav-item">
-                        <div class="nav-item-header" onclick="toggleNav('nav-reporte', this)">
-                            <span class="nav-icon">📋</span>
-                            <span class="nav-label">Generador de Reporte</span>
-                            <span class="nav-arrow" id="nav-reporte-arrow">▶</span>
-                        </div>
-                        <div class="nav-sub" id="nav-reporte">
-                            <div class="nav-sub-item" onclick="navigateTo('reporte-slack', this)">
+                            <div class="nav-sub-item" onclick="navigateTo('calc-tasa', this)">
                                 <span class="nav-sub-dot"></span>
-                                Reporte Slack
-                            </div>
-                            <div class="nav-sub-item" onclick="navigateTo('reporte-incidencia', this)">
-                                <span class="nav-sub-dot"></span>
-                                Incidencia Perfil
+                                Tasa
                             </div>
                         </div>
                     </div>
+
                     <!-- CIUDADES -->
                     <div class="nav-item">
                         <div class="nav-item-header" onclick="navigateTo('ciudades', this)">
@@ -7665,6 +7652,65 @@
                                         <small style="color:var(--gris-3)">Si el conductor validó $10 pero recibió $0 → Incidencia = $10 (abono para anular descuento automático). Caso Movimiento Cero.</small>
                                     </div>
                                     <code style="color:#0d7c5a">CGA − RCG</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- ══ PÁGINA: CALCULADORA TASA ══ -->
+                <div class="page-content" id="page-calc-tasa">
+                    <div class="vc-card">
+                        <div class="vc-header">
+                            <div class="vc-icon">💱</div>
+                            <div>
+                                <div class="vc-title">TASA DEL DÍA</div>
+                                <div class="vc-sub">Convierte montos según la tasa de cambio actual</div>
+                            </div>
+                        </div>
+                        <div class="vc-grid" style="grid-template-columns:repeat(3,1fr)">
+                            <div class="vc-cell vc-input">
+                                <div class="vc-lbl"><span>💲</span> Moneda</div>
+                                <span class="vc-pct vc-pct-dato">SÍMBOLO (ej: $, €, COP)</span>
+                                <input type="text" class="vc-num" id="tasa-moneda" placeholder="$" maxlength="5" oninput="tasaCalc()" onfocus="this.select()" style="font-size:1.4rem;text-align:center">
+                            </div>
+                            <div class="vc-cell vc-input">
+                                <div class="vc-lbl"><span>📈</span> Tasa del día</div>
+                                <span class="vc-pct vc-pct-dato">VALOR EN Bs POR UNIDAD</span>
+                                <input type="number" class="vc-num" id="tasa-valor" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="tasaCalc()" onfocus="this.select()">
+                            </div>
+                            <div class="vc-cell vc-input">
+                                <div class="vc-lbl"><span>🔢</span> Monto a consultar</div>
+                                <span class="vc-pct vc-pct-dato">INGRESA EL MONTO</span>
+                                <input type="number" class="vc-num" id="tasa-monto" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="tasaCalc()" onfocus="this.select()">
+                            </div>
+                        </div>
+                        <!-- Resultado -->
+                        <div id="tasa-resultado-wrap" style="display:none;margin-top:20px;background:linear-gradient(135deg,var(--verde-p),#e0f7f1);border:2px solid var(--verde);border-radius:16px;padding:22px 28px;text-align:center">
+                            <div style="font-family:var(--font-secondary);font-size:.7rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--verde);margin-bottom:8px">AL CAMBIO</div>
+                            <div id="tasa-resultado-val" style="font-family:var(--font-display);font-size:2.6rem;letter-spacing:2px;color:var(--negro)">—</div>
+                            <div id="tasa-resultado-detalle" style="font-family:var(--font-secondary);font-size:.82rem;color:var(--gris-4);margin-top:6px;font-weight:600"></div>
+                        </div>
+                        <div class="vc-btn-row" style="margin-top:18px">
+                            <button class="vc-btn-reset" onclick="tasaReset()">🗑️ Limpiar</button>
+                            <button class="vc-btn-copy" onclick="tasaCopiar()">📋 Copiar</button>
+                        </div>
+                        <div class="vc-info-card">
+                            <div class="vc-info-title">📌 ¿Cómo funciona?</div>
+                            <div class="vc-info-rows">
+                                <div class="vc-info-row">
+                                    <span>💲</span>
+                                    <div><b>Moneda:</b> El símbolo de la moneda que necesitas convertir (ej: $, €, COP, PEN).</div>
+                                    <code>DATO</code>
+                                </div>
+                                <div class="vc-info-row">
+                                    <span>📈</span>
+                                    <div><b>Tasa del día:</b> Cuántos Bs equivale 1 unidad de esa moneda hoy.</div>
+                                    <code>DATO</code>
+                                </div>
+                                <div class="vc-info-row" style="border-color:rgba(56,206,166,.3);background:rgba(56,206,166,.05)">
+                                    <span>⚡</span>
+                                    <div><b style="color:#0d7c5a">Resultado:</b> Monto × Tasa = equivalente en Bs.<br><small style="color:var(--gris-3)">Ej: Tasa $=500Bs · Monto=2$ → Resultado=1.000Bs</small></div>
+                                    <code style="color:#0d7c5a">M × T</code>
                                 </div>
                             </div>
                         </div>
@@ -9547,6 +9593,27 @@
                                 oficinas
                             </div>
                         </div>
+                        <!-- Botón Editar (solo admin) -->
+                        <div id="ci-admin-bar" style="display:none;margin-bottom:16px">
+                            <button onclick="ciToggleEdit()" id="ci-edit-btn" style="background:var(--negro);color:var(--verde);border:1.5px solid rgba(56,206,166,.3);border-radius:8px;padding:9px 20px;font-family:var(--font-secondary);font-size:.8rem;font-weight:800;cursor:pointer;display:inline-flex;align-items:center;gap:8px">✏️ Editar ciudades</button>
+                        </div>
+                        <!-- Modal edición ciudad -->
+                        <div id="ci-modal-wrap" style="display:none;position:fixed;inset:0;background:rgba(15,17,30,.7);z-index:9000;align-items:center;justify-content:center;padding:20px">
+                            <div style="background:var(--blanco);border-radius:20px;padding:32px;max-width:560px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3);max-height:90vh;overflow-y:auto">
+                                <div style="font-family:var(--font-display);font-size:1.4rem;letter-spacing:2px;color:var(--negro);margin-bottom:24px">✏️ EDITAR CIUDAD</div>
+                                <div style="display:flex;flex-direction:column;gap:14px">
+                                    <div><label style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.06em">Estado / Región</label><input id="ci-edit-estado" type="text" style="width:100%;margin-top:6px;padding:10px 14px;border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:.9rem;font-weight:600;color:var(--negro);outline:none"></div>
+                                    <div><label style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.06em">Ciudades (separadas por ·)</label><input id="ci-edit-ciudades" type="text" style="width:100%;margin-top:6px;padding:10px 14px;border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:.9rem;font-weight:600;color:var(--negro);outline:none"></div>
+                                    <div><label style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.06em">Dirección</label><textarea id="ci-edit-dir" rows="3" style="width:100%;margin-top:6px;padding:10px 14px;border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:.9rem;font-weight:600;color:var(--negro);outline:none;resize:vertical"></textarea></div>
+                                    <div><label style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.06em">Coordinador</label><input id="ci-edit-coord" type="text" style="width:100%;margin-top:6px;padding:10px 14px;border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:.9rem;font-weight:600;color:var(--negro);outline:none"></div>
+                                    <div><label style="font-family:var(--font-secondary);font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.06em">Ícono (emoji)</label><input id="ci-edit-ico" type="text" maxlength="4" style="width:80px;margin-top:6px;padding:10px 14px;border:1.5px solid var(--borde);border-radius:10px;font-size:1.4rem;text-align:center;outline:none"></div>
+                                </div>
+                                <div style="display:flex;gap:10px;margin-top:24px">
+                                    <button onclick="ciGuardarEdit()" style="flex:1;background:var(--verde);color:var(--negro);border:none;border-radius:10px;padding:12px;font-family:var(--font-secondary);font-size:.85rem;font-weight:900;cursor:pointer">💾 Guardar cambios</button>
+                                    <button onclick="ciCerrarModal()" style="background:var(--gris-1);color:var(--negro);border:1.5px solid var(--borde);border-radius:10px;padding:12px 20px;font-family:var(--font-secondary);font-size:.85rem;font-weight:800;cursor:pointer">Cancelar</button>
+                                </div>
+                            </div>
+                        </div>
                         <!-- Cards -->
                         <div id="ci-list"></div>
                         <!-- Empty state -->
@@ -10277,10 +10344,7 @@
                                         <input type="checkbox" id="sf-cuero" onchange="sfStyleCheck('lbl-cuero','sf-cuero')" style="accent-color:var(--verde);width:15px;height:15px">Tapicería en buen estado
               
                                     </label>
-                                    <label id="lbl-sin-ac" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
-                                        <input type="checkbox" id="sf-sin-ac" onchange="sfStyleCheck('lbl-sin-ac','sf-sin-ac')" style="accent-color:var(--verde);width:15px;height:15px">️ No tiene aire acondicionado
-              
-                                    </label>
+
                                     <label id="lbl-2p" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
                                         <input type="checkbox" id="sf-2p" onchange="sfStyleCheck('lbl-2p','sf-2p')" style="accent-color:var(--verde);width:15px;height:15px">2 puertas
               
@@ -10315,6 +10379,10 @@
                                         <input type="checkbox" id="sf-tapiceria" onchange="sfStyleCheckRed('lbl-tapiceria','sf-tapiceria')" style="accent-color:var(--rosa);width:15px;height:15px">️ Tapicería deteriorada
               
                                     </label>
+                                    <label id="lbl-sin-ac" style="display:flex;align-items:center;gap:8px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:8px;padding:9px 14px;cursor:pointer;font-family:var(--font-secondary);font-size:.8rem;font-weight:700;color:var(--negro-2);transition:all .15s">
+                                        <input type="checkbox" id="sf-sin-ac" onchange="sfStyleCheckRed('lbl-sin-ac','sf-sin-ac')" style="accent-color:var(--rosa);width:15px;height:15px">❄️ No tiene aire acondicionado
+              
+                                    </label>
                                 </div>
                                 <!-- Desperfectos adicionales libres -->
                                 <textarea id="sf-obs" placeholder="Otros desperfectos o detalles adicionales... Ej: le falta la manija de la puerta trasera, el odómetro no funciona, tiene una grieta en el parabrisas..." rows="2" style="width:100%;padding:11px 14px;background:var(--gris-1);border:1.5px solid var(--borde);border-radius:10px;font-family:var(--font-main);font-size:.87rem;font-weight:500;color:var(--negro);outline:none;resize:vertical;transition:border-color .2s;line-height:1.5" onfocus="this.style.borderColor='var(--rosa)'" onblur="this.style.borderColor='var(--borde)'"></textarea>
@@ -10330,7 +10398,7 @@
                             <div id="sf-cat-banner" style="border-radius:16px;padding:26px 30px;margin-bottom:18px;display:flex;align-items:center;gap:20px;box-shadow:0 6px 28px rgba(0,0,0,.1)">
                                 <div id="sf-cat-ico" style="font-size:2.8rem"></div>
                                 <div style="flex:1">
-                                    <div id="sf-cat-label" style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;opacity:.65">CATEGORÍA ASIGNADA</div>
+                                    <div id="sf-cat-label" style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;margin-bottom:5px;opacity:.65">FLOTA ASIGNADA</div>
                                     <div id="sf-cat-nombre" style="font-family:var(--font-display);font-size:2rem;letter-spacing:3px;line-height:1"></div>
                                 </div>
                                 <div id="sf-cat-badge" style="border-radius:10px;padding:9px 18px;font-family:var(--font-secondary);font-size:.78rem;font-weight:900;letter-spacing:.04em;flex-shrink:0"></div>
@@ -11053,6 +11121,7 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 'calc-viaje': 'Calculadora · Viaje Realizado',
                 'calc-cash': 'Calculadora · Viaje Realizado Cash',
                 'calc-cambio': 'Calculadora · Cambio de Monto Cash',
+                'calc-tasa': 'Calculadora · Tasa del Día',
                 'reporte-slack': 'Generador de Reporte · Reporte Slack',
                 'reporte-incidencia': 'Generador de Reporte · Incidencia Perfil',
                 'validador': 'Administrative · Validador de Pagos',
@@ -12097,6 +12166,62 @@ ${contexto}
                 ico: '🐠'
             }, ];
 
+            let CI_EDIT_MODE = false;
+            let CI_EDIT_IDX = -1;
+            let CI_DATA_LOCAL = CI_DATA.map(c => Object.assign({}, c));
+
+            function ciToggleEdit() {
+                CI_EDIT_MODE = !CI_EDIT_MODE;
+                const btn = document.getElementById('ci-edit-btn');
+                btn.innerHTML = CI_EDIT_MODE ? '✅ Modo edición activo' : '✏️ Editar ciudades';
+                btn.style.background = CI_EDIT_MODE ? 'var(--verde)' : 'var(--negro)';
+                btn.style.color = CI_EDIT_MODE ? 'var(--negro)' : 'var(--verde)';
+                ciRender(document.getElementById('ci-search').value);
+            }
+
+            function ciOpenEdit(idx) {
+                CI_EDIT_IDX = idx;
+                const c = CI_DATA_LOCAL[idx];
+                document.getElementById('ci-edit-estado').value = c.estado;
+                document.getElementById('ci-edit-ciudades').value = c.ciudades;
+                document.getElementById('ci-edit-dir').value = c.direccion;
+                document.getElementById('ci-edit-coord').value = c.coordinador || '';
+                document.getElementById('ci-edit-ico').value = c.ico;
+                const wrap = document.getElementById('ci-modal-wrap');
+                wrap.style.display = 'flex';
+            }
+
+            function ciCerrarModal() {
+                document.getElementById('ci-modal-wrap').style.display = 'none';
+                CI_EDIT_IDX = -1;
+            }
+
+            function ciGuardarEdit() {
+                if (CI_EDIT_IDX < 0) return;
+                const estado = document.getElementById('ci-edit-estado').value.trim();
+                const ciudades = document.getElementById('ci-edit-ciudades').value.trim();
+                const dir = document.getElementById('ci-edit-dir').value.trim();
+                const coord = document.getElementById('ci-edit-coord').value.trim();
+                const ico = document.getElementById('ci-edit-ico').value.trim();
+                if (!estado || !ciudades || !dir) { alert('Completa los campos obligatorios'); return; }
+                CI_DATA_LOCAL[CI_EDIT_IDX] = {
+                    estado, ciudades, ciudades_raw: ciudades.replace(/·/g,' ').replace(/\s+/g,' '),
+                    direccion: dir, coordinador: coord || null, ico: ico || '🏙️'
+                };
+                // Guardar en API
+                fetch('/api/contenido', {
+                    method: 'POST',
+                    headers: {'Content-Type':'application/json'},
+                    body: JSON.stringify({ seccion: 'ciudades-data', key: 'all', value: JSON.stringify(CI_DATA_LOCAL) })
+                }).catch(() => {});
+                ciCerrarModal();
+                ciRender(document.getElementById('ci-search').value);
+                const btn = document.getElementById('ci-edit-btn');
+                const orig = btn.innerHTML;
+                btn.innerHTML = '✅ Guardado';
+                setTimeout(() => { btn.innerHTML = '✏️ Editar ciudades'; }, 2000);
+            }
+
             function ciHighlight(text, query) {
                 if (!query)
                     return text;
@@ -12106,7 +12231,7 @@ ${contexto}
 
             function ciRender(query='') {
                 const q = query.trim().toLowerCase();
-                const filtered = CI_DATA.filter(c => {
+                const filtered = CI_DATA_LOCAL.map((c,i) => ({...c, _idx: i})).filter(c => {
                     if (!q)
                         return true;
                     return (c.estado.toLowerCase().includes(q) || c.ciudades_raw.toLowerCase().includes(q) || c.ciudades.toLowerCase().includes(q) || c.direccion.toLowerCase().includes(q) || (c.coordinador && c.coordinador.toLowerCase().includes(q)));
@@ -12125,7 +12250,7 @@ ${contexto}
                 }
 
                 empty.style.display = 'none';
-                count.innerHTML = 'Mostrando <strong>' + filtered.length + '</strong> de ' + CI_DATA.length + ' oficinas';
+                count.innerHTML = 'Mostrando <strong>' + filtered.length + '</strong> de ' + CI_DATA_LOCAL.length + ' oficinas';
 
                 list.innerHTML = filtered.map(c => {
                     const hl = t => ciHighlight(t, query);
@@ -12159,10 +12284,10 @@ ${contexto}
             </div>
             <div class="ci-field-value">${hl(c.direccion)}</div>
           </div>
+          ${CI_EDIT_MODE ? `<button onclick="ciOpenEdit(${c._idx})" style="margin-top:12px;padding:6px 14px;border:1.5px solid var(--azul);border-radius:7px;background:#fff;color:var(--azul);font-size:.78rem;font-weight:800;cursor:pointer;font-family:var(--font-secondary)">✏️ Editar</button>` : ''}
         </div>
       </div>`;
-                }
-                ).join('');
+                }).join('');
             }
 
             function ciCopiarDireccion(e) {
@@ -12197,6 +12322,11 @@ ${contexto}
 
             function ciInit() {
                 ciRender('');
+                const isAdmin = (typeof loginType !== 'undefined') && loginType === 'admin';
+                if (isAdmin) {
+                    const bar = document.getElementById('ci-admin-bar');
+                    if (bar) bar.style.display = 'block';
+                }
             }
 
             window.onload = function() {
@@ -12955,6 +13085,44 @@ ${contexto}
                 const hint = document.getElementById('vm-hint').innerText.trim();
                 const txt = '💱 CAMBIO DE MONTO CASH — RIDERY ADMIN\n' + '────────────────────────────────────\n' + '💵 Cash Given Admin:     $' + cga + '\n' + '🤚 Real Cash Given:      $' + rcg + '\n' + '────────────────────────────────────\n' + '⚡ Total Incidencia:      ' + tot + '\n' + '   ' + hint + '\n' + '────────────────────────────────────';
                 navigator.clipboard.writeText(txt).then( () => alert('✅ Resumen copiado'));
+            }
+
+            // ─── CALCULADORA TASA ───
+            function tasaCalc() {
+                const moneda = document.getElementById('tasa-moneda').value.trim() || '$';
+                const tasa = parseFloat(document.getElementById('tasa-valor').value) || 0;
+                const monto = parseFloat(document.getElementById('tasa-monto').value) || 0;
+                const wrap = document.getElementById('tasa-resultado-wrap');
+                const val = document.getElementById('tasa-resultado-val');
+                const detalle = document.getElementById('tasa-resultado-detalle');
+                if (tasa > 0 && monto > 0) {
+                    const resultado = tasa * monto;
+                    wrap.style.display = 'block';
+                    val.textContent = resultado.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
+                    detalle.textContent = monto + moneda + ' × ' + tasa.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs/' + moneda + ' = ' + resultado.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs';
+                } else {
+                    wrap.style.display = 'none';
+                }
+            }
+            function tasaReset() {
+                ['tasa-moneda','tasa-valor','tasa-monto'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+                document.getElementById('tasa-resultado-wrap').style.display = 'none';
+            }
+            function tasaCopiar() {
+                const moneda = document.getElementById('tasa-moneda').value.trim() || '$';
+                const tasa = document.getElementById('tasa-valor').value;
+                const monto = document.getElementById('tasa-monto').value;
+                const val = document.getElementById('tasa-resultado-val').textContent;
+                if (!tasa || !monto) { alert('Realiza un cálculo primero'); return; }
+                const txt = '💱 TASA DEL DÍA — RIDERY ADMIN\n' +
+                    '────────────────────────────────────\n' +
+                    '💲 Moneda:        ' + moneda + '\n' +
+                    '📈 Tasa del día:  ' + tasa + ' Bs/' + moneda + '\n' +
+                    '🔢 Monto:         ' + monto + moneda + '\n' +
+                    '────────────────────────────────────\n' +
+                    '✅ Al cambio:     ' + val + '\n' +
+                    '────────────────────────────────────';
+                navigator.clipboard.writeText(txt).then(() => alert('✅ Resumen copiado'));
             }
 
             function vcCopiar() {
