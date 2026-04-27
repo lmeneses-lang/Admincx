@@ -8520,7 +8520,12 @@
                 .ms-flbl{display:flex;flex-direction:column;gap:4px}
                 .ms-flbl label{font-size:.7rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.04em}
                 /* Table */
-                .ms-table-wrap{overflow-x:auto;border-radius:0 0 var(--radius) var(--radius)}
+                .ms-table-wrap{overflow-x:auto;border-radius:0 0 var(--radius) var(--radius);position:relative}
+                .ms-scroll-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:#f4f6f8;border-top:1px solid var(--borde);border-radius:0 0 var(--radius) var(--radius)}
+                .ms-scroll-bar span{font-size:.72rem;color:var(--gris-4);font-weight:700}
+                .ms-scroll-arrows{display:flex;gap:6px}
+                .ms-arr{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--borde);background:white;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:.12s}
+                .ms-arr:hover{background:var(--verde);border-color:var(--verde);color:var(--negro)}
                 .ms-table{border-collapse:collapse;width:100%;font-size:.79rem}
                 .ms-table thead th{padding:8px 12px;text-align:center;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--gris-4);background:#f9fafb;border-bottom:2px solid var(--borde);white-space:nowrap;position:sticky;top:0;z-index:2}
                 .ms-table thead th:first-child{text-align:left;position:sticky;left:0;z-index:3;min-width:190px;background:#f9fafb}
@@ -8643,11 +8648,21 @@
                             <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto">
                                 <button class="ms-btn ms-btn-navy" onclick="msOpenWeekConfig()">📅 Semanas</button>
                                 <button class="ms-btn ms-btn-mint" onclick="msOpenImport()">⬆️ Importar</button>
+                                <button class="ms-btn" id="ms-save-btn" onclick="msGuardarMes()" style="background:linear-gradient(135deg,#10b981,#059669);color:white;display:none">💾 Guardar</button>
                                 <button class="ms-btn ms-btn-ghost" onclick="msClearMonth()">🗑️ Limpiar</button>
                             </div>
                         </div>
-                        <div class="ms-table-wrap" id="ms-table-wrap">
-                            <div class="ms-empty"><i class="fas fa-calendar-week"></i><p style="font-weight:700;margin-bottom:4px">Sin datos</p><p>Seleccioná un mes y luego importá datos desde Zendesk</p></div>
+                        <div style="position:relative">
+                            <div class="ms-table-wrap" id="ms-table-wrap">
+                                <div class="ms-empty"><i class="fas fa-calendar-week"></i><p style="font-weight:700;margin-bottom:4px">Sin datos</p><p>Seleccioná un mes y luego importá datos desde Zendesk</p></div>
+                            </div>
+                            <div class="ms-scroll-bar" id="ms-scroll-bar" style="display:none">
+                                <span>← Deslizá para ver más semanas →</span>
+                                <div class="ms-scroll-arrows">
+                                    <button class="ms-arr" onclick="msScroll(-300)" title="Izquierda">◀</button>
+                                    <button class="ms-arr" onclick="msScroll(300)" title="Derecha">▶</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -8962,6 +8977,10 @@
                     h+=`</tbody></table>`;
                     wrap.innerHTML=h;
                     msUpdateStats(k);
+                    // Mostrar barra de scroll si la tabla es ancha
+                    const scrollBar=document.getElementById('ms-scroll-bar');
+                    if(scrollBar) scrollBar.style.display=weeks.length>1?'':'none';
+                    msMarkDirty();
                 }
 
                 function msFmtVal(v,type){
