@@ -7022,6 +7022,12 @@
                                 <span class="nav-label">Módulo Calidad</span>
                             </div>
                         </div>
+                        <div class="nav-item">
+                            <div class="nav-item-header" onclick="navigateTo('metricas-semanales', this)">
+                                <span class="nav-icon">📈</span>
+                                <span class="nav-label">Métricas Semanales</span>
+                            </div>
+                        </div>
                     </div>
                     <div id="nav-admin-section" style="display:none">
                         <!-- ADMINISTRATIVE -->
@@ -8460,6 +8466,756 @@
                 hcCargarDeMongo();
                 </script>
                 </div><!-- /page-calidad -->
+
+                <!-- ═══════════════════════════════════════════
+                     MÓDULO: MÉTRICAS SEMANALES
+                ═══════════════════════════════════════════ -->
+                <div class="page-content" id="page-metricas-semanales">
+                <div class="page-header">
+                    <h1 class="page-title">📈 Métricas Semanales</h1>
+                    <p style="color:var(--gris-4);font-size:.85rem">Seguimiento semanal del rendimiento de agentes de soporte</p>
+                </div>
+
+                <!-- TABS VISTA -->
+                <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap" id="ms-tabs">
+                    <button id="ms-tab-esp" onclick="msSetTab('especialista')"
+                        style="padding:8px 20px;border:1px solid var(--verde);border-radius:999px;font-family:var(--font-main);font-size:.82rem;font-weight:700;cursor:pointer;background:var(--verde);color:var(--negro);transition:.15s">
+                        ⚙️ Especialista / Supervisor
+                    </button>
+                    <button id="ms-tab-age" onclick="msSetTab('agente')"
+                        style="padding:8px 20px;border:1px solid var(--borde);border-radius:999px;font-family:var(--font-main);font-size:.82rem;font-weight:700;cursor:pointer;background:var(--gris-1);color:var(--gris-4);transition:.15s">
+                        👤 Ver Mi Progreso
+                    </button>
+                </div>
+
+                <style>
+                /* ── MÉTRICAS SEMANALES — ESTILOS ── */
+                .ms-card{background:var(--blanco);border-radius:var(--radius);padding:22px 24px;box-shadow:var(--shadow);border:1px solid var(--borde);margin-top:18px}
+                .ms-card h3{font-size:.9rem;font-weight:800;color:var(--negro);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+                .ms-stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin-bottom:18px}
+                .ms-stat{background:var(--fondo);border-radius:var(--radius-s);padding:14px 16px;border-left:4px solid var(--verde)}
+                .ms-stat.warn{border-left-color:var(--amber)}
+                .ms-stat.bad{border-left-color:var(--rosa)}
+                .ms-stat .ms-lbl{font-size:.7rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.05em}
+                .ms-stat .ms-val{font-size:1.5rem;font-weight:900;color:var(--negro);font-variant-numeric:tabular-nums}
+                .ms-stat .ms-sub{font-size:.72rem;color:var(--gris-3)}
+                .ms-btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--radius-s);font-size:.83rem;font-weight:800;font-family:var(--font-main);cursor:pointer;border:none;transition:opacity .15s,transform .1s;white-space:nowrap}
+                .ms-btn:hover{opacity:.85;transform:translateY(-1px)}
+                .ms-btn-navy{background:var(--azul);color:white}
+                .ms-btn-mint{background:var(--verde);color:var(--negro)}
+                .ms-btn-ghost{background:var(--gris-1);color:var(--negro);border:1px solid var(--borde)}
+                .ms-inp{background:var(--fondo);border:1.5px solid var(--borde);border-radius:var(--radius-s);padding:9px 12px;font-size:.85rem;font-family:var(--font-main);color:var(--negro);outline:none;transition:border-color .15s;min-width:130px}
+                .ms-inp:focus{border-color:var(--verde);background:var(--blanco)}
+                .ms-ctrl{padding:14px 18px;border-bottom:1px solid var(--borde);display:flex;flex-wrap:wrap;align-items:flex-end;gap:12px;background:#fafbfc;border-radius:var(--radius) var(--radius) 0 0}
+                .ms-flbl{display:flex;flex-direction:column;gap:4px}
+                .ms-flbl label{font-size:.7rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.04em}
+                /* Table */
+                .ms-table-wrap{overflow-x:auto;border-radius:0 0 var(--radius) var(--radius)}
+                .ms-table{border-collapse:collapse;width:100%;font-size:.79rem}
+                .ms-table thead th{padding:8px 12px;text-align:center;font-size:.68rem;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:var(--gris-4);background:#f9fafb;border-bottom:2px solid var(--borde);white-space:nowrap;position:sticky;top:0;z-index:2}
+                .ms-table thead th:first-child{text-align:left;position:sticky;left:0;z-index:3;min-width:190px;background:#f9fafb}
+                .ms-table thead th:nth-child(2){text-align:left;position:sticky;left:190px;z-index:3;min-width:90px;background:#f9fafb}
+                .ms-table .ms-wk-hdr th{background:linear-gradient(135deg,var(--azul),#1e1f6a);color:white;font-size:.7rem;letter-spacing:.06em;border:none}
+                .ms-table .ms-wk-hdr th:first-child,.ms-table .ms-wk-hdr th:nth-child(2){background:linear-gradient(135deg,var(--azul),#1e1f6a)}
+                .ms-table tbody tr{border-bottom:1px solid #f0f0f0;transition:background .12s}
+                .ms-table tbody tr:hover{background:#f9fdf9}
+                .ms-table td{padding:10px 12px;text-align:center;vertical-align:middle;white-space:nowrap}
+                .ms-table td:first-child{text-align:left;font-weight:700;position:sticky;left:0;background:white;z-index:1}
+                .ms-table td:nth-child(2){text-align:left;position:sticky;left:190px;background:white;z-index:1}
+                .ms-pill-ok{background:#d1fae5;color:#065f46;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:800}
+                .ms-pill-warn{background:#fef3c7;color:#92400e;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:800}
+                .ms-pill-bad{background:#fee2e2;color:#991b1b;padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:800}
+                .ms-pill-neu{background:var(--gris-1);color:var(--gris-4);padding:3px 10px;border-radius:999px;font-size:.7rem;font-weight:800}
+                .ms-edit-btn{background:none;border:1px solid var(--borde);border-radius:6px;padding:3px 7px;cursor:pointer;font-size:.72rem;color:var(--gris-4);transition:.12s}
+                .ms-edit-btn:hover{background:var(--verde-p);border-color:var(--verde);color:var(--negro)}
+                .ms-q-pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:999px;font-size:.72rem;font-weight:800;cursor:pointer;border:1px solid var(--borde);background:var(--fondo);color:var(--gris-4);transition:.12s}
+                .ms-q-pill.has-val{background:#d1fae5;border-color:#6ee7b7;color:#065f46}
+                .ms-q-pill:hover{border-color:var(--verde);background:var(--verde-p)}
+                .ms-empty{padding:60px 20px;text-align:center;color:var(--gris-3)}
+                .ms-empty i{font-size:2.5rem;margin-bottom:14px;display:block}
+                /* Modal */
+                .ms-modal-bg{position:fixed;inset:0;background:rgba(15,17,30,.55);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px}
+                .ms-modal-bg.hidden{display:none}
+                .ms-modal{background:var(--blanco);border-radius:var(--radius);padding:28px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:90vh;overflow-y:auto}
+                .ms-modal h4{font-size:1rem;font-weight:900;color:var(--negro);margin-bottom:4px}
+                .ms-modal .ms-modal-sub{font-size:.78rem;color:var(--gris-4);margin-bottom:20px}
+                .ms-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+                .ms-form-field{display:flex;flex-direction:column;gap:5px}
+                .ms-form-field label{font-size:.7rem;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:var(--gris-4)}
+                .ms-modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:20px;border-top:1px solid var(--borde);padding-top:16px}
+                /* Shift badge */
+                .ms-shift{display:inline-block;padding:2px 8px;border-radius:999px;font-size:.68rem;font-weight:800}
+                .ms-shift-am{background:var(--verde-p);color:var(--mint-dark,#0b8f6a)}
+                .ms-shift-pm{background:var(--azul-p);color:var(--azul)}
+                .ms-shift-mad{background:#1e293b;color:#94a3b8}
+                /* ── VISTA AGENTE ── */
+                .ms-agent-header{background:linear-gradient(135deg,var(--azul) 0%,#1a1b70 100%);border-radius:var(--radius);padding:24px;color:white;margin-top:18px;position:relative;overflow:hidden}
+                .ms-agent-header::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 50%,rgba(56,206,166,.18) 0%,transparent 65%)}
+                .ms-agent-name{font-size:1.7rem;font-weight:900;line-height:1.2;position:relative}
+                .ms-agent-name span{color:var(--verde)}
+                .ms-agent-sub{font-size:.82rem;color:rgba(255,255,255,.65);margin-top:4px;position:relative}
+                .ms-week-pills{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}
+                .ms-wpill{padding:7px 16px;border-radius:999px;font-size:.78rem;font-weight:800;cursor:pointer;border:2px solid var(--borde);background:white;color:var(--gris-4);transition:all .15s}
+                .ms-wpill.has-data{border-color:var(--verde);color:#0b8f6a;background:var(--verde-p)}
+                .ms-wpill.active{background:var(--azul);color:white;border-color:var(--azul);box-shadow:0 2px 8px rgba(39,40,131,.2)}
+                .ms-wpill.has-data.active{background:linear-gradient(135deg,var(--verde),#0b8f6a);border-color:transparent}
+                .ms-metrics-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:4px}
+                .ms-mcard{border-radius:var(--radius-s);padding:14px;border:1px solid var(--borde);background:var(--blanco);position:relative;overflow:hidden;transition:transform .15s,box-shadow .15s}
+                .ms-mcard:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.08)}
+                .ms-mcard .ms-ico{font-size:1.2rem;width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+                .ms-mcard .ms-mlbl{font-size:.68rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.04em}
+                .ms-mcard .ms-mval{font-size:1.5rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+                .ms-mcard .ms-msub{font-size:.72rem;color:var(--gris-3)}
+                .ms-score-wrap{text-align:center;padding:16px 0}
+                .ms-score-circle{width:110px;height:110px;border-radius:50%;background:conic-gradient(var(--score-clr,var(--verde)) calc(var(--score-pct,0%) * 3.6deg),#e5e7eb 0);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;box-shadow:0 4px 16px rgba(0,0,0,.1)}
+                .ms-score-inner{width:82px;height:82px;border-radius:50%;background:white;display:flex;flex-direction:column;align-items:center;justify-content:center}
+                .ms-sv{font-size:1.6rem;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+                .ms-sl{font-size:.65rem;color:var(--gris-4);font-weight:700}
+                .ms-delta-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}
+                .ms-delta{border-radius:var(--radius-s);padding:10px 12px;border:1px solid var(--borde);background:var(--fondo);display:flex;flex-direction:column;gap:2px}
+                .ms-delta.up{background:#d1fae5;border-color:#6ee7b7}
+                .ms-delta.down{background:#fee2e2;border-color:#fca5a5}
+                .ms-delta.neutral{background:var(--fondo)}
+                .ms-delta .d-lbl{font-size:.68rem;font-weight:800;color:var(--gris-4);text-transform:uppercase}
+                .ms-delta .d-arrow{font-size:1.1rem}
+                .ms-delta .d-val{font-size:.88rem;font-weight:800;color:var(--negro)}
+                .ms-reco{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:var(--radius-s);margin-bottom:10px;border-left:4px solid var(--borde)}
+                .ms-reco.high{border-left-color:var(--rosa);background:var(--rosa-p)}
+                .ms-reco.medium{border-left-color:var(--amber);background:var(--amber-p)}
+                .ms-reco.low{border-left-color:var(--verde);background:var(--verde-p)}
+                .ms-reco-ico{font-size:1.4rem;flex-shrink:0}
+                .ms-reco h5{font-size:.85rem;font-weight:800;margin-bottom:3px;color:var(--negro)}
+                .ms-reco p{font-size:.8rem;color:var(--gris-4);line-height:1.45}
+                .ms-tag{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.65rem;font-weight:800;margin-top:5px}
+                .ms-tag.high{background:var(--rosa);color:white}
+                .ms-tag.medium{background:var(--amber);color:white}
+                .ms-tag.low{background:var(--verde);color:var(--negro)}
+                .ms-compare-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+                @media(max-width:600px){.ms-compare-grid{grid-template-columns:1fr}.ms-form-grid{grid-template-columns:1fr}}
+                .ms-side{border-radius:var(--radius-s);padding:14px;border:1px solid var(--borde)}
+                .ms-side.this-week{border-color:var(--verde);background:var(--verde-p)}
+                .ms-side-title{font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;margin-bottom:10px}
+                .ms-side.this-week .ms-side-title{color:#0b8f6a}
+                .ms-kv{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:1px solid rgba(0,0,0,.05);font-size:.8rem}
+                .ms-kv:last-child{border:none}
+                .ms-kv .k{font-weight:600;color:var(--gris-4)}
+                .ms-kv .v{font-weight:800;color:var(--negro)}
+                /* Week config */
+                .ms-wc-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--borde)}
+                .ms-wc-row:last-child{border:none}
+                .ms-wc-row label{font-size:.78rem;font-weight:800;color:var(--gris-4);min-width:60px}
+                </style>
+
+                <!-- ═══ VISTA ESPECIALISTA ═══ -->
+                <div id="ms-panel-esp" style="display:block">
+
+                    <!-- Stats rápidas -->
+                    <div class="ms-stat-row" id="ms-stats-row">
+                        <div class="ms-stat"><div class="ms-lbl">Agentes</div><div class="ms-val" id="ms-s-agents">0</div><div class="ms-sub">registrados este mes</div></div>
+                        <div class="ms-stat warn"><div class="ms-lbl">Total Tickets</div><div class="ms-val" id="ms-s-tickets">0</div><div class="ms-sub">acumulados</div></div>
+                        <div class="ms-stat bad"><div class="ms-lbl">Calif. Malos</div><div class="ms-val" id="ms-s-bad">0</div><div class="ms-sub">total del mes</div></div>
+                        <div class="ms-stat"><div class="ms-lbl">Prom. T.Resp</div><div class="ms-val" id="ms-s-resp">—</div><div class="ms-sub">segundos promedio</div></div>
+                    </div>
+
+                    <!-- Tabla principal -->
+                    <div class="ms-card" style="padding:0;overflow:hidden">
+                        <div class="ms-ctrl">
+                            <div class="ms-flbl">
+                                <label>Mes</label>
+                                <input type="month" id="ms-month" class="ms-inp" onchange="msRender()">
+                            </div>
+                            <div class="ms-flbl">
+                                <label>Agente</label>
+                                <select id="ms-agent-filter" class="ms-inp" onchange="msRender()">
+                                    <option value="">Todos</option>
+                                </select>
+                            </div>
+                            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:auto">
+                                <button class="ms-btn ms-btn-navy" onclick="msOpenWeekConfig()">📅 Semanas</button>
+                                <button class="ms-btn ms-btn-mint" onclick="msOpenImport()">⬆️ Importar</button>
+                                <button class="ms-btn ms-btn-ghost" onclick="msClearMonth()">🗑️ Limpiar</button>
+                            </div>
+                        </div>
+                        <div class="ms-table-wrap" id="ms-table-wrap">
+                            <div class="ms-empty"><i class="fas fa-calendar-week"></i><p style="font-weight:700;margin-bottom:4px">Sin datos</p><p>Seleccioná un mes y luego importá datos desde Zendesk</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ VISTA AGENTE "VER MI PROGRESO" ═══ -->
+                <div id="ms-panel-age" style="display:none">
+                    <!-- Selector agente + mes -->
+                    <div class="ms-card" style="display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:18px 20px">
+                        <div class="ms-flbl">
+                            <label>Mes</label>
+                            <input type="month" id="ms-age-month" class="ms-inp" onchange="msRenderAgent()">
+                        </div>
+                        <div class="ms-flbl">
+                            <label>Agente</label>
+                            <select id="ms-age-agent" class="ms-inp" onchange="msRenderAgent()">
+                                <option value="">— Seleccioná —</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Header agente -->
+                    <div class="ms-agent-header" id="ms-age-header" style="display:none">
+                        <p style="font-size:.8rem;color:rgba(255,255,255,.6);margin-bottom:2px;position:relative">Mi Progreso Semanal</p>
+                        <div class="ms-agent-name" id="ms-age-name">Agente</div>
+                        <div class="ms-agent-sub" id="ms-age-month-lbl"></div>
+                        <!-- Week pills -->
+                        <div class="ms-week-pills" id="ms-age-pills"></div>
+                    </div>
+
+                    <!-- Contenido dinámico -->
+                    <div id="ms-age-content"></div>
+                </div>
+
+                <!-- ═══ MODAL IMPORTAR ═══ -->
+                <div class="ms-modal-bg hidden" id="ms-modal-import">
+                    <div class="ms-modal">
+                        <h4>⬆️ Importar desde Zendesk / Excel</h4>
+                        <p class="ms-modal-sub">Pegá el reporte copiado (separado por tabulaciones). Primera fila = encabezado. Columnas: Agente · Tickets · Prom/día · Malos · Buenos · T.Resp(s) · T.Resol(m)</p>
+                        <div class="ms-form-field" style="margin-bottom:12px">
+                            <label>Mes</label>
+                            <input type="text" id="ms-imp-month-lbl" class="ms-inp" readonly style="background:var(--gris-1)">
+                        </div>
+                        <div class="ms-form-field" style="margin-bottom:12px">
+                            <label>Semana</label>
+                            <select id="ms-imp-week" class="ms-inp"></select>
+                        </div>
+                        <div class="ms-form-field">
+                            <label>Datos (pegá aquí)</label>
+                            <textarea id="ms-imp-data" class="ms-inp" rows="8" style="resize:vertical;font-size:.78rem;font-family:monospace" placeholder="Agente&#9;Tickets&#9;Prom/día&#9;Malos&#9;Buenos&#9;T.Resp(s)&#9;T.Resol(m)&#10;Juan Pérez&#9;120&#9;24&#9;2&#9;18&#9;45&#9;8.5"></textarea>
+                        </div>
+                        <div class="ms-modal-actions">
+                            <button class="ms-btn ms-btn-ghost" onclick="msCloseImport()">Cancelar</button>
+                            <button class="ms-btn ms-btn-mint" onclick="msRunImport()">⬆️ Importar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ MODAL SEMANAS ═══ -->
+                <div class="ms-modal-bg hidden" id="ms-modal-weeks">
+                    <div class="ms-modal">
+                        <h4>📅 Configurar Semanas</h4>
+                        <p class="ms-modal-sub">Definí el rango de fechas de cada semana del mes seleccionado.</p>
+                        <div id="ms-wk-cfg-content"></div>
+                        <div class="ms-modal-actions">
+                            <button class="ms-btn ms-btn-ghost" onclick="msCloseWeekConfig()">Cancelar</button>
+                            <button class="ms-btn ms-btn-ghost" onclick="msAddWeek()" style="margin-right:auto">+ Semana</button>
+                            <button class="ms-btn ms-btn-navy" onclick="msSaveWeekConfig()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ MODAL EDITAR MÉTRICAS ═══ -->
+                <div class="ms-modal-bg hidden" id="ms-modal-metrics">
+                    <div class="ms-modal">
+                        <h4>✏️ Editar Métricas</h4>
+                        <p class="ms-modal-sub" id="ms-mm-sub"></p>
+                        <input type="hidden" id="ms-mm-k"><input type="hidden" id="ms-mm-wi"><input type="hidden" id="ms-mm-ag">
+                        <div class="ms-form-grid">
+                            <div class="ms-form-field"><label>Tickets</label><input type="number" id="ms-mm-tickets" class="ms-inp" min="0"></div>
+                            <div class="ms-form-field"><label>Prom. diario</label><input type="number" id="ms-mm-avg" class="ms-inp" min="0" step="0.1"></div>
+                            <div class="ms-form-field"><label>Calif. Malos</label><input type="number" id="ms-mm-bad" class="ms-inp" min="0"></div>
+                            <div class="ms-form-field"><label>Calif. Buenos</label><input type="number" id="ms-mm-good" class="ms-inp" min="0"></div>
+                            <div class="ms-form-field"><label>T. Resp (s)</label><input type="number" id="ms-mm-first" class="ms-inp" min="0" step="0.1"></div>
+                            <div class="ms-form-field"><label>T. Resol (m)</label><input type="number" id="ms-mm-resol" class="ms-inp" min="0" step="0.1"></div>
+                        </div>
+                        <div class="ms-modal-actions">
+                            <button class="ms-btn ms-btn-ghost" onclick="msCloseMetrics()">Cancelar</button>
+                            <button class="ms-btn ms-btn-navy" onclick="msSaveMetrics()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ MODAL % CALIDAD ═══ -->
+                <div class="ms-modal-bg hidden" id="ms-modal-quality">
+                    <div class="ms-modal">
+                        <h4>⭐ % Calidad Auditado</h4>
+                        <p class="ms-modal-sub" id="ms-q-sub"></p>
+                        <input type="hidden" id="ms-q-k"><input type="hidden" id="ms-q-wi"><input type="hidden" id="ms-q-ag">
+                        <div class="ms-form-field">
+                            <label>% Calidad (0 – 100)</label>
+                            <input type="number" id="ms-q-score" class="ms-inp" min="0" max="100" step="0.1" placeholder="Ej: 87.5">
+                        </div>
+                        <div class="ms-modal-actions">
+                            <button class="ms-btn ms-btn-ghost" onclick="msCloseQuality()">Cancelar</button>
+                            <button class="ms-btn ms-btn-mint" onclick="msSaveQuality()">Guardar</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ TOAST ═══ -->
+                <div id="ms-toast-stack" style="position:fixed;bottom:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px"></div>
+
+                <script>
+                /* ══════════════════════════════════════════
+                   MÉTRICAS SEMANALES — LÓGICA COMPLETA
+                ══════════════════════════════════════════ */
+
+                /* ── STORAGE (localStorage con prefijo) ── */
+                const MS_KEY = 'ms_v1';
+                function msLoad(){ try{ return JSON.parse(localStorage.getItem(MS_KEY))||{}; }catch(e){return{};} }
+                function msSave(d){ localStorage.setItem(MS_KEY, JSON.stringify(d)); }
+
+                let msData       = msLoad();           // { [monthKey]: { weeks:[], agents:{}, data:{} } }
+                let msKnownAgent = {};                  // { agentName: { shift:'' } }
+                function msMk(){ return document.getElementById('ms-month')?.value||''; }
+
+                function msEnsureMonth(k){
+                    if(!msData[k]) msData[k]={weeks:msDefaultWeeks(k),agents:{},data:{}};
+                    return msData[k];
+                }
+                function msDefaultWeeks(k){
+                    if(!k) return [];
+                    const [y,m]=k.split('-').map(Number);
+                    const d=new Date(y,m-1,1);
+                    const weeks=[];
+                    let start=new Date(d);
+                    for(let i=1;i<=4;i++){
+                        const end=i<4?new Date(y,m-1,start.getDate()+6):new Date(y,m,0);
+                        if(end>new Date(y,m,0)) end.setTime(new Date(y,m,0).getTime());
+                        weeks.push({label:`Semana ${i}`,start:msFmtDate(start),end:msFmtDate(end)});
+                        start=new Date(end.getFullYear(),end.getMonth(),end.getDate()+1);
+                        if(start.getMonth()!==m-1) break;
+                    }
+                    return weeks;
+                }
+                function msFmtDate(d){
+                    return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+                }
+                function msGetWeeks(k){ return msEnsureMonth(k).weeks; }
+                function msGetD(k,wi,ag){ return msData[k]?.data?.[wi]?.[ag]||null; }
+                function msSetD(k,wi,ag,vals){
+                    const m=msEnsureMonth(k);
+                    if(!m.data[wi]) m.data[wi]={};
+                    m.data[wi][ag]={...(m.data[wi][ag]||{}), ...vals};
+                    if(!m.agents[ag]) m.agents[ag]={shift:''};
+                    msData[k]=m;
+                }
+                function msFmtRange(w){
+                    if(!w?.start) return '';
+                    const a=w.start.split('-'),b=w.end?.split('-')||a;
+                    return `${parseInt(a[2])}/${parseInt(a[1])} – ${parseInt(b[2])}/${parseInt(b[1])}`;
+                }
+
+                /* ── TABS ── */
+                function msSetTab(t){
+                    const isEsp = t==='especialista';
+                    document.getElementById('ms-panel-esp').style.display=isEsp?'block':'none';
+                    document.getElementById('ms-panel-age').style.display=isEsp?'none':'block';
+                    const bEsp=document.getElementById('ms-tab-esp');
+                    const bAge=document.getElementById('ms-tab-age');
+                    bEsp.style.background=isEsp?'var(--verde)':'var(--gris-1)';
+                    bEsp.style.color=isEsp?'var(--negro)':'var(--gris-4)';
+                    bEsp.style.borderColor=isEsp?'var(--verde)':'var(--borde)';
+                    bAge.style.background=isEsp?'var(--gris-1)':'var(--verde)';
+                    bAge.style.color=isEsp?'var(--gris-4)':'var(--negro)';
+                    bAge.style.borderColor=isEsp?'var(--borde)':'var(--verde)';
+                    if(!isEsp) msRenderAgent();
+                }
+
+                /* ── REFRESH AGENT SELECTOR ── */
+                function msRefreshAgentSel(){
+                    const k=msMk(); const m=msData[k];
+                    const agents=m?Object.keys(m.agents).sort():[];
+                    ['ms-agent-filter','ms-age-agent'].forEach(id=>{
+                        const sel=document.getElementById(id);
+                        if(!sel) return;
+                        const cur=sel.value;
+                        sel.innerHTML=id==='ms-agent-filter'?'<option value="">Todos</option>':'<option value="">— Seleccioná —</option>';
+                        agents.forEach(ag=>{const o=document.createElement('option');o.value=ag;o.textContent=ag;sel.appendChild(o);});
+                        if(agents.includes(cur)) sel.value=cur;
+                    });
+                }
+
+                /* ── RENDER TABLA ESPECIALISTA ── */
+                const MONTHS_ES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
+                function msRender(){
+                    const k=msMk();
+                    msRefreshAgentSel();
+                    const wrap=document.getElementById('ms-table-wrap');
+                    if(!k){ wrap.innerHTML='<div class="ms-empty"><i class="fas fa-calendar"></i><p>Seleccioná un mes</p></div>'; return; }
+                    const m=msEnsureMonth(k);
+                    const curAgent=document.getElementById('ms-agent-filter')?.value||'';
+                    const agents=Object.keys(m.agents).filter(a=>!curAgent||a===curAgent).sort();
+                    if(!agents.length){ wrap.innerHTML='<div class="ms-empty"><i class="fas fa-file-excel"></i><p style="font-weight:700;margin-bottom:4px">Sin agentes</p><p>Importá datos para registrar agentes</p></div>'; msUpdateStats(k); return; }
+                    const weeks=msGetWeeks(k);
+                    let h=`<table class="ms-table"><thead>
+                        <tr class="ms-wk-hdr">
+                            <th rowspan="2" style="position:sticky;left:0;z-index:3;background:var(--azul)">Agente</th>
+                            <th rowspan="2" style="position:sticky;left:190px;z-index:3;background:var(--azul)">Turno</th>
+                            ${weeks.map(w=>`<th colspan="8">${w.label.toUpperCase()}: ${msFmtRange(w)}</th>`).join('')}
+                        </tr>
+                        <tr>${weeks.map(()=>'<th>Tickets</th><th>Prom/día</th><th>Malos</th><th>Buenos</th><th>T.Resp(s)</th><th>T.Resol(m)</th><th>% Calif.</th><th>% Calidad</th>').join('')}</tr>
+                    </thead><tbody>`;
+                    agents.forEach(ag=>{
+                        const shift=m.agents[ag]?.shift||'';
+                        h+=`<tr><td>${ag}</td><td>${msShiftBadge(shift)}</td>`;
+                        weeks.forEach((w,wi)=>{
+                            const d=msGetD(k,wi,ag);
+                            const safeAg=ag.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+                            const wLbl=`${w.label}: ${msFmtRange(w)}`;
+                            const safeLbl=wLbl.replace(/'/g,"\\'");
+                            const tickets=d?.tickets??null;
+                            const bad=d?.ticketsBad??null;
+                            const good=d?.ticketsGood??null;
+                            const pctC=(tickets&&(bad!==null||good!==null))?((Number(bad||0)+Number(good||0))/Number(tickets)*100):null;
+                            const pctQ=d?.pctCalidad??null;
+                            const hasQ=pctQ!==null&&pctQ!==undefined;
+                            const editBtn=`<button class="ms-edit-btn" onclick="msOpenMetrics('${k}',${wi},'${safeAg}','${safeLbl}')"><i class="fas fa-pen"></i></button>`;
+                            const qPill=`<button class="ms-q-pill ${hasQ?'has-val':''}" onclick="msOpenQuality('${k}',${wi},'${safeAg}','${safeLbl}')">
+                                ${hasQ?`<i class="fas fa-star"></i>${parseFloat(pctQ).toFixed(1)}%`:`<i class="fas fa-plus"></i>Asignar`}
+                            </button>`;
+                            h+=`<td>${msFmtVal(tickets,'tickets')}${editBtn}</td>
+                                <td>${msFmtVal(d?.avgDaily,'avg')}</td>
+                                <td>${msFmtVal(bad,'bad')}</td>
+                                <td>${msFmtVal(good,'good')}</td>
+                                <td>${msFmtVal(d?.firstResponse,'resp')}</td>
+                                <td>${msFmtVal(d?.resolutionTime,'resol')}</td>
+                                <td>${msFmtVal(pctC,'pctCalif')}</td>
+                                <td>${qPill}</td>`;
+                        });
+                        h+=`</tr>`;
+                    });
+                    h+=`</tbody></table>`;
+                    wrap.innerHTML=h;
+                    msUpdateStats(k);
+                }
+
+                function msFmtVal(v,type){
+                    if(v===null||v===undefined) return `<span style="color:var(--gris-3)">—</span>`;
+                    const n=Number(v);
+                    if(type==='bad') return n===0?`<span class="ms-pill-ok">0</span>`:(n<=2?`<span class="ms-pill-warn">${n}</span>`:`<span class="ms-pill-bad">${n}</span>`);
+                    if(type==='good') return `<span class="ms-pill-ok">${n}</span>`;
+                    if(type==='pctCalif'){
+                        const s=n.toFixed(1)+'%';
+                        return n>=40?`<span class="ms-pill-ok">${s}</span>`:(n>=20?`<span class="ms-pill-warn">${s}</span>`:`<span class="ms-pill-bad">${s}</span>`);
+                    }
+                    if(type==='resp') return n<=60?`<span class="ms-pill-ok">${n}s</span>`:(n<=120?`<span class="ms-pill-warn">${n}s</span>`:`<span class="ms-pill-bad">${n}s</span>`);
+                    if(type==='resol') return `<span style="font-weight:700">${n}m</span>`;
+                    if(type==='avg') return `<span style="font-weight:700">${Number(n).toFixed(1)}</span>`;
+                    return `<span style="font-weight:700">${n}</span>`;
+                }
+
+                function msShiftBadge(s){
+                    if(!s) return `<span class="ms-shift ms-shift-neu" style="background:var(--gris-1);color:var(--gris-4)">—</span>`;
+                    if(s.toLowerCase().includes('am')) return `<span class="ms-shift ms-shift-am">AM</span>`;
+                    if(s.toLowerCase().includes('pm')) return `<span class="ms-shift ms-shift-pm">PM</span>`;
+                    return `<span class="ms-shift ms-shift-mad">${s.slice(0,6)}</span>`;
+                }
+
+                function msUpdateStats(k){
+                    if(!k||!msData[k]){
+                        ['ms-s-agents','ms-s-tickets','ms-s-bad','ms-s-resp'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
+                        return;
+                    }
+                    const m=msData[k];
+                    const agents=Object.keys(m.agents);
+                    let totalT=0,totalBad=0,respSum=0,respN=0;
+                    agents.forEach(ag=>{
+                        msGetWeeks(k).forEach((_,wi)=>{
+                            const d=msGetD(k,wi,ag);
+                            if(!d) return;
+                            totalT+=Number(d.tickets||0);
+                            totalBad+=Number(d.ticketsBad||0);
+                            if(d.firstResponse){respSum+=Number(d.firstResponse);respN++;}
+                        });
+                    });
+                    const elA=document.getElementById('ms-s-agents');if(elA)elA.textContent=agents.length;
+                    const elT=document.getElementById('ms-s-tickets');if(elT)elT.textContent=totalT;
+                    const elB=document.getElementById('ms-s-bad');if(elB)elB.textContent=totalBad;
+                    const elR=document.getElementById('ms-s-resp');if(elR)elR.textContent=respN?Math.round(respSum/respN)+'s':'—';
+                }
+
+                /* ── RENDER VISTA AGENTE ── */
+                let msSelectedWeek=0;
+                function msRenderAgent(){
+                    const k=document.getElementById('ms-age-month')?.value||'';
+                    const ag=document.getElementById('ms-age-agent')?.value||'';
+                    const header=document.getElementById('ms-age-header');
+                    const cont=document.getElementById('ms-age-content');
+                    if(!k||!ag){ if(header) header.style.display='none'; if(cont) cont.innerHTML=''; return; }
+                    const m=msData[k];
+                    if(!m||!m.agents[ag]){ if(header) header.style.display='none'; if(cont) cont.innerHTML='<div class="ms-card ms-empty"><i class="fas fa-inbox"></i><p>Sin datos para este agente en el mes seleccionado</p></div>'; return; }
+                    const [y,mo]=k.split('-').map(Number);
+                    const monthLbl=`${MONTHS_ES[mo-1]} ${y}`;
+                    if(header) header.style.display='block';
+                    document.getElementById('ms-age-name').innerHTML=ag.split(' ')[0]+' <span>'+ag.split(' ').slice(1).join(' ')+'</span>';
+                    document.getElementById('ms-age-month-lbl').textContent=monthLbl;
+                    // Pills
+                    const weeks=msGetWeeks(k);
+                    const pillsEl=document.getElementById('ms-age-pills');
+                    pillsEl.innerHTML=weeks.map((w,i)=>{
+                        const hasData=!!msGetD(k,i,ag);
+                        return `<button class="ms-wpill ${hasData?'has-data':''} ${i===msSelectedWeek?'active':''}" onclick="msSelectWeek(${i})">${w.label}</button>`;
+                    }).join('');
+                    // Content
+                    msRenderAgentWeek(k,ag,weeks);
+                }
+                function msSelectWeek(i){ msSelectedWeek=i; msRenderAgent(); }
+                function msRenderAgentWeek(k,ag,weeks){
+                    const cont=document.getElementById('ms-age-content');
+                    const wi=msSelectedWeek;
+                    const dc=msGetD(k,wi,ag);
+                    const prevWi=wi>0?wi-1:null;
+                    const dp=prevWi!==null?msGetD(k,prevWi,ag):null;
+                    const w2=weeks[wi];
+                    const w1=prevWi!==null?weeks[prevWi]:null;
+                    if(!dc){ cont.innerHTML=`<div class="ms-card ms-empty"><i class="fas fa-calendar-week"></i><p style="font-weight:700">Sin datos para ${w2?.label||'esta semana'}</p><p>El especialista aún no ha cargado métricas para esta semana</p></div>`; return; }
+
+                    // Helpers
+                    const fmtN=(v,dec=0)=>v!=null?Number(v).toFixed(dec):'—';
+                    const pctCalif=d=>(d?.tickets&&(d.ticketsBad!==null||d.ticketsGood!==null))?((Number(d.ticketsBad||0)+Number(d.ticketsGood||0))/Number(d.tickets)*100):null;
+                    const delta=(a,b)=>{ if(a===null||a===undefined||b===null||b===undefined) return null; const d=Number(b)-Number(a); return {d,pct:a!==0?d/a*100:null}; };
+                    const dClass=obj=>{ if(!obj) return 'neutral'; return obj.d>0?'up':'down'; };
+                    const dArrow=(obj,invertBad=false)=>{ if(!obj) return '–'; const up=obj.d>0; return (invertBad?!up:up)?'↑':'↓'; };
+                    const dText=(obj,suf='')=>{ if(!obj) return '—'; return `${obj.d>0?'+':''}${fmtN(obj.d,1)}${suf} ${obj.pct!=null?`(${obj.pct>0?'+':''}${obj.pct.toFixed(0)}%)`:''}`; };
+
+                    const dTickets=delta(dp?.tickets,dc?.tickets);
+                    const dBad=delta(dp?.ticketsBad,dc?.ticketsBad);
+                    const dFirst=delta(dp?.firstResponse,dc?.firstResponse);
+                    const dResol=delta(dp?.resolutionTime,dc?.resolutionTime);
+                    const dPctQ=delta(parseFloat(dp?.pctCalidad??null),parseFloat(dc?.pctCalidad??null));
+                    const dPctC=delta(pctCalif(dp),pctCalif(dc));
+
+                    // Métricas de la semana actual
+                    const metricsHtml=`
+                    <div class="ms-metrics-grid">
+                        <div class="ms-mcard"><div class="ms-ico" style="background:var(--azul-p);color:var(--azul)">🎫</div><div class="ms-mlbl">Tickets</div><div class="ms-mval">${fmtN(dc.tickets,0)}</div><div class="ms-msub">esta semana</div></div>
+                        <div class="ms-mcard"><div class="ms-ico" style="background:var(--verde-p);color:#0b8f6a">📅</div><div class="ms-mlbl">Prom. Diario</div><div class="ms-mval">${fmtN(dc.avgDaily,1)}</div><div class="ms-msub">tickets/día</div></div>
+                        <div class="ms-mcard" style="border-color:${Number(dc.ticketsBad)>2?'var(--rosa)':'var(--borde)'}"><div class="ms-ico" style="background:var(--rosa-p);color:var(--rosa)">👎</div><div class="ms-mlbl">Malos</div><div class="ms-mval" style="color:${Number(dc.ticketsBad)>0?'var(--rosa)':'var(--negro)'}">${fmtN(dc.ticketsBad,0)}</div><div class="ms-msub">calificaciones</div></div>
+                        <div class="ms-mcard"><div class="ms-ico" style="background:var(--verde-p);color:#0b8f6a">👍</div><div class="ms-mlbl">Buenos</div><div class="ms-mval" style="color:#0b8f6a">${fmtN(dc.ticketsGood,0)}</div><div class="ms-msub">calificaciones</div></div>
+                        <div class="ms-mcard" style="border-color:${Number(dc.firstResponse)>120?'var(--rosa)':Number(dc.firstResponse)>60?'var(--amber)':'var(--borde)'}"><div class="ms-ico" style="background:var(--amber-p);color:var(--amber)">⏱️</div><div class="ms-mlbl">T. Resp.</div><div class="ms-mval">${fmtN(dc.firstResponse,0)}<span style="font-size:.8rem;font-weight:700">s</span></div><div class="ms-msub">primera respuesta</div></div>
+                        <div class="ms-mcard"><div class="ms-ico" style="background:var(--azul-p);color:var(--azul)">🕐</div><div class="ms-mlbl">T. Resol.</div><div class="ms-mval">${fmtN(dc.resolutionTime,1)}<span style="font-size:.8rem;font-weight:700">m</span></div><div class="ms-msub">resolución</div></div>
+                        <div class="ms-mcard"><div class="ms-ico" style="background:var(--gris-1);color:var(--gris-4)">📊</div><div class="ms-mlbl">% Calificado</div><div class="ms-mval">${pctCalif(dc)!==null?pctCalif(dc).toFixed(1)+'%':'—'}</div><div class="ms-msub">tickets calificados</div></div>
+                        <div class="ms-mcard" style="border-color:${dc.pctCalidad!==null&&dc.pctCalidad!==undefined?(parseFloat(dc.pctCalidad)<75?'var(--rosa)':parseFloat(dc.pctCalidad)<90?'var(--amber)':'var(--verde)'):'var(--borde)'}"><div class="ms-ico" style="background:var(--verde-p);color:#0b8f6a">⭐</div><div class="ms-mlbl">% Calidad</div><div class="ms-mval" style="color:${dc.pctCalidad!==null&&dc.pctCalidad!==undefined?(parseFloat(dc.pctCalidad)<75?'var(--rosa)':parseFloat(dc.pctCalidad)<90?'var(--amber)':'#0b8f6a'):'var(--negro)'}">${dc.pctCalidad!==null&&dc.pctCalidad!==undefined?parseFloat(dc.pctCalidad).toFixed(1)+'%':'Pendiente'}</div><div class="ms-msub">auditoría</div></div>
+                    </div>`;
+
+                    // Score
+                    function calcScore(d){
+                        if(!d) return null;
+                        let s=50;
+                        if(d.ticketsBad===0||d.ticketsBad==='0') s+=15; else if(Number(d.ticketsBad)<=2) s+=5; else s-=15;
+                        if(d.firstResponse!=null){ const f=Number(d.firstResponse); if(f<=60) s+=15; else if(f<=120) s+=5; else s-=10; }
+                        if(d.pctCalidad!=null){ const q=parseFloat(d.pctCalidad); if(q>=90) s+=20; else if(q>=75) s+=10; else s-=15; }
+                        const pc=pctCalif(d); if(pc!=null){ if(pc>=40) s+=5; else if(pc<20) s-=5; }
+                        return Math.max(0,Math.min(100,s));
+                    }
+                    const sc=calcScore(dc); const sp=calcScore(dp);
+                    const scClr=sc>=70?'var(--verde)':sc>=50?'var(--amber)':'var(--rosa)';
+                    const scEmoji=sc>=70?'🏆':sc>=50?'💪':'💡';
+                    const scMsg=sc>=70?'¡Excelente rendimiento!':sc>=50?'Buen camino, seguí mejorando':'Hay oportunidades de mejora';
+
+                    // Comparativa sides
+                    function renderSide(d,w,title,cls){
+                        if(!d) return `<div class="ms-side ${cls}"><div class="ms-side-title">${title}</div><p style="color:var(--gris-3);font-size:.8rem">Sin datos</p></div>`;
+                        const pc=pctCalif(d);
+                        return `<div class="ms-side ${cls}">
+                            <div class="ms-side-title">${title}</div>
+                            <div class="ms-kv"><span class="k">Tickets</span><span class="v">${fmtN(d.tickets,0)}</span></div>
+                            <div class="ms-kv"><span class="k">Prom. diario</span><span class="v">${fmtN(d.avgDaily,1)}</span></div>
+                            <div class="ms-kv"><span class="k">Malos</span><span class="v" style="color:${Number(d.ticketsBad)>0?'var(--rosa)':'#0b8f6a'}">${fmtN(d.ticketsBad,0)}</span></div>
+                            <div class="ms-kv"><span class="k">Buenos</span><span class="v" style="color:#0b8f6a">${fmtN(d.ticketsGood,0)}</span></div>
+                            <div class="ms-kv"><span class="k">T. Resp (s)</span><span class="v">${fmtN(d.firstResponse,0)}s</span></div>
+                            <div class="ms-kv"><span class="k">T. Resol (m)</span><span class="v">${fmtN(d.resolutionTime,1)}m</span></div>
+                            <div class="ms-kv"><span class="k">% Calificado</span><span class="v">${pc!=null?pc.toFixed(1)+'%':'—'}</span></div>
+                            <div class="ms-kv"><span class="k">% Calidad</span><span class="v">${d.pctCalidad!=null?parseFloat(d.pctCalidad).toFixed(1)+'%':'Pendiente'}</span></div>
+                        </div>`;
+                    }
+
+                    // Recomendaciones
+                    const recos=[];
+                    if(Number(dc.ticketsBad)>2) recos.push({p:'high',i:'⚠️',t:'Reducí las calificaciones negativas',txt:`Tuviste ${dc.ticketsBad} calificaciones malas esta semana. Revisá los tickets con valoración negativa y analizá qué situaciones generan insatisfacción. Mejorá el tono y el cierre de cada ticket.`,tag:'PRIORIDAD ALTA'});
+                    else if(Number(dc.ticketsBad)>0) recos.push({p:'medium',i:'💬',t:'Seguí trabajando en la satisfacción',txt:`Tuviste ${dc.ticketsBad} calificación(es) mala(s). Aunque es bajo, siempre hay oportunidad de bajar a cero.`,tag:'A MEJORAR'});
+                    else recos.push({p:'low',i:'🏆',t:'¡Sin calificaciones negativas!',txt:'Excelente trabajo — cero malos. Mantené el nivel de comunicación que te está funcionando.',tag:'MANTENER'});
+
+                    if(dc.firstResponse!=null){ const f=Number(dc.firstResponse);
+                        if(f>120) recos.push({p:'high',i:'⏱️',t:'Mejorá el tiempo de primera respuesta',txt:`Tu tiempo fue ${fmtN(f,0)}s — sobre el objetivo. Apuntá a menos de 60s para mejorar la experiencia desde el primer contacto.`,tag:'PRIORIDAD ALTA'});
+                        else if(f>60) recos.push({p:'medium',i:'⏰',t:'Ajustá tu tiempo de respuesta',txt:`Tu primera respuesta promedia ${fmtN(f,0)}s. El objetivo es estar bajo 60s.`,tag:'A MEJORAR'});
+                    }
+                    if(dc.pctCalidad!=null){ const q=parseFloat(dc.pctCalidad);
+                        if(q<75) recos.push({p:'high',i:'📋',t:'El puntaje de calidad necesita atención',txt:`Tu % Calidad fue ${q.toFixed(1)}%. El mínimo es 75%. Revisá la auditoría con tu especialista para entender los puntos a corregir.`,tag:'PRIORIDAD ALTA'});
+                        else if(q<90) recos.push({p:'medium',i:'⭐',t:'Estás cerca del objetivo de calidad',txt:`Tu % Calidad fue ${q.toFixed(1)}%. Apuntamos a 90%+. Revisá en cuáles aspectos del checklist podés ganar puntos.`,tag:'A MEJORAR'});
+                        else recos.push({p:'low',i:'💎',t:'Excelente puntaje de calidad',txt:`Alcanzaste un ${q.toFixed(1)}% en calidad auditada. Seguí aplicando los mismos estándares.`,tag:'MANTENER'});
+                    } else recos.push({p:'medium',i:'🔍',t:'Auditoría de calidad pendiente',txt:'Todavía no tenés un % Calidad asignado. El especialista lo cargará próximamente.',tag:'EN PROCESO'});
+
+                    if(dTickets&&dTickets.d!==0){
+                        if(dTickets.d>0) recos.push({p:'low',i:'📈',t:'Aumentaste tu volumen de tickets',txt:`Atendiste ${dTickets.d} tickets más que la semana anterior. Mantené el ritmo sin sacrificar calidad.`,tag:'BUEN RITMO'});
+                        else recos.push({p:'medium',i:'📉',t:'Tu volumen bajó',txt:`Atendiste ${Math.abs(dTickets.d)} tickets menos que la semana anterior. Revisá si hay obstáculos que te estén ralentizando.`,tag:'REVISAR'});
+                    }
+
+                    cont.innerHTML=`
+                    <!-- Métricas semana -->
+                    <div class="ms-card">
+                        <h3>📊 Semana ${wi+1} — ${msFmtRange(w2)}</h3>
+                        ${metricsHtml}
+                    </div>
+
+                    <!-- Score -->
+                    <div class="ms-card" style="text-align:center">
+                        <h3 style="justify-content:center">🏆 Score de Rendimiento</h3>
+                        <div class="ms-score-wrap">
+                            <div class="ms-score-circle" style="--score-pct:${sc||0};background:conic-gradient(${scClr} ${(sc||0)*3.6}deg,#e5e7eb 0)">
+                                <div class="ms-score-inner">
+                                    <div class="ms-sv" style="color:${scClr}">${sc??'—'}</div>
+                                    <div class="ms-sl">/ 100</div>
+                                </div>
+                            </div>
+                        </div>
+                        <p style="font-size:1rem;font-weight:800;color:var(--negro)">${scEmoji} ${scMsg}</p>
+                        ${sp!=null?`<p style="color:var(--gris-4);font-size:.82rem;margin-top:6px">Semana anterior: <strong>${sp}/100</strong> ${sc>=sp?'📈 Mejoraste':'📉 Bajaste'}</p>`:''}
+                    </div>
+
+                    <!-- Comparativa -->
+                    <div class="ms-card">
+                        <h3>⚖️ Comparativa Semana a Semana</h3>
+                        <div class="ms-compare-grid">
+                            ${renderSide(dp,w1,w1?`${w1.label}: ${msFmtRange(w1)}`:'Semana Anterior','')}
+                            ${renderSide(dc,w2,w2?`⭐ ${w2.label}: ${msFmtRange(w2)}`:'Esta Semana','this-week')}
+                        </div>
+                    </div>
+
+                    <!-- Deltas -->
+                    <div class="ms-card">
+                        <h3>↕️ Cambios respecto a la semana anterior</h3>
+                        <div class="ms-delta-grid">
+                            <div class="ms-delta ${dClass(dTickets)}"><span class="d-lbl">Tickets</span><span class="d-arrow">${dArrow(dTickets)}</span><span class="d-val">${dText(dTickets)}</span></div>
+                            <div class="ms-delta ${dClass(dBad)}"><span class="d-lbl">Calif. Malos</span><span class="d-arrow">${dArrow(dBad,true)}</span><span class="d-val">${dText(dBad)}</span></div>
+                            <div class="ms-delta ${dClass(dFirst)}"><span class="d-lbl">T. 1ª Resp.</span><span class="d-arrow">${dArrow(dFirst,true)}</span><span class="d-val">${dText(dFirst,' s')}</span></div>
+                            <div class="ms-delta ${dClass(dResol)}"><span class="d-lbl">T. Resolución</span><span class="d-arrow">${dArrow(dResol,true)}</span><span class="d-val">${dText(dResol,' m')}</span></div>
+                            <div class="ms-delta ${dClass(dPctC)}"><span class="d-lbl">% Calificado</span><span class="d-arrow">${dArrow(dPctC)}</span><span class="d-val">${dText(dPctC,'%')}</span></div>
+                            <div class="ms-delta ${dClass(dPctQ)}"><span class="d-lbl">% Calidad</span><span class="d-arrow">${dArrow(dPctQ)}</span><span class="d-val">${dText(dPctQ,'%')}</span></div>
+                        </div>
+                    </div>
+
+                    <!-- Recomendaciones -->
+                    <div class="ms-card">
+                        <h3 style="background:linear-gradient(135deg,var(--azul),#1e1f6a);color:white;margin:-22px -24px 16px;padding:16px 20px;border-radius:var(--radius) var(--radius) 0 0">🎯 Para la próxima semana — Recomendaciones</h3>
+                        <div style="padding-top:4px">
+                            ${recos.map(r=>`<div class="ms-reco ${r.p}"><span class="ms-reco-ico">${r.i}</span><div><h5>${r.t}</h5><p>${r.txt}</p><span class="ms-tag ${r.p}">${r.tag}</span></div></div>`).join('')}
+                        </div>
+                    </div>`;
+                }
+
+                /* ── MODALES ── */
+                function msOpenWeekConfig(){
+                    const k=msMk(); if(!k){msToast('Seleccioná un mes primero','err');return;}
+                    const weeks=msGetWeeks(k);
+                    document.getElementById('ms-wk-cfg-content').innerHTML=weeks.map((w,i)=>`
+                        <div class="ms-wc-row">
+                            <label>Sem ${i+1}</label>
+                            <div style="display:flex;gap:8px;flex:1;flex-wrap:wrap">
+                                <div class="ms-flbl"><label>Desde</label><input type="date" id="ms-wcs${i}" class="ms-inp" value="${w.start}"></div>
+                                <div class="ms-flbl"><label>Hasta</label><input type="date" id="ms-wce${i}" class="ms-inp" value="${w.end||''}"></div>
+                            </div>
+                        </div>`).join('');
+                    document.getElementById('ms-modal-weeks').classList.remove('hidden');
+                }
+                function msAddWeek(){
+                    const k=msMk(); const weeks=msGetWeeks(k);
+                    const [y,m]=k.split('-').map(Number);
+                    weeks.push({label:`Semana ${weeks.length+1}`,start:msFmtDate(new Date(y,m-1,22)),end:msFmtDate(new Date(y,m,0))});
+                    msEnsureMonth(k).weeks=weeks; msOpenWeekConfig();
+                }
+                function msSaveWeekConfig(){
+                    const k=msMk(); const weeks=msGetWeeks(k);
+                    weeks.forEach((_,i)=>{
+                        const s=document.getElementById(`ms-wcs${i}`)?.value; const e=document.getElementById(`ms-wce${i}`)?.value;
+                        if(s) weeks[i].start=s; if(e) weeks[i].end=e;
+                    });
+                    msEnsureMonth(k).weeks=weeks; msSave(msData); msCloseWeekConfig(); msRender(); msToast('Semanas guardadas','ok');
+                }
+                function msCloseWeekConfig(){ document.getElementById('ms-modal-weeks').classList.add('hidden'); }
+
+                function msOpenImport(){
+                    const k=msMk(); if(!k){msToast('Seleccioná un mes primero','err');return;}
+                    const [y,m]=k.split('-').map(Number);
+                    document.getElementById('ms-imp-month-lbl').value=`${MONTHS_ES[m-1]} ${y}`;
+                    const sel=document.getElementById('ms-imp-week'); sel.innerHTML='';
+                    msGetWeeks(k).forEach((w,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=`${w.label}: ${msFmtRange(w)}`; sel.appendChild(o); });
+                    document.getElementById('ms-modal-import').classList.remove('hidden');
+                }
+                function msCloseImport(){ document.getElementById('ms-modal-import').classList.add('hidden'); document.getElementById('ms-imp-data').value=''; }
+                function msRunImport(){
+                    const raw=document.getElementById('ms-imp-data').value.trim();
+                    if(!raw){msToast('No hay datos para importar','err');return;}
+                    const k=msMk(); const wi=parseInt(document.getElementById('ms-imp-week').value);
+                    const lines=raw.split('\n').filter(l=>l.trim());
+                    if(lines.length<2){msToast('Incluí encabezado + al menos 1 fila','err');return;}
+                    const pn=v=>{const n=parseFloat((v||'').replace(',','.'));return isNaN(n)?0:n;};
+                    let n=0;
+                    lines.slice(1).forEach(line=>{
+                        const c=line.split('\t'); const ag=c[0]?.trim(); if(!ag) return;
+                        msSetD(k,wi,ag,{tickets:pn(c[1]),avgDaily:pn(c[2]),ticketsBad:pn(c[3]),ticketsGood:pn(c[4]),firstResponse:pn(c[5]),resolutionTime:pn(c[6])}); n++;
+                    });
+                    msSave(msData); msRefreshAgentSel(); msCloseImport(); msRender(); msToast(`${n} agente(s) importados`,'ok');
+                }
+
+                function msOpenMetrics(k,wi,ag,wl){
+                    const d=msGetD(k,wi,ag)||{};
+                    document.getElementById('ms-mm-sub').textContent=`${ag} — ${wl}`;
+                    document.getElementById('ms-mm-k').value=k; document.getElementById('ms-mm-wi').value=wi; document.getElementById('ms-mm-ag').value=ag;
+                    document.getElementById('ms-mm-tickets').value=d.tickets??0; document.getElementById('ms-mm-avg').value=d.avgDaily??0;
+                    document.getElementById('ms-mm-bad').value=d.ticketsBad??0; document.getElementById('ms-mm-good').value=d.ticketsGood??0;
+                    document.getElementById('ms-mm-first').value=d.firstResponse??0; document.getElementById('ms-mm-resol').value=d.resolutionTime??0;
+                    document.getElementById('ms-modal-metrics').classList.remove('hidden');
+                }
+                function msCloseMetrics(){ document.getElementById('ms-modal-metrics').classList.add('hidden'); }
+                function msSaveMetrics(){
+                    const k=document.getElementById('ms-mm-k').value; const wi=parseInt(document.getElementById('ms-mm-wi').value); const ag=document.getElementById('ms-mm-ag').value;
+                    msSetD(k,wi,ag,{tickets:parseFloat(document.getElementById('ms-mm-tickets').value)||0,avgDaily:parseFloat(document.getElementById('ms-mm-avg').value)||0,ticketsBad:parseFloat(document.getElementById('ms-mm-bad').value)||0,ticketsGood:parseFloat(document.getElementById('ms-mm-good').value)||0,firstResponse:parseFloat(document.getElementById('ms-mm-first').value)||0,resolutionTime:parseFloat(document.getElementById('ms-mm-resol').value)||0});
+                    msSave(msData); msCloseMetrics(); msRender(); msToast('Métricas guardadas','ok');
+                }
+
+                function msOpenQuality(k,wi,ag,wl){
+                    const d=msGetD(k,wi,ag)||{};
+                    document.getElementById('ms-q-sub').textContent=`${ag} — ${wl}`;
+                    document.getElementById('ms-q-k').value=k; document.getElementById('ms-q-wi').value=wi; document.getElementById('ms-q-ag').value=ag;
+                    document.getElementById('ms-q-score').value=d.pctCalidad??'';
+                    document.getElementById('ms-modal-quality').classList.remove('hidden');
+                }
+                function msCloseQuality(){ document.getElementById('ms-modal-quality').classList.add('hidden'); }
+                function msSaveQuality(){
+                    const k=document.getElementById('ms-q-k').value; const wi=parseInt(document.getElementById('ms-q-wi').value); const ag=document.getElementById('ms-q-ag').value;
+                    const v=parseFloat(document.getElementById('ms-q-score').value);
+                    if(isNaN(v)||v<0||v>100){msToast('Ingresá un valor entre 0 y 100','err');return;}
+                    msSetD(k,wi,ag,{pctCalidad:v}); msSave(msData); msCloseQuality(); msRender(); msToast(`% Calidad de ${ag} → ${v}%`,'ok');
+                }
+
+                function msClearMonth(){
+                    const k=msMk(); if(!k) return;
+                    if(!confirm(`¿Borrar todos los datos de ${k}?`)) return;
+                    delete msData[k]; msSave(msData); msRender(); msToast('Mes limpiado','ok');
+                }
+
+                function msToast(msg,type='inf'){
+                    const s=document.getElementById('ms-toast-stack');
+                    const el=document.createElement('div');
+                    el.style.cssText='background:var(--negro);color:white;padding:10px 16px;border-radius:var(--radius-s);font-size:.82rem;font-weight:700;display:flex;align-items:center;gap:8px;box-shadow:0 4px 20px rgba(0,0,0,.2);animation:fadeIn .2s';
+                    const ic={ok:'✅',err:'❌',inf:'ℹ️'};
+                    el.innerHTML=`${ic[type]||'ℹ️'} ${msg}`;
+                    s.appendChild(el); setTimeout(()=>el.remove(),3200);
+                }
+
+                /* ── INIT ── */
+                (function msInit(){
+                    // Sincronizar selects de agente desde el módulo especialista al de agente
+                    const ageMonthInp=document.getElementById('ms-age-month');
+                    const espMonthInp=document.getElementById('ms-month');
+                    if(ageMonthInp&&espMonthInp){
+                        ageMonthInp.addEventListener('change',()=>{
+                            espMonthInp.value=ageMonthInp.value;
+                            msRefreshAgentSel();
+                        });
+                    }
+                    msRefreshAgentSel();
+                })();
+                </script>
+                </div><!-- /page-metricas-semanales -->
+
                 <div class="page-content" id="page-guardia-vacante" style="position:relative">
                     <!-- Login overlay Guardia Vacante -->
                     <div class="adm-login-overlay" id="gv-login-overlay">
