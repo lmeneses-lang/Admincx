@@ -7667,64 +7667,87 @@
                                 <div class="vc-sub">Convierte montos según la tasa de cambio actual</div>
                             </div>
                         </div>
-                        <div class="vc-grid" style="grid-template-columns:repeat(3,1fr)">
-                            <div class="vc-cell vc-input">
-                                <div class="vc-lbl"><span>💲</span> Tipo de divisa</div>
-                                <span class="vc-pct vc-pct-dato">SELECCIONA LA MONEDA</span>
-                                <select class="vc-num" id="tasa-moneda" onchange="tasaCalc()" style="font-size:1rem;text-align:center;cursor:pointer;background:var(--blanco);border:2px solid var(--borde);border-radius:var(--radius-s);padding:10px 8px;width:100%;font-family:var(--font-main);font-weight:700;color:var(--negro);appearance:none;-webkit-appearance:none">
-                                    <option value="$">🇺🇸 Dólar — $</option>
-                                    <option value="COP">🇨🇴 Peso Colombiano — COP</option>
-                                    <option value="Bs">🇻🇪 Bolívar — Bs</option>
-                                </select>
+
+                        <!-- Tasa del día (campo central) -->
+                        <div style="margin-bottom:18px">
+                            <div style="font-family:var(--font-secondary);font-size:.68rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);margin-bottom:6px">📈 Tasa del día (Bs por unidad)</div>
+                            <input type="number" id="tasa-valor" placeholder="Ej: 50.00" step="0.01" min="0" inputmode="decimal"
+                                oninput="tasaCalc()" onfocus="this.select()"
+                                style="width:100%;padding:14px 18px;font-family:var(--font-main);font-size:1.05rem;font-weight:700;border:2px solid var(--borde);border-radius:var(--radius-s);background:var(--blanco);color:var(--negro);outline:none;transition:border-color .2s"
+                                onfocus="this.style.borderColor='var(--verde)';this.select()" onblur="this.style.borderColor='var(--borde)'">
+                        </div>
+
+                        <!-- Conversor estilo Wise/Google -->
+                        <div style="display:flex;align-items:stretch;gap:0;border:2px solid var(--borde);border-radius:16px;overflow:hidden;background:var(--blanco);position:relative">
+
+                            <!-- Panel izquierdo: DE -->
+                            <div style="flex:1;padding:18px 20px;min-width:0">
+                                <div style="font-family:var(--font-secondary);font-size:.65rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);margin-bottom:10px">De</div>
+                                <input type="number" id="tasa-monto" placeholder="0,00" step="0.01" min="0" inputmode="decimal"
+                                    oninput="tasaCalcDesde()" onfocus="this.select()"
+                                    style="width:100%;border:none;outline:none;font-family:var(--font-display);font-size:2rem;letter-spacing:1px;color:var(--negro);background:transparent;padding:0;margin-bottom:12px">
+                                <!-- Selector moneda origen -->
+                                <div style="position:relative;display:inline-block">
+                                    <select id="tasa-moneda" onchange="tasaCalc()"
+                                        style="appearance:none;-webkit-appearance:none;background:var(--gris-1);border:none;border-radius:999px;padding:7px 32px 7px 14px;font-family:var(--font-main);font-size:.88rem;font-weight:800;color:var(--negro);cursor:pointer;outline:none">
+                                        <option value="$">🇺🇸 USD — $</option>
+                                        <option value="COP">🇨🇴 COP — Peso</option>
+                                        <option value="Bs">🇻🇪 VES — Bs</option>
+                                    </select>
+                                    <span style="position:absolute;right:10px;top:50%;transform:translateY(-50%);pointer-events:none;font-size:.7rem;color:var(--gris-4)">▾</span>
+                                </div>
                             </div>
-                            <div class="vc-cell vc-input">
-                                <div class="vc-lbl"><span>📈</span> Tasa del día</div>
-                                <span class="vc-pct vc-pct-dato">VALOR EN Bs POR UNIDAD</span>
-                                <input type="number" class="vc-num" id="tasa-valor" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="tasaCalc()" onfocus="this.select()">
+
+                            <!-- Botón swap central -->
+                            <div style="display:flex;align-items:center;justify-content:center;padding:0 4px;position:relative;z-index:2">
+                                <button onclick="tasaInvertir()" title="Invertir"
+                                    style="width:40px;height:40px;border-radius:50%;border:2px solid var(--borde);background:var(--blanco);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,.08)"
+                                    onmouseover="this.style.background='var(--verde)';this.style.borderColor='var(--verde)'"
+                                    onmouseout="this.style.background='var(--blanco)';this.style.borderColor='var(--borde)'">
+                                    <svg id="tasa-swap-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="transition:transform .35s;color:var(--negro)">
+                                        <path d="M7 16V4m0 0L3 8m4-4l4 4"/><path d="M17 8v12m0 0l4-4m-4 4l-4-4"/>
+                                    </svg>
+                                </button>
                             </div>
-                            <div class="vc-cell vc-input">
-                                <div class="vc-lbl"><span>🔢</span> Monto a consultar</div>
-                                <span class="vc-pct vc-pct-dato">INGRESA EL MONTO</span>
-                                <input type="number" class="vc-num" id="tasa-monto" placeholder="0.00" step="0.01" min="0" inputmode="decimal" oninput="tasaCalc()" onfocus="this.select()">
+
+                            <!-- Panel derecho: A -->
+                            <div style="flex:1;padding:18px 20px;min-width:0;border-left:2px solid var(--borde)">
+                                <div style="font-family:var(--font-secondary);font-size:.65rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-3);margin-bottom:10px">A</div>
+                                <div id="tasa-resultado-num" style="font-family:var(--font-display);font-size:2rem;letter-spacing:1px;color:var(--negro);margin-bottom:12px;min-height:2.4rem">—</div>
+                                <!-- Moneda destino (siempre la contraria) -->
+                                <div style="display:inline-flex;align-items:center;gap:8px;background:var(--gris-1);border-radius:999px;padding:7px 14px">
+                                    <span id="tasa-dest-flag" style="font-size:.88rem">🇻🇪</span>
+                                    <span id="tasa-dest-label" style="font-family:var(--font-main);font-size:.88rem;font-weight:800;color:var(--negro)">VES — Bs</span>
+                                </div>
                             </div>
                         </div>
-                        <!-- Resultado -->
-                        <div id="tasa-resultado-wrap" style="display:none;margin-top:20px;background:linear-gradient(135deg,var(--verde-p),#e0f7f1);border:2px solid var(--verde);border-radius:16px;padding:22px 28px;text-align:center;position:relative">
-                            <div style="font-family:var(--font-secondary);font-size:.7rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--verde);margin-bottom:8px" id="tasa-resultado-label">AL CAMBIO</div>
-                            <div id="tasa-resultado-val" style="font-family:var(--font-display);font-size:2.6rem;letter-spacing:2px;color:var(--negro)">—</div>
-                            <div id="tasa-resultado-detalle" style="font-family:var(--font-secondary);font-size:.82rem;color:var(--gris-4);margin-top:6px;font-weight:600"></div>
-                            <!-- Botón invertir -->
-                            <button onclick="tasaInvertir()" title="Invertir cálculo" style="margin-top:14px;display:inline-flex;align-items:center;gap:8px;background:var(--verde);color:var(--negro);border:none;border-radius:999px;padding:9px 22px;font-family:var(--font-main);font-size:.85rem;font-weight:800;cursor:pointer;letter-spacing:.03em;transition:background .2s,transform .15s" onmouseover="this.style.background='var(--verde-l)'" onmouseout="this.style.background='var(--verde)'">
-                                <span style="font-size:1.1rem;display:inline-block;transition:transform .3s" id="tasa-invertir-icon">⇅</span> Invertir
-                            </button>
-                            <div id="tasa-modo-badge" style="display:none;margin-top:8px;font-family:var(--font-secondary);font-size:.7rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:var(--gris-4)">MODO INVERTIDO · Bs → DIVISA</div>
-                        </div>
+
+                        <!-- Línea de detalle -->
+                        <div id="tasa-resultado-detalle" style="margin-top:12px;font-family:var(--font-secondary);font-size:.82rem;color:var(--gris-4);font-weight:600;min-height:1.2em;text-align:center"></div>
+
+                        <!-- Botones -->
                         <div class="vc-btn-row" style="margin-top:18px">
                             <button class="vc-btn-reset" onclick="tasaReset()">🗑️ Limpiar</button>
                             <button class="vc-btn-copy" onclick="tasaCopiar()">📋 Copiar</button>
                         </div>
+
                         <div class="vc-info-card">
                             <div class="vc-info-title">📌 ¿Cómo funciona?</div>
                             <div class="vc-info-rows">
                                 <div class="vc-info-row">
-                                    <span>💲</span>
-                                    <div><b>Tipo de divisa:</b> Selecciona entre Dólar ($), Peso Colombiano (COP) o Bolívar (Bs).</div>
-                                    <code>DATO</code>
-                                </div>
-                                <div class="vc-info-row">
                                     <span>📈</span>
-                                    <div><b>Tasa del día:</b> Cuántos Bs equivale 1 unidad de esa moneda hoy.</div>
+                                    <div><b>Tasa del día:</b> Cuántos Bs equivale 1 unidad de la divisa hoy.</div>
                                     <code>DATO</code>
                                 </div>
                                 <div class="vc-info-row" style="border-color:rgba(56,206,166,.3);background:rgba(56,206,166,.05)">
                                     <span>⚡</span>
-                                    <div><b style="color:#0d7c5a">Resultado:</b> Monto × Tasa = equivalente en Bs.<br><small style="color:var(--gris-3)">Ej: Tasa $=500Bs · Monto=2$ → Resultado=1.000Bs</small></div>
+                                    <div><b style="color:#0d7c5a">Normal:</b> Monto × Tasa = Bs.<br><small style="color:var(--gris-3)">Ej: 2$ × 500 = 1.000 Bs</small></div>
                                     <code style="color:#0d7c5a">M × T</code>
                                 </div>
                                 <div class="vc-info-row" style="border-color:rgba(39,40,131,.2);background:rgba(39,40,131,.04)">
                                     <span>⇅</span>
-                                    <div><b style="color:var(--azul)">Invertir:</b> Cambia la dirección del cálculo. Resultado ÷ Tasa = monto en divisa.<br><small style="color:var(--gris-3)">Ej: 1.000Bs ÷ 500 = 2$</small></div>
-                                    <code style="color:var(--azul)">R ÷ T</code>
+                                    <div><b style="color:var(--azul)">Invertido:</b> Bs ÷ Tasa = Divisa.<br><small style="color:var(--gris-3)">Ej: 1.000 Bs ÷ 500 = 2$</small></div>
+                                    <code style="color:var(--azul)">Bs ÷ T</code>
                                 </div>
                             </div>
                         </div>
@@ -13104,77 +13127,84 @@ ${contexto}
             // ─── CALCULADORA TASA ───
             let tasaModoInvertido = false;
 
-            function tasaCalc() {
-                const moneda = document.getElementById('tasa-moneda').value || '$';
-                const tasa = parseFloat(document.getElementById('tasa-valor').value) || 0;
-                const monto = parseFloat(document.getElementById('tasa-monto').value) || 0;
-                const wrap = document.getElementById('tasa-resultado-wrap');
-                const val = document.getElementById('tasa-resultado-val');
-                const detalle = document.getElementById('tasa-resultado-detalle');
-                const label = document.getElementById('tasa-resultado-label');
-                const modoBadge = document.getElementById('tasa-modo-badge');
-                if (tasa > 0 && monto > 0) {
-                    wrap.style.display = 'block';
-                    if (!tasaModoInvertido) {
-                        // Normal: monto × tasa = Bs
-                        const resultado = tasa * monto;
-                        label.textContent = 'AL CAMBIO';
-                        label.style.color = 'var(--verde)';
-                        val.textContent = resultado.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
-                        detalle.textContent = monto + ' ' + moneda + ' × ' + tasa.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs/' + moneda + ' = ' + resultado.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs';
-                        modoBadge.style.display = 'none';
-                    } else {
-                        // Invertido: monto Bs ÷ tasa = divisa
-                        const resultado = monto / tasa;
-                        label.textContent = 'EQUIVALENTE EN ' + moneda;
-                        label.style.color = 'var(--azul)';
-                        val.textContent = resultado.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 4}) + ' ' + moneda;
-                        detalle.textContent = monto.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs ÷ ' + tasa.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' = ' + resultado.toLocaleString('es-VE', {minimumFractionDigits: 4}) + ' ' + moneda;
-                        modoBadge.style.display = 'block';
-                    }
+            const TASA_DIVISAS = {
+                '$':   { flag: '🇺🇸', label: 'USD — $' },
+                'COP': { flag: '🇨🇴', label: 'COP — Peso' },
+                'Bs':  { flag: '🇻🇪', label: 'VES — Bs' }
+            };
+
+            function tasaActualizarDestino() {
+                const moneda = document.getElementById('tasa-moneda').value;
+                const flag  = document.getElementById('tasa-dest-flag');
+                const lbl   = document.getElementById('tasa-dest-label');
+                if (!tasaModoInvertido) {
+                    // Destino = Bs
+                    if (flag) flag.textContent = '🇻🇪';
+                    if (lbl)  lbl.textContent  = 'VES — Bs';
                 } else {
-                    wrap.style.display = 'none';
+                    // Destino = moneda seleccionada
+                    const d = TASA_DIVISAS[moneda] || { flag: '💱', label: moneda };
+                    if (flag) flag.textContent = d.flag;
+                    if (lbl)  lbl.textContent  = d.label;
                 }
             }
 
+            function tasaCalc() {
+                tasaActualizarDestino();
+                const moneda  = document.getElementById('tasa-moneda').value || '$';
+                const tasa    = parseFloat(document.getElementById('tasa-valor').value) || 0;
+                const monto   = parseFloat(document.getElementById('tasa-monto').value) || 0;
+                const resNum  = document.getElementById('tasa-resultado-num');
+                const detalle = document.getElementById('tasa-resultado-detalle');
+                if (tasa > 0 && monto > 0) {
+                    if (!tasaModoInvertido) {
+                        const resultado = tasa * monto;
+                        resNum.textContent  = resultado.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' Bs';
+                        detalle.textContent = monto + ' ' + moneda + ' × ' + tasa.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' = ' + resultado.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs';
+                    } else {
+                        const resultado = monto / tasa;
+                        resNum.textContent  = resultado.toLocaleString('es-VE', {minimumFractionDigits: 2, maximumFractionDigits: 4}) + ' ' + moneda;
+                        detalle.textContent = monto.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' Bs ÷ ' + tasa.toLocaleString('es-VE', {minimumFractionDigits: 2}) + ' = ' + resultado.toLocaleString('es-VE', {minimumFractionDigits: 4}) + ' ' + moneda;
+                    }
+                } else {
+                    resNum.textContent  = '—';
+                    detalle.textContent = '';
+                }
+            }
+
+            function tasaCalcDesde() { tasaCalc(); }
+
             function tasaInvertir() {
                 tasaModoInvertido = !tasaModoInvertido;
-                const icon = document.getElementById('tasa-invertir-icon');
-                const lbl3 = document.querySelector('#page-calc-tasa .vc-cell:nth-child(3) .vc-lbl');
-                const lbl3hint = document.querySelector('#page-calc-tasa .vc-cell:nth-child(3) .vc-pct');
-                const moneda = document.getElementById('tasa-moneda').value || '$';
-                if (tasaModoInvertido) {
-                    icon.style.transform = 'rotate(180deg)';
-                    if (lbl3) lbl3.innerHTML = '<span>🔢</span> Monto en Bs';
-                    if (lbl3hint) lbl3hint.textContent = 'INGRESA EL MONTO EN Bs';
-                } else {
-                    icon.style.transform = 'rotate(0deg)';
-                    if (lbl3) lbl3.innerHTML = '<span>🔢</span> Monto a consultar';
-                    if (lbl3hint) lbl3hint.textContent = 'INGRESA EL MONTO';
-                }
+                // Rotar ícono SVG
+                const icon = document.getElementById('tasa-swap-icon');
+                if (icon) icon.style.transform = tasaModoInvertido ? 'rotate(180deg)' : 'rotate(0deg)';
+                // Cambiar labels De/A
+                const labelDe = document.querySelector('#page-calc-tasa [style*="margin-bottom:10px"]');
+                tasaActualizarDestino();
+                // Intercambiar placeholder del input
+                const inp = document.getElementById('tasa-monto');
+                if (inp) inp.placeholder = tasaModoInvertido ? 'Monto en Bs' : '0,00';
                 tasaCalc();
             }
 
             function tasaReset() {
-                const el2 = document.getElementById('tasa-valor'); if(el2) el2.value = '';
-                const el3 = document.getElementById('tasa-monto'); if(el3) el3.value = '';
-                document.getElementById('tasa-resultado-wrap').style.display = 'none';
-                // Reset modo
+                document.getElementById('tasa-valor').value = '';
+                document.getElementById('tasa-monto').value = '';
+                document.getElementById('tasa-resultado-num').textContent  = '—';
+                document.getElementById('tasa-resultado-detalle').textContent = '';
                 tasaModoInvertido = false;
-                const icon = document.getElementById('tasa-invertir-icon');
+                const icon = document.getElementById('tasa-swap-icon');
                 if (icon) icon.style.transform = 'rotate(0deg)';
-                const lbl3 = document.querySelector('#page-calc-tasa .vc-cell:nth-child(3) .vc-lbl');
-                const lbl3hint = document.querySelector('#page-calc-tasa .vc-cell:nth-child(3) .vc-pct');
-                if (lbl3) lbl3.innerHTML = '<span>🔢</span> Monto a consultar';
-                if (lbl3hint) lbl3hint.textContent = 'INGRESA EL MONTO';
+                tasaActualizarDestino();
             }
 
             function tasaCopiar() {
-                const moneda = document.getElementById('tasa-moneda').value || '$';
-                const tasa = document.getElementById('tasa-valor').value;
-                const monto = document.getElementById('tasa-monto').value;
-                const val = document.getElementById('tasa-resultado-val').textContent;
-                if (!tasa || !monto) { alert('Realiza un cálculo primero'); return; }
+                const moneda  = document.getElementById('tasa-moneda').value || '$';
+                const tasa    = document.getElementById('tasa-valor').value;
+                const monto   = document.getElementById('tasa-monto').value;
+                const val     = document.getElementById('tasa-resultado-num').textContent;
+                if (!tasa || !monto || val === '—') { alert('Realiza un cálculo primero'); return; }
                 const modoTxt = tasaModoInvertido ? 'Bs → ' + moneda : moneda + ' → Bs';
                 const txt = '💱 TASA DEL DÍA — RIDERY ADMIN\n' +
                     '────────────────────────────────────\n' +
