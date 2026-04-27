@@ -7029,6 +7029,16 @@
                             </div>
                         </div>
                     </div>
+                    <!-- NAV solo para Agente Remoto -->
+                    <div id="nav-metricas-remoto-section" style="display:none">
+                        <div class="nav-section-label" style="margin-top:10px;border-top:1px solid rgba(56,206,166,.12);padding-top:10px">Mi Rendimiento</div>
+                        <div class="nav-item">
+                            <div class="nav-item-header" onclick="navigateTo('metricas-semanales', this)">
+                                <span class="nav-icon">📈</span>
+                                <span class="nav-label">Ver Mi Progreso</span>
+                            </div>
+                        </div>
+                    </div>
                     <div id="nav-admin-section" style="display:none">
                         <!-- ADMINISTRATIVE -->
                         <div class="nav-section-label" style="margin-top:10px;border-top:1px solid rgba(56,206,166,.12);padding-top:10px">Administrative</div>
@@ -8755,13 +8765,81 @@
                    MÉTRICAS SEMANALES — LÓGICA COMPLETA
                 ══════════════════════════════════════════ */
 
-                /* ── STORAGE (localStorage con prefijo) ── */
-                const MS_KEY = 'ms_v1';
-                function msLoad(){ try{ return JSON.parse(localStorage.getItem(MS_KEY))||{}; }catch(e){return{};} }
-                function msSave(d){ localStorage.setItem(MS_KEY, JSON.stringify(d)); }
+                /* ── STORAGE — API MongoDB ── */
+                let msData = {};          // cache local { [mesKey]: doc }
+                let msSaving = false;
 
-                let msData       = msLoad();           // { [monthKey]: { weeks:[], agents:{}, data:{} } }
-                let msKnownAgent = {};                  // { agentName: { shift:'' } }
+                async function msApiGet(mes, agente) {
+                    const url = '/api/metricas-semanales?mes=' + mes + (agente ? '&agente=' + encodeURIComponent(agente) : '');
+                    const r = await fetch(url);
+                    const j = await r.json();
+                    return j.ok ? j.data : null;
+                }
+
+                async function msApiPost(mesKey, semanas) {
+                    const r = await fetch('/api/metricas-semanales', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mesKey, semanas })
+                    });
+                    return (await r.json());
+                }
+
+                async function msApiPut(mesKey, semanaIndex, agente, campos) {
+                    const r = await fetch('/api/metricas-semanales', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ mesKey, semanaIndex, agente, campos })
+                    });
+                    return (await r.json());
+                }
+
+                // Convierte doc de API → formato interno msData[k]
+                function msDocToLocal(doc) {
+                    if (!doc) return null;
+                    const result = { weeks: [], agents: {}, data: {} };
+                    (doc.semanas || []).forEach((s, wi) => {
+                        result.weeks.push({ label: s.label, start: s.start, end: s.end });
+                        result.data[wi] = {};
+                        (s.datos || []).forEach(d => {
+                            result.agents[d.agente] = { shift: d.turno || '' };
+                            result.data[wi][d.agente] = { ...d };
+                        });
+                    });
+                    return result;
+                }
+
+                // Convierte msData[k] → formato semanas para API
+                function msLocalToSemanas(k) {
+                    const m = msData[k];
+                    if (!m) return [];
+                    return m.weeks.map((w, wi) => ({
+                        label: w.label, start: w.start, end: w.end || '',
+                        datos: Object.entries(m.data[wi] || {}).map(([ag, d]) => ({
+                            agente: ag, turno: m.agents[ag]?.shift || '', ...d
+                        }))
+                    }));
+                }
+
+                async function msSave(k) {
+                    if (!k || msSaving) return;
+                    msSaving = true;
+                    try {
+                        await msApiPost(k, msLocalToSemanas(k));
+                    } catch(e) { msToast('Error guardando en base de datos', 'err'); }
+                    finally { msSaving = false; }
+                }
+
+                async function msLoadMonth(k) {
+                    if (!k) return;
+                    if (msData[k]) return; // ya en cache
+                    const doc = await msApiGet(k);
+                    if (doc) {
+                        msData[k] = msDocToLocal(doc);
+                    }
+                }
+
+                let msKnownAgent = {};
                 function msMk(){ return document.getElementById('ms-month')?.value||''; }
 
                 function msEnsureMonth(k){
@@ -8833,8 +8911,9 @@
 
                 /* ── RENDER TABLA ESPECIALISTA ── */
                 const MONTHS_ES=['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
-                function msRender(){
+                async function msRender(){
                     const k=msMk();
+                    await msLoadMonth(k);
                     msRefreshAgentSel();
                     const wrap=document.getElementById('ms-table-wrap');
                     if(!k){ wrap.innerHTML='<div class="ms-empty"><i class="fas fa-calendar"></i><p>Seleccioná un mes</p></div>'; return; }
@@ -8932,9 +9011,10 @@
 
                 /* ── RENDER VISTA AGENTE ── */
                 let msSelectedWeek=0;
-                function msRenderAgent(){
+                async function msRenderAgent(){
                     const k=document.getElementById('ms-age-month')?.value||'';
                     const ag=document.getElementById('ms-age-agent')?.value||'';
+                    await msLoadMonth(k);
                     const header=document.getElementById('ms-age-header');
                     const cont=document.getElementById('ms-age-content');
                     if(!k||!ag){ if(header) header.style.display='none'; if(cont) cont.innerHTML=''; return; }
@@ -9120,13 +9200,13 @@
                     weeks.push({label:`Semana ${weeks.length+1}`,start:msFmtDate(new Date(y,m-1,22)),end:msFmtDate(new Date(y,m,0))});
                     msEnsureMonth(k).weeks=weeks; msOpenWeekConfig();
                 }
-                function msSaveWeekConfig(){
+                async function msSaveWeekConfig(){
                     const k=msMk(); const weeks=msGetWeeks(k);
                     weeks.forEach((_,i)=>{
                         const s=document.getElementById(`ms-wcs${i}`)?.value; const e=document.getElementById(`ms-wce${i}`)?.value;
                         if(s) weeks[i].start=s; if(e) weeks[i].end=e;
                     });
-                    msEnsureMonth(k).weeks=weeks; msSave(msData); msCloseWeekConfig(); msRender(); msToast('Semanas guardadas','ok');
+                    msEnsureMonth(k).weeks=weeks; await msSave(k); msCloseWeekConfig(); msRender(); msToast('Semanas guardadas','ok');
                 }
                 function msCloseWeekConfig(){ document.getElementById('ms-modal-weeks').classList.add('hidden'); }
 
@@ -9139,7 +9219,7 @@
                     document.getElementById('ms-modal-import').classList.remove('hidden');
                 }
                 function msCloseImport(){ document.getElementById('ms-modal-import').classList.add('hidden'); document.getElementById('ms-imp-data').value=''; }
-                function msRunImport(){
+                async function msRunImport(){
                     const raw=document.getElementById('ms-imp-data').value.trim();
                     if(!raw){msToast('No hay datos para importar','err');return;}
                     const k=msMk(); const wi=parseInt(document.getElementById('ms-imp-week').value);
@@ -9151,7 +9231,7 @@
                         const c=line.split('\t'); const ag=c[0]?.trim(); if(!ag) return;
                         msSetD(k,wi,ag,{tickets:pn(c[1]),avgDaily:pn(c[2]),ticketsBad:pn(c[3]),ticketsGood:pn(c[4]),firstResponse:pn(c[5]),resolutionTime:pn(c[6])}); n++;
                     });
-                    msSave(msData); msRefreshAgentSel(); msCloseImport(); msRender(); msToast(`${n} agente(s) importados`,'ok');
+                    await msSave(k); msRefreshAgentSel(); msCloseImport(); msRender(); msToast(`${n} agente(s) importados`,'ok');
                 }
 
                 function msOpenMetrics(k,wi,ag,wl){
@@ -9164,10 +9244,10 @@
                     document.getElementById('ms-modal-metrics').classList.remove('hidden');
                 }
                 function msCloseMetrics(){ document.getElementById('ms-modal-metrics').classList.add('hidden'); }
-                function msSaveMetrics(){
+                async function msSaveMetrics(){
                     const k=document.getElementById('ms-mm-k').value; const wi=parseInt(document.getElementById('ms-mm-wi').value); const ag=document.getElementById('ms-mm-ag').value;
                     msSetD(k,wi,ag,{tickets:parseFloat(document.getElementById('ms-mm-tickets').value)||0,avgDaily:parseFloat(document.getElementById('ms-mm-avg').value)||0,ticketsBad:parseFloat(document.getElementById('ms-mm-bad').value)||0,ticketsGood:parseFloat(document.getElementById('ms-mm-good').value)||0,firstResponse:parseFloat(document.getElementById('ms-mm-first').value)||0,resolutionTime:parseFloat(document.getElementById('ms-mm-resol').value)||0});
-                    msSave(msData); msCloseMetrics(); msRender(); msToast('Métricas guardadas','ok');
+                    await msSave(k); msCloseMetrics(); msRender(); msToast('Métricas guardadas','ok');
                 }
 
                 function msOpenQuality(k,wi,ag,wl){
@@ -9178,17 +9258,17 @@
                     document.getElementById('ms-modal-quality').classList.remove('hidden');
                 }
                 function msCloseQuality(){ document.getElementById('ms-modal-quality').classList.add('hidden'); }
-                function msSaveQuality(){
+                async function msSaveQuality(){
                     const k=document.getElementById('ms-q-k').value; const wi=parseInt(document.getElementById('ms-q-wi').value); const ag=document.getElementById('ms-q-ag').value;
                     const v=parseFloat(document.getElementById('ms-q-score').value);
                     if(isNaN(v)||v<0||v>100){msToast('Ingresá un valor entre 0 y 100','err');return;}
-                    msSetD(k,wi,ag,{pctCalidad:v}); msSave(msData); msCloseQuality(); msRender(); msToast(`% Calidad de ${ag} → ${v}%`,'ok');
+                    msSetD(k,wi,ag,{pctCalidad:v}); await msSave(k); msCloseQuality(); msRender(); msToast(`% Calidad de ${ag} → ${v}%`,'ok');
                 }
 
-                function msClearMonth(){
+                async function msClearMonth(){
                     const k=msMk(); if(!k) return;
                     if(!confirm(`¿Borrar todos los datos de ${k}?`)) return;
-                    delete msData[k]; msSave(msData); msRender(); msToast('Mes limpiado','ok');
+                    delete msData[k]; await msApiPost(k, []); msRender(); msToast('Mes limpiado','ok');
                 }
 
                 function msToast(msg,type='inf'){
@@ -10686,6 +10766,23 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 const calidadSection = document.getElementById('nav-calidad-section');
                 if (calidadSection)
                     calidadSection.style.display = (isAdmin || isCalidad) ? '' : 'none';
+                
+                // Agente Remoto: mostrar sección métricas y auto-seleccionar su vista
+                const isRemoto = (loginType === 'remoto');
+                const navMetricas = document.getElementById('nav-metricas-remoto-section');
+                if (navMetricas) navMetricas.style.display = isRemoto ? '' : 'none';
+                const tabEsp = document.getElementById('ms-tab-esp');
+                if (tabEsp) tabEsp.style.display = isRemoto ? 'none' : '';
+                if (isRemoto) {
+                    msSetTab('agente');
+                    setTimeout(() => {
+                        const ageAgentSel = document.getElementById('ms-age-agent');
+                        if (!ageAgentSel) return;
+                        const opts = Array.from(ageAgentSel.options);
+                        const match = opts.find(o => o.value.toLowerCase().includes((currentUser||'').toLowerCase()));
+                        if (match) { ageAgentSel.value = match.value; msRenderAgent(); }
+                    }, 600);
+                }
 
                 if (isAdmin) {
                     document.querySelectorAll('.adm-login-overlay').forEach(function(el) {
