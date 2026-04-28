@@ -19,6 +19,12 @@ module.exports = async function handler(req, res) {
         const guardias = await GuardiaVacante.find({ nombreAgente: agente }).sort({ fecha: -1 });
         return res.status(200).json({ success: true, data: guardias });
       }
+      if (vista === 'mis' && agente) {
+  const guardias = await GuardiaVacante
+    .find({ nombreAgente: agente, estado: 'aceptada' })
+    .sort({ fecha: -1 });
+  return res.status(200).json({ success: true, data: guardias });
+}
       const guardias = await GuardiaVacante.find({}).sort({ fecha: -1 });
       return res.status(200).json({ success: true, data: guardias });
     } catch (err) {
