@@ -8632,11 +8632,11 @@
                                 <span style="font-size:.7rem;color:var(--gris-3);font-weight:600">Si se deja vacío se detecta del archivo</span>
                             </div>
                         </div>
-                        <label style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;border:2px dashed var(--borde);border-radius:var(--radius-s);cursor:pointer;background:var(--fondo);margin-bottom:14px">
+                        <div onclick="document.getElementById('hc-imp-file').click()" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;border:2px dashed var(--borde);border-radius:var(--radius-s);cursor:pointer;background:var(--fondo);margin-bottom:14px">
                             <span style="font-size:1.5rem">📂</span>
                             <span style="font-weight:700;font-size:.88rem;color:var(--gris-4)" id="hc-imp-filename">Haz clic para seleccionar el archivo .xlsx</span>
                             <input type="file" id="hc-imp-file" accept=".xlsx" style="display:none" onchange="hcOnFileSelect(this)">
-                        </label>
+                        </div>
                         <div id="hc-imp-preview" style="display:none;margin-bottom:14px;max-height:200px;overflow-y:auto;border:1px solid var(--borde);border-radius:var(--radius-s)">
                             <table style="width:100%;border-collapse:collapse;font-size:.78rem">
                                 <thead><tr style="background:var(--negro);color:var(--blanco)">
@@ -9609,7 +9609,7 @@
                 }
 
                 /* ── RENDER VISTA AGENTE ── */
-                let msSelectedWeek=0;
+                if(window.msSelectedWeek===undefined) window.msSelectedWeek=0;
                 async function msRenderAgent(){
                     const k=document.getElementById('ms-age-month')?.value||'';
                     const ag=document.getElementById('ms-age-agent')?.value||'';
@@ -9629,15 +9629,15 @@
                     const pillsEl=document.getElementById('ms-age-pills');
                     pillsEl.innerHTML=weeks.map((w,i)=>{
                         const hasData=!!msGetD(k,i,ag);
-                        return `<button class="ms-wpill ${hasData?'has-data':''} ${i===msSelectedWeek?'active':''}" onclick="msSelectWeek(${i})">${w.label}</button>`;
+                        return `<button class="ms-wpill ${hasData?'has-data':''} ${i===window.msSelectedWeek?'active':''}" onclick="msSelectWeek(${i})">${w.label}</button>`;
                     }).join('');
                     // Content
                     msRenderAgentWeek(k,ag,weeks);
                 }
-                function msSelectWeek(i){ msSelectedWeek=i; msRenderAgent(); }
+                function msSelectWeek(i){ window.msSelectedWeek=i; msRenderAgent(); }
                 function msRenderAgentWeek(k,ag,weeks){
                     const cont=document.getElementById('ms-age-content');
-                    const wi=msSelectedWeek;
+                    const wi=window.msSelectedWeek;
                     const dc=msGetD(k,wi,ag);
                     const prevWi=wi>0?wi-1:null;
                     const dp=prevWi!==null?msGetD(k,prevWi,ag):null;
@@ -9745,7 +9745,7 @@
                             </div>
                         </div>
                         <p style="font-size:1rem;font-weight:800;color:var(--negro)">${scEmoji} ${scMsg}</p>
-                        ${sp!=null?`<p style="color:var(--gris-4);font-size:.82rem;margin-top:6px">Semana anterior: <strong>${sp}/100</strong> ${sc>=sp?'📈 Mejoraste':'📉 Bajaste'}</p>`:''}
+                        ${sp!=null?`<p style="color:var(--gris-4);font-size:.82rem;margin-top:6px">${w1?w1.label:'Semana anterior'}: <strong>${sp}/100</strong> ${sc>=sp?'📈 Mejoraste':'📉 Bajaste'}</p>`:''}
                     </div>
 
                     <!-- Comparativa -->
