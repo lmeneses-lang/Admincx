@@ -15,16 +15,19 @@ module.exports = async function handler(req, res) {
           .sort({ fecha: 1 });
         return res.status(200).json({ success: true, data: guardias });
       }
+
       if (vista === 'historial' && agente) {
         const guardias = await GuardiaVacante.find({ nombreAgente: agente }).sort({ fecha: -1 });
         return res.status(200).json({ success: true, data: guardias });
       }
+
       if (vista === 'mis' && agente) {
-  const guardias = await GuardiaVacante
-    .find({ nombreAgente: agente, estado: 'aceptada' })
-    .sort({ fecha: -1 });
-  return res.status(200).json({ success: true, data: guardias });
-}
+        const guardias = await GuardiaVacante
+          .find({ nombreAgente: agente, estado: 'aceptada' })
+          .sort({ fecha: -1 });
+        return res.status(200).json({ success: true, data: guardias });
+      }
+
       const guardias = await GuardiaVacante.find({}).sort({ fecha: -1 });
       return res.status(200).json({ success: true, data: guardias });
     } catch (err) {
@@ -34,6 +37,7 @@ module.exports = async function handler(req, res) {
 
   if (method === 'POST') {
     const { accion } = req.body;
+
     if (accion === 'aceptar') {
       const { guardiaId, nombreAgente } = req.body;
       try {
@@ -50,6 +54,7 @@ module.exports = async function handler(req, res) {
         return res.status(500).json({ success: false, error: err.message });
       }
     }
+
     try {
       const guardia = new GuardiaVacante(req.body);
       await guardia.save();
