@@ -763,6 +763,85 @@
             }
             .notif-clear-btn:hover { background: var(--gris-1); }
 
+            /* ── SURGE BADGE ── */
+            .gv-surge-badge {
+                background: linear-gradient(135deg, #D97706, #F59E0B);
+                color: #fff;
+                border-radius: var(--radius-s);
+                padding: 10px 14px;
+                font-size: .82rem;
+                font-weight: 900;
+                letter-spacing: .04em;
+                text-align: center;
+                margin-bottom: 10px;
+                animation: surgePulse 1.4s ease-in-out infinite;
+            }
+            @keyframes surgePulse {
+                0%,100% { opacity:1; transform:scale(1); }
+                50%      { opacity:.85; transform:scale(1.02); }
+            }
+
+            /* ── MIS GUARDIAS (remoto) ── */
+            .gv-mis-section { margin-top: 32px; }
+            .gv-mis-title {
+                font-size: 1rem;
+                font-weight: 900;
+                color: var(--negro);
+                margin-bottom: 4px;
+            }
+            .gv-mis-sub {
+                font-size: .78rem;
+                color: var(--gris-4);
+                font-weight: 600;
+                margin-bottom: 18px;
+            }
+            .gv-mis-group { margin-bottom: 24px; }
+            .gv-mis-group-title {
+                font-size: .78rem;
+                font-weight: 900;
+                letter-spacing: .06em;
+                text-transform: uppercase;
+                color: var(--gris-4);
+                margin-bottom: 10px;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .gv-mis-card {
+                background: var(--blanco);
+                border: 1.5px solid var(--borde);
+                border-radius: var(--radius-s);
+                padding: 14px 16px;
+                margin-bottom: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+                box-shadow: 0 2px 8px rgba(15,17,30,.06);
+            }
+            .gv-mis-card-info { flex: 1; }
+            .gv-mis-card-fecha {
+                font-size: .84rem;
+                font-weight: 800;
+                color: var(--negro);
+                margin-bottom: 2px;
+            }
+            .gv-mis-card-sub {
+                font-size: .74rem;
+                color: var(--gris-4);
+                font-weight: 600;
+            }
+            .gv-mis-pill {
+                border-radius: 999px;
+                padding: 4px 12px;
+                font-size: .7rem;
+                font-weight: 900;
+                white-space: nowrap;
+            }
+            .gv-mis-pill.pendiente  { background: var(--amber-p);  color: var(--amber); }
+            .gv-mis-pill.por-pagar  { background: var(--azul-p);   color: var(--azul);  }
+            .gv-mis-pill.pagada     { background: var(--verde-p);   color: #1a7a5e;      }
+
             .page-content {
                 flex: 1;
                 padding: 32px;
@@ -17339,6 +17418,27 @@ ${contexto}
       <div class="gv-empty-icon">🎉</div>
       No hay guardias vacantes disponibles en este momento.
     </div>
+
+    <!-- MIS GUARDIAS (solo remoto, solo si tiene guardias aceptadas) -->
+    <div class="gv-mis-section" id="gv-mis-section" style="display:none">
+      <div class="gv-mis-title">🗂️ Mis Guardias</div>
+      <div class="gv-mis-sub">Historial de guardias vacantes que has tomado</div>
+
+      <div class="gv-mis-group" id="gv-mis-pendientes-group">
+        <div class="gv-mis-group-title">⏳ Pendientes por realizar</div>
+        <div id="gv-mis-pendientes"></div>
+      </div>
+
+      <div class="gv-mis-group" id="gv-mis-porpagar-group">
+        <div class="gv-mis-group-title">💳 Realizadas — Por cobrar</div>
+        <div id="gv-mis-porpagar"></div>
+      </div>
+
+      <div class="gv-mis-group" id="gv-mis-pagadas-group">
+        <div class="gv-mis-group-title">✅ Pagadas</div>
+        <div id="gv-mis-pagadas"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ══ PESTAÑA: REGISTRO & PAGOS (solo admin) ════════════════════ -->
@@ -17531,6 +17631,59 @@ async function gvCargarRemoto() {
   } catch (e) {
     console.error('[GV] Error cargando vacantes:', e);
   }
+  // También cargar Mis Guardias
+  try {
+    const agente = (typeof currentUser !== 'undefined' ? currentUser : '') || '';
+    if (!agente) return;
+    const res2  = await fetch('/api/guardias?vista=mis&agente=' + encodeURIComponent(agente));
+    const json2 = await res2.json();
+    if (json2.success) gvRenderMisGuardias(json2.data);
+  } catch (e) {
+    console.warn('[GV] Mis guardias no disponibles:', e);
+  }
+}
+
+function gvRenderMisGuardias(guardias) {
+  const section = document.getElementById('gv-mis-section');
+  if (!guardias || !guardias.length) {
+    if (section) section.style.display = 'none';
+    return;
+  }
+  section.style.display = 'block';
+
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+
+  const pendientes = guardias.filter(g => !g.pagada && new Date(g.fecha) >= hoy);
+  const porPagar   = guardias.filter(g => !g.pagada && new Date(g.fecha) < hoy);
+  const pagadas    = guardias.filter(g =>  g.pagada);
+
+  function renderGrupo(containerId, groupId, lista) {
+    const grp = document.getElementById(groupId);
+    const cnt = document.getElementById(containerId);
+    if (!lista.length) { if (grp) grp.style.display = 'none'; return; }
+    if (grp) grp.style.display = '';
+    cnt.innerHTML = lista.map(g => {
+      const fecha = new Date(g.fecha).toLocaleDateString('es-VE', {
+        weekday:'short', day:'numeric', month:'short', year:'numeric'
+      });
+      const esPend   = !g.pagada && new Date(g.fecha) >= hoy;
+      const esPorPag = !g.pagada && new Date(g.fecha) < hoy;
+      const pillCls  = g.pagada ? 'pagada' : esPend ? 'pendiente' : 'por-pagar';
+      const pillTxt  = g.pagada ? '✅ Pagada' : esPend ? '⏳ Pendiente' : '💳 Por cobrar';
+      return `
+        <div class="gv-mis-card">
+          <div class="gv-mis-card-info">
+            <div class="gv-mis-card-fecha">${fecha} · ${g.turno}</div>
+            <div class="gv-mis-card-sub">📞 ${g.cola} &nbsp;·&nbsp; ⏰ ${g.horaInicio}–${g.horaFin}</div>
+          </div>
+          <span class="gv-mis-pill ${pillCls}">${pillTxt}</span>
+        </div>`;
+    }).join('');
+  }
+
+  renderGrupo('gv-mis-pendientes', 'gv-mis-pendientes-group', pendientes);
+  renderGrupo('gv-mis-porpagar',   'gv-mis-porpagar-group',   porPagar);
+  renderGrupo('gv-mis-pagadas',    'gv-mis-pagadas-group',    pagadas);
 }
 
 function gvRenderVacantesRemoto(guardias) {
@@ -17552,12 +17705,9 @@ function gvRenderVacantesRemoto(guardias) {
       weekday:'long', year:'numeric', month:'long', day:'numeric'
     });
 
-    const montoLabel = g.tipoPago === 'horas'
-      ? `$${g.montoPago}/hora`
-      : `$${g.montoPago} fijo`;
-
-    const penHtml = (g.mostrarPenalizacion && g.montoPenalizacion > 0)
-      ? `<div class="gv-penalizacion">⚠️ Esta guardia tiene un costo de $${g.montoPenalizacion} si no es tomada</div>`
+    // Monto OCULTO para remoto — solo muestra SURGE si el admin lo activó
+    const surgeHtml = (g.mostrarPenalizacion && g.montoPenalizacion > 0)
+      ? `<div class="gv-surge-badge">❗ SURGE — ¡Tarifa aumentada!</div>`
       : '';
 
     card.innerHTML = `
@@ -17567,9 +17717,8 @@ function gvRenderVacantesRemoto(guardias) {
         <div class="gv-card-row">🔄 Turno: <span>${g.turno}</span></div>
         <div class="gv-card-row">📞 Cola: <span>${g.cola}</span></div>
         <div class="gv-card-row">⏰ Horario: <span>${g.horaInicio} – ${g.horaFin}</span></div>
-        <div class="gv-card-row">💵 Pago: <span>${montoLabel}</span></div>
       </div>
-      ${penHtml}
+      ${surgeHtml}
       <button class="gv-btn-aceptar" onclick="gvAceptarVacante('${g._id}', this)">
         ✅ Aceptar guardia
       </button>
@@ -17608,6 +17757,8 @@ async function gvAceptarVacante(guardiaId, btn) {
       if (!document.querySelectorAll('.gv-card').length) {
         document.getElementById('gv-empty-vacantes').style.display = 'block';
       }
+      // Recargar Mis Guardias para que aparezca la nueva
+      gvCargarRemoto();
     }, 320);
 
   } catch (e) {
