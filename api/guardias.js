@@ -1,9 +1,8 @@
 // api/guardias.js
 // Vercel Serverless Function — todas las operaciones de Guardia Vacante
 
-import dbConnect from '../lib/dbConnect.js';
+import dbConnect from '../lib/mongodb.js';
 import GuardiaVacante from '../models/GuardiaVacante.js';
-import Usuario from '../models/Usuario.js';
 
 export default async function handler(req, res) {
   await dbConnect();
