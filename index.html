@@ -13214,139 +13214,8 @@ ${contexto}
             //  GUARDIA VACANTE — Exportar Imagen (canvas)
             // ═══════════════════════════════════════════
             function gvExportarImagenResumen() {
-                const aceptadas = (typeof gvGuardias !== 'undefined') ? gvGuardias.filter(g => g.estado === 'aceptada') : [];
-                if (!aceptadas.length) {
-                    alert('No hay guardias aceptadas para exportar');
-                    return;
-                }
-
-                // Construir mapa por agente (misma lógica que gvRenderResumen)
-                const mapa = {};
-                aceptadas.forEach(g => {
-                    const nombre = g.nombreAgente || 'Sin asignar';
-                    if (!mapa[nombre]) mapa[nombre] = { remoto: 0, horas: 0, presencial: 0, km: 0, tr: 0, th: 0, tp: 0, total: 0 };
-                    let monto = g.montoPago || 0;
-                    if (g.tipoPago === 'horas' && g.horaInicio && g.horaFin) {
-                        const [hI, mI] = g.horaInicio.split(':').map(Number);
-                        const [hF, mF] = g.horaFin.split(':').map(Number);
-                        monto = (((hF * 60 + mF) - (hI * 60 + mI)) / 60) * g.montoPago;
-                        mapa[nombre].horas++;
-                        mapa[nombre].th += monto;
-                    } else if (g.tipoPago === 'presencial') {
-                        mapa[nombre].presencial++;
-                        mapa[nombre].tp += monto;
-                    } else {
-                        mapa[nombre].remoto++;
-                        mapa[nombre].tr += monto;
-                    }
-                    mapa[nombre].km += g.km || 0;
-                    mapa[nombre].total += monto;
-                });
-
-                const registros = Object.entries(mapa);
-                const totGeneral = registros.reduce((s, [, d]) => s + d.total, 0);
-                const fecha = new Date().toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
-
-                const filas = registros.map(([nombre, r], i) => `
-                  <tr>
-                    <td style="padding:13px 16px;font-size:.85rem;font-weight:700;color:#9BB5AC">${i + 1}</td>
-                    <td style="padding:13px 16px;font-size:.92rem;font-weight:800;color:#0F111E">${nombre}</td>
-                    <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
-                      ${r.remoto}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.tr.toFixed(2)})</span>
-                    </td>
-                    <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
-                      ${r.horas}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.th.toFixed(2)})</span>
-                    </td>
-                    <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
-                      ${r.presencial}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.tp.toFixed(2)})</span>
-                    </td>
-                    <td style="padding:13px 16px;font-size:.85rem;color:#5A7A70">${r.km} km</td>
-                    <td style="padding:13px 16px;font-size:1.05rem;font-weight:900;color:#38CEA6">$${r.total.toFixed(2)}</td>
-                  </tr>`).join('');
-
-                const html = `<!DOCTYPE html>
-<html lang="es"><head><meta charset="UTF-8">
-<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-<style>
-* { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:'Urbanist',Arial,sans-serif; background:#F6FAF9; padding:36px; color:#0F111E; }
-.card { background:#fff; border-radius:18px; padding:36px; box-shadow:0 4px 32px rgba(0,0,0,.09); max-width:980px; margin:0 auto; }
-.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; padding-bottom:20px; border-bottom:2px solid #E8FAF5; }
-.logo-row { display:flex; align-items:center; gap:14px; }
-.logo-mark { width:52px; height:52px; background:linear-gradient(135deg,#0F111E,#1A1D30); border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; font-weight:900; color:#38CEA6; }
-.logo-text h1 { font-size:1.45rem; font-weight:900; color:#0F111E; }
-.logo-text p { font-size:.72rem; font-weight:700; color:#9BB5AC; text-transform:uppercase; letter-spacing:.08em; }
-.badge { background:#E8FAF5; border:1.5px solid rgba(56,206,166,.3); border-radius:999px; padding:8px 18px; font-size:.78rem; font-weight:800; color:#0F111E; }
-h2 { font-size:.72rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:#38CEA6; border-left:3px solid #D71D5C; padding-left:9px; margin-bottom:16px; }
-table { width:100%; border-collapse:collapse; font-size:.85rem; }
-thead { background:#0F111E; }
-th { padding:12px 16px; text-align:left; font-size:.62rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.7); white-space:nowrap; }
-tbody tr { border-bottom:1px solid #EEF2F0; }
-tbody tr:last-child { border-bottom:none; }
-.footer { margin-top:20px; background:#0F111E; border-radius:12px; padding:20px 28px; display:flex; align-items:center; justify-content:space-between; }
-.ft-label { font-size:.72rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.5); }
-.ft-sub { font-size:.7rem; color:rgba(255,255,255,.3); margin-top:4px; font-weight:600; }
-.ft-val { font-size:2.2rem; font-weight:900; color:#fbbf24; letter-spacing:1px; }
-</style>
-</head><body>
-<div class="card">
-  <div class="header">
-    <div class="logo-row">
-      <div class="logo-mark">R</div>
-      <div class="logo-text">
-        <h1>Guardia Vacante</h1>
-        <p>Ridery Admin CX · Reporte de Pagos</p>
-      </div>
-    </div>
-    <div class="badge">📅 Generado: ${fecha}</div>
-  </div>
-  <h2>📋 Registros del período</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>#</th><th>Agente</th>
-        <th>🖥️ Remoto C.</th><th>⏱️ Por Horas</th>
-        <th>🏢 Presencial</th><th>🗺️ KM</th><th>Total</th>
-      </tr>
-    </thead>
-    <tbody>${filas}</tbody>
-  </table>
-  <div class="footer">
-    <div>
-      <div class="ft-label">Total General a Pagar</div>
-      <div class="ft-sub">${gvRegistros.length} agente(s) · Generado el ${fecha}</div>
-    </div>
-    <div class="ft-val">$${totGeneral.toFixed(2)}</div>
-  </div>
-</div>
-<script>
-window.onload = function() {
-  // Cargar html2canvas dinámicamente
-  const s = document.createElement('script');
-  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-  s.onload = function() {
-    setTimeout(function() {
-      html2canvas(document.querySelector('.card'), {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#F6FAF9'
-      }).then(function(canvas) {
-        const link = document.createElement('a');
-        link.download = 'guardia_vacante_' + new Date().toISOString().slice(0,10) + '.png';
-        link.href = canvas.toDataURL('image/png');
-        link.click();
-        setTimeout(function(){ window.close(); }, 800);
-      });
-    }, 600);
-  };
-  document.head.appendChild(s);
-};
-<\/script>
-</body></html>`;
-
-                const win = window.open('', '_blank', 'width=1060,height=700');
-                win.document.write(html);
-                win.document.close();
+                if (typeof _gvExportarImagenResumen === 'function') _gvExportarImagenResumen();
+                else alert('El módulo aún no ha cargado. Ve a Registro & Pagos primero.');
             }
 
             // ═══════════════════════════════════════════
@@ -18529,6 +18398,111 @@ function notifStopPolling() {
   _notifPollTimer = null;
   _notifItems = [];
   notifRender();
+}
+
+// ── Exportar imagen resumen por agente ──────────────────────────────
+function _gvExportarImagenResumen() {
+  const aceptadas = gvGuardias.filter(g => g.estado === 'aceptada');
+  if (!aceptadas.length) { alert('No hay guardias aceptadas para exportar'); return; }
+
+  const mapa = {};
+  aceptadas.forEach(g => {
+    const nombre = g.nombreAgente || 'Sin asignar';
+    if (!mapa[nombre]) mapa[nombre] = { remoto: 0, horas: 0, presencial: 0, km: 0, tr: 0, th: 0, tp: 0, total: 0 };
+    let monto = parseFloat(g.montoPago) || 0;
+    if (g.tipoPago === 'horas' && g.horaInicio && g.horaFin) {
+      const [hI, mI] = g.horaInicio.split(':').map(Number);
+      const [hF, mF] = g.horaFin.split(':').map(Number);
+      monto = (((hF * 60 + mF) - (hI * 60 + mI)) / 60) * monto;
+      mapa[nombre].horas++; mapa[nombre].th += monto;
+    } else if (g.tipoPago === 'presencial') {
+      mapa[nombre].presencial++; mapa[nombre].tp += monto;
+    } else {
+      mapa[nombre].remoto++; mapa[nombre].tr += monto;
+    }
+    mapa[nombre].km += parseFloat(g.km) || 0;
+    mapa[nombre].total += monto;
+  });
+
+  const registros = Object.entries(mapa);
+  const totGeneral = registros.reduce((s, [, d]) => s + d.total, 0);
+  const fecha = new Date().toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+  const filas = registros.map(([nombre, r], i) => `
+    <tr>
+      <td>${i + 1}</td>
+      <td><strong>${nombre}</strong></td>
+      <td>${r.remoto}<br><small>($${r.tr.toFixed(2)})</small></td>
+      <td>${r.horas}<br><small>($${r.th.toFixed(2)})</small></td>
+      <td>${r.presencial}<br><small>($${r.tp.toFixed(2)})</small></td>
+      <td>${r.km} km</td>
+      <td class="tot">$${r.total.toFixed(2)}</td>
+    </tr>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Urbanist',Arial,sans-serif;background:#F6FAF9;padding:36px;color:#0F111E}
+.card{background:#fff;border-radius:18px;padding:36px;box-shadow:0 4px 32px rgba(0,0,0,.09);max-width:980px;margin:0 auto}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid #E8FAF5}
+.logo{display:flex;align-items:center;gap:14px}
+.lm{width:52px;height:52px;background:linear-gradient(135deg,#0F111E,#1A1D30);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1.7rem;font-weight:900;color:#38CEA6}
+.lt h1{font-size:1.45rem;font-weight:900;color:#0F111E}
+.lt p{font-size:.72rem;font-weight:700;color:#9BB5AC;text-transform:uppercase;letter-spacing:.08em}
+.badge{background:#E8FAF5;border:1.5px solid rgba(56,206,166,.3);border-radius:999px;padding:8px 18px;font-size:.78rem;font-weight:800;color:#0F111E}
+h2{font-size:.72rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#38CEA6;border-left:3px solid #D71D5C;padding-left:9px;margin-bottom:16px}
+table{width:100%;border-collapse:collapse;font-size:.85rem}
+thead{background:#0F111E}
+th{padding:12px 16px;text-align:left;font-size:.62rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.7);white-space:nowrap}
+tbody tr{border-bottom:1px solid #EEF2F0}
+tbody tr:last-child{border-bottom:none}
+td{padding:11px 16px;vertical-align:middle}
+small{display:block;font-size:.7rem;color:#9BB5AC;font-weight:600}
+.tot{font-size:1.05rem;font-weight:900;color:#38CEA6}
+.footer{margin-top:20px;background:#0F111E;border-radius:12px;padding:20px 28px;display:flex;align-items:center;justify-content:space-between}
+.fl{font-size:.72rem;font-weight:800;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+.fs{font-size:.7rem;color:rgba(255,255,255,.3);margin-top:4px;font-weight:600}
+.fv{font-size:2.2rem;font-weight:900;color:#fbbf24;letter-spacing:1px}
+</style></head><body>
+<div class="card">
+  <div class="hdr">
+    <div class="logo"><div class="lm">R</div><div class="lt"><h1>Guardia Vacante</h1><p>Ridery Admin CX · Reporte de Pagos</p></div></div>
+    <div class="badge">📅 ${fecha}</div>
+  </div>
+  <h2>📋 Registros del período</h2>
+  <table>
+    <thead><tr><th>#</th><th>Agente</th><th>🖥️ Remoto C.</th><th>⏱️ Por Horas</th><th>🏢 Presencial</th><th>🗺️ KM</th><th>Total</th></tr></thead>
+    <tbody>${filas}</tbody>
+  </table>
+  <div class="footer">
+    <div><div class="fl">Total General a Pagar</div><div class="fs">${registros.length} agente(s) · Generado el ${fecha}</div></div>
+    <div class="fv">$${totGeneral.toFixed(2)}</div>
+  </div>
+</div>
+<script>
+window.onload = function() {
+  var s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload = function() {
+    setTimeout(function() {
+      html2canvas(document.querySelector('.card'), { scale:2, useCORS:true, backgroundColor:'#F6FAF9' }).then(function(canvas) {
+        var a = document.createElement('a');
+        a.download = 'guardia_vacante_${new Date().toISOString().slice(0,10)}.png';
+        a.href = canvas.toDataURL('image/png');
+        a.click();
+        setTimeout(function(){ window.close(); }, 1000);
+      });
+    }, 800);
+  };
+  document.head.appendChild(s);
+};
+<\/script>
+</body></html>`;
+
+  const win = window.open('', '_blank', 'width=1060,height=700');
+  win.document.write(html);
+  win.document.close();
 }
 </script>
     </body>
