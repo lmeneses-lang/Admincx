@@ -1,67 +1,42 @@
-// api/guardias.js
-// Vercel Serverless Function — todas las operaciones de Guardia Vacante
-
 const { connectDB } = require('../lib/mongodb.js');
 const GuardiaVacante = require('../models/GuardiaVacante.js');
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   await connectDB();
-
   const { method } = req;
 
-  // ── GET ────────────────────────────────────────────────────────────────────
-  // ?vista=remoto  → solo guardias disponibles (el agente remoto ve esto)
-  // ?vista=admin   → todas las guardias (para el panel admin / registro pagos)
-  // ?vista=historial&agente=ID → historial de un agente específico
   if (method === 'GET') {
     const { vista, agente } = req.query;
-
     try {
       if (vista === 'remoto') {
-        // Solo las disponibles, sin datos sensibles de pago
         const guardias = await GuardiaVacante
           .find({ estado: 'disponible', visible: true })
-          .select('-pagada -fechaPago -notaPago -montoPenalizacion -mostrarPenalizacion')
+          .select('-pagada -fechaPago -notaPago')
           .sort({ fecha: 1 });
         return res.status(200).json({ success: true, data: guardias });
       }
-
       if (vista === 'historial' && agente) {
-        const guardias = await GuardiaVacante
-          .find({ aceptadaPor: agente })
-          .sort({ fecha: -1 });
+        const guardias = await GuardiaVacante.find({ nombreAgente: agente }).sort({ fecha: -1 });
         return res.status(200).json({ success: true, data: guardias });
       }
-
-      // Vista admin — todo
-      const guardias = await GuardiaVacante
-        .find({})
-        .populate('aceptadaPor', 'nombre user rol')
-        .populate('creadaPor', 'nombre user')
-        .sort({ fecha: -1 });
+      const guardias = await GuardiaVacante.find({}).sort({ fecha: -1 });
       return res.status(200).json({ success: true, data: guardias });
-
     } catch (err) {
       return res.status(500).json({ success: false, error: err.message });
     }
   }
 
-  // ── POST — Crear guardia nueva (solo admin) ────────────────────────────────
   if (method === 'POST') {
     const { accion } = req.body;
-
-    // Acción: el agente acepta una guardia disponible
     if (accion === 'aceptar') {
-      const { guardiaId, agenteId, nombreAgente } = req.body;
+      const { guardiaId, nombreAgente } = req.body;
       try {
-        // Verificar que sigue disponible (carrera de condición)
         const guardia = await GuardiaVacante.findById(guardiaId);
         if (!guardia || guardia.estado !== 'disponible') {
           return res.status(409).json({ success: false, error: 'La guardia ya no está disponible.' });
         }
-        guardia.estado          = 'aceptada';
-        guardia.aceptadaPor     = agenteId;
-        guardia.nombreAgente    = nombreAgente;
+        guardia.estado = 'aceptada';
+        guardia.nombreAgente = nombreAgente;
         guardia.fechaAceptacion = new Date();
         await guardia.save();
         return res.status(200).json({ success: true, data: guardia });
@@ -69,8 +44,6 @@ export default async function handler(req, res) {
         return res.status(500).json({ success: false, error: err.message });
       }
     }
-
-    // Acción por defecto: crear guardia
     try {
       const guardia = new GuardiaVacante(req.body);
       await guardia.save();
@@ -80,7 +53,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── PUT — Editar guardia o marcar pago (solo admin) ────────────────────────
   if (method === 'PUT') {
     const { id, ...campos } = req.body;
     try {
@@ -92,7 +64,6 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── DELETE — Eliminar guardia (solo admin) ─────────────────────────────────
   if (method === 'DELETE') {
     const { id } = req.body;
     try {
@@ -105,4 +76,4 @@ export default async function handler(req, res) {
 
   res.setHeader('Allow', ['GET', 'POST', 'PUT', 'DELETE']);
   return res.status(405).json({ success: false, error: `Método ${method} no permitido.` });
-}
+};
