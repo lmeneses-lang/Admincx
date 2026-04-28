@@ -7175,6 +7175,27 @@
                 </div>
                 <nav class="sidebar-nav">
                     <div class="nav-section-label">Módulos</div>
+                    <!-- ISSUES -->
+                    <div class="nav-item">
+                        <div class="nav-item-header" onclick="navigateTo('issues', this)">
+                            <span class="nav-icon">🐛</span>
+                            <span class="nav-label">Issues</span>
+                        </div>
+                    </div>
+                    <!-- MATERIAL DE APOYO -->
+                    <div class="nav-item">
+                        <div class="nav-item-header" onclick="navigateTo('material-apoyo', this)">
+                            <span class="nav-icon">📚</span>
+                            <span class="nav-label">Material de Apoyo</span>
+                        </div>
+                    </div>
+                    <!-- CIUDADES -->
+                    <div class="nav-item">
+                        <div class="nav-item-header" onclick="navigateTo('ciudades', this)">
+                            <span class="nav-icon">🏙️</span>
+                            <span class="nav-label">Ciudades</span>
+                        </div>
+                    </div>
                     <!-- Calculadora -->
                     <div class="nav-item">
                         <div class="nav-item-header" onclick="toggleNav('nav-calc', this)">
@@ -7205,19 +7226,22 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- CIUDADES -->
+                    <!-- SIMULADOR (módulo agrupado) -->
                     <div class="nav-item">
-                        <div class="nav-item-header" onclick="navigateTo('ciudades', this)">
-                            <span class="nav-icon">🏙️</span>
-                            <span class="nav-label">Ciudades</span>
+                        <div class="nav-item-header" onclick="toggleNav('nav-simulador', this)">
+                            <span class="nav-icon">🧪</span>
+                            <span class="nav-label">Simulador</span>
+                            <span class="nav-arrow" id="nav-simulador-arrow">▶</span>
                         </div>
-                    </div>
-                    <!-- ISSUES -->
-                    <div class="nav-item">
-                        <div class="nav-item-header" onclick="navigateTo('issues', this)">
-                            <span class="nav-icon">🐛</span>
-                            <span class="nav-label">Issues</span>
+                        <div class="nav-sub" id="nav-simulador">
+                            <div class="nav-sub-item" onclick="navigateTo('categoria', this)">
+                                <span class="nav-sub-dot"></span>
+                                Simulador de Categoría
+                            </div>
+                            <div class="nav-sub-item" onclick="navigateTo('simulacion-flota', this)">
+                                <span class="nav-sub-dot"></span>
+                                Simulación Flota Vehículo
+                            </div>
                         </div>
                     </div>
                     <!-- DISPONIBILIDAD (módulo agrupado) -->
@@ -7240,31 +7264,6 @@
                                 <span class="nav-sub-dot"></span>
                                 Indumentaria
                             </div>
-                        </div>
-                    </div>
-                    <!-- SIMULADOR (módulo agrupado) -->
-                    <div class="nav-item">
-                        <div class="nav-item-header" onclick="toggleNav('nav-simulador', this)">
-                            <span class="nav-icon">🧪</span>
-                            <span class="nav-label">Simulador</span>
-                            <span class="nav-arrow" id="nav-simulador-arrow">▶</span>
-                        </div>
-                        <div class="nav-sub" id="nav-simulador">
-                            <div class="nav-sub-item" onclick="navigateTo('categoria', this)">
-                                <span class="nav-sub-dot"></span>
-                                Simulador de Categoría
-                            </div>
-                            <div class="nav-sub-item" onclick="navigateTo('simulacion-flota', this)">
-                                <span class="nav-sub-dot"></span>
-                                Simulación Flota Vehículo
-                            </div>
-                        </div>
-                    </div>
-                    <!-- MATERIAL DE APOYO -->
-                    <div class="nav-item">
-                        <div class="nav-item-header" onclick="navigateTo('material-apoyo', this)">
-                            <span class="nav-icon">📚</span>
-                            <span class="nav-label">Material de Apoyo</span>
                         </div>
                     </div>
                     <div id="nav-calidad-section" style="display:none">
@@ -9741,6 +9740,7 @@
     <div id="gv-panel-registro" style="display:none">
       <div class="gv-admin-toolbar">
         <button class="gv-btn-export" onclick="gvExportarExcel()">📥 Exportar Excel</button>
+        <button class="gv-btn-export" onclick="gvExportarImagenResumen()" style="background:var(--azul);color:var(--blanco);border-color:rgba(39,40,131,.3)">🖼️ Exportar Imagen</button>
         <div class="gv-filter">
           <select id="gv-filtro-agente" onchange="gvRenderTabla()">
             <option value="">Todos los agentes</option>
@@ -13208,6 +13208,122 @@ ${contexto}
                     , 500);
                 }
                 ;
+            }
+
+            // ═══════════════════════════════════════════
+            //  GUARDIA VACANTE — Exportar Imagen (canvas)
+            // ═══════════════════════════════════════════
+            function gvExportarImagenResumen() {
+                if (!gvRegistros || !gvRegistros.length) {
+                    alert('No hay registros para exportar');
+                    return;
+                }
+
+                const totGeneral = gvRegistros.reduce((s, r) => s + r.total, 0);
+                const fecha = new Date().toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
+
+                // Construir filas HTML
+                const filas = gvRegistros.map(r => `
+                  <tr>
+                    <td style="padding:13px 16px;font-size:.85rem;font-weight:700;color:#9BB5AC">${r.id}</td>
+                    <td style="padding:13px 16px;font-size:.92rem;font-weight:800;color:#0F111E">${r.nombre}</td>
+                    <td style="padding:13px 16px;font-size:.85rem;color:#5A7A70">—</td>
+                    <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
+                      ${r.remoto}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.tr.toFixed(2)})</span>
+                    </td>
+                    <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
+                      ${r.horas}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.th.toFixed(2)})</span>
+                    </td>
+                    <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
+                      ${r.presencial}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.tp.toFixed(2)})</span>
+                    </td>
+                    <td style="padding:13px 16px;font-size:.85rem;color:#5A7A70">${r.km} km</td>
+                    <td style="padding:13px 16px;font-size:1.05rem;font-weight:900;color:#38CEA6">$${r.total.toFixed(2)}</td>
+                  </tr>`).join('');
+
+                const html = `<!DOCTYPE html>
+<html lang="es"><head><meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Urbanist',Arial,sans-serif; background:#F6FAF9; padding:36px; color:#0F111E; }
+.card { background:#fff; border-radius:18px; padding:36px; box-shadow:0 4px 32px rgba(0,0,0,.09); max-width:980px; margin:0 auto; }
+.header { display:flex; align-items:center; justify-content:space-between; margin-bottom:28px; padding-bottom:20px; border-bottom:2px solid #E8FAF5; }
+.logo-row { display:flex; align-items:center; gap:14px; }
+.logo-mark { width:52px; height:52px; background:linear-gradient(135deg,#0F111E,#1A1D30); border-radius:13px; display:flex; align-items:center; justify-content:center; font-size:1.7rem; font-weight:900; color:#38CEA6; }
+.logo-text h1 { font-size:1.45rem; font-weight:900; color:#0F111E; }
+.logo-text p { font-size:.72rem; font-weight:700; color:#9BB5AC; text-transform:uppercase; letter-spacing:.08em; }
+.badge { background:#E8FAF5; border:1.5px solid rgba(56,206,166,.3); border-radius:999px; padding:8px 18px; font-size:.78rem; font-weight:800; color:#0F111E; }
+h2 { font-size:.72rem; font-weight:900; letter-spacing:.12em; text-transform:uppercase; color:#38CEA6; border-left:3px solid #D71D5C; padding-left:9px; margin-bottom:16px; }
+table { width:100%; border-collapse:collapse; font-size:.85rem; }
+thead { background:#0F111E; }
+th { padding:12px 16px; text-align:left; font-size:.62rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.7); white-space:nowrap; }
+tbody tr { border-bottom:1px solid #EEF2F0; }
+tbody tr:last-child { border-bottom:none; }
+.footer { margin-top:20px; background:#0F111E; border-radius:12px; padding:20px 28px; display:flex; align-items:center; justify-content:space-between; }
+.ft-label { font-size:.72rem; font-weight:800; letter-spacing:.1em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+.ft-sub { font-size:.7rem; color:rgba(255,255,255,.3); margin-top:4px; font-weight:600; }
+.ft-val { font-size:2.2rem; font-weight:900; color:#fbbf24; letter-spacing:1px; }
+</style>
+</head><body>
+<div class="card">
+  <div class="header">
+    <div class="logo-row">
+      <div class="logo-mark">R</div>
+      <div class="logo-text">
+        <h1>Guardia Vacante</h1>
+        <p>Ridery Admin CX · Reporte de Pagos</p>
+      </div>
+    </div>
+    <div class="badge">📅 Generado: ${fecha}</div>
+  </div>
+  <h2>📋 Registros del período</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th><th>Agente</th><th>Período</th>
+        <th>🖥️ Remoto C.</th><th>⏱️ Por Horas</th>
+        <th>🏢 Presencial</th><th>🗺️ KM</th><th>Total</th>
+      </tr>
+    </thead>
+    <tbody>${filas}</tbody>
+  </table>
+  <div class="footer">
+    <div>
+      <div class="ft-label">Total General a Pagar</div>
+      <div class="ft-sub">${gvRegistros.length} agente(s) · Generado el ${fecha}</div>
+    </div>
+    <div class="ft-val">$${totGeneral.toFixed(2)}</div>
+  </div>
+</div>
+<script>
+window.onload = function() {
+  // Cargar html2canvas dinámicamente
+  const s = document.createElement('script');
+  s.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+  s.onload = function() {
+    setTimeout(function() {
+      html2canvas(document.querySelector('.card'), {
+        scale: 2,
+        useCORS: true,
+        backgroundColor: '#F6FAF9'
+      }).then(function(canvas) {
+        const link = document.createElement('a');
+        link.download = 'guardia_vacante_' + new Date().toISOString().slice(0,10) + '.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        setTimeout(function(){ window.close(); }, 800);
+      });
+    }, 600);
+  };
+  document.head.appendChild(s);
+};
+<\/script>
+</body></html>`;
+
+                const win = window.open('', '_blank', 'width=1060,height=700');
+                win.document.write(html);
+                win.document.close();
             }
 
             // ═══════════════════════════════════════════
