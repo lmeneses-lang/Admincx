@@ -13214,20 +13214,43 @@ ${contexto}
             //  GUARDIA VACANTE — Exportar Imagen (canvas)
             // ═══════════════════════════════════════════
             function gvExportarImagenResumen() {
-                if (!gvRegistros || !gvRegistros.length) {
-                    alert('No hay registros para exportar');
+                const aceptadas = (typeof gvGuardias !== 'undefined') ? gvGuardias.filter(g => g.estado === 'aceptada') : [];
+                if (!aceptadas.length) {
+                    alert('No hay guardias aceptadas para exportar');
                     return;
                 }
 
-                const totGeneral = gvRegistros.reduce((s, r) => s + r.total, 0);
+                // Construir mapa por agente (misma lógica que gvRenderResumen)
+                const mapa = {};
+                aceptadas.forEach(g => {
+                    const nombre = g.nombreAgente || 'Sin asignar';
+                    if (!mapa[nombre]) mapa[nombre] = { remoto: 0, horas: 0, presencial: 0, km: 0, tr: 0, th: 0, tp: 0, total: 0 };
+                    let monto = g.montoPago || 0;
+                    if (g.tipoPago === 'horas' && g.horaInicio && g.horaFin) {
+                        const [hI, mI] = g.horaInicio.split(':').map(Number);
+                        const [hF, mF] = g.horaFin.split(':').map(Number);
+                        monto = (((hF * 60 + mF) - (hI * 60 + mI)) / 60) * g.montoPago;
+                        mapa[nombre].horas++;
+                        mapa[nombre].th += monto;
+                    } else if (g.tipoPago === 'presencial') {
+                        mapa[nombre].presencial++;
+                        mapa[nombre].tp += monto;
+                    } else {
+                        mapa[nombre].remoto++;
+                        mapa[nombre].tr += monto;
+                    }
+                    mapa[nombre].km += g.km || 0;
+                    mapa[nombre].total += monto;
+                });
+
+                const registros = Object.entries(mapa);
+                const totGeneral = registros.reduce((s, [, d]) => s + d.total, 0);
                 const fecha = new Date().toLocaleDateString('es-VE', { day: 'numeric', month: 'long', year: 'numeric' });
 
-                // Construir filas HTML
-                const filas = gvRegistros.map(r => `
+                const filas = registros.map(([nombre, r], i) => `
                   <tr>
-                    <td style="padding:13px 16px;font-size:.85rem;font-weight:700;color:#9BB5AC">${r.id}</td>
-                    <td style="padding:13px 16px;font-size:.92rem;font-weight:800;color:#0F111E">${r.nombre}</td>
-                    <td style="padding:13px 16px;font-size:.85rem;color:#5A7A70">—</td>
+                    <td style="padding:13px 16px;font-size:.85rem;font-weight:700;color:#9BB5AC">${i + 1}</td>
+                    <td style="padding:13px 16px;font-size:.92rem;font-weight:800;color:#0F111E">${nombre}</td>
                     <td style="padding:13px 16px;font-size:.88rem;font-weight:700;color:#0F111E">
                       ${r.remoto}<br><span style="font-size:.72rem;font-weight:600;color:#9BB5AC">($${r.tr.toFixed(2)})</span>
                     </td>
@@ -13281,7 +13304,7 @@ tbody tr:last-child { border-bottom:none; }
   <table>
     <thead>
       <tr>
-        <th>#</th><th>Agente</th><th>Período</th>
+        <th>#</th><th>Agente</th>
         <th>🖥️ Remoto C.</th><th>⏱️ Por Horas</th>
         <th>🏢 Presencial</th><th>🗺️ KM</th><th>Total</th>
       </tr>
