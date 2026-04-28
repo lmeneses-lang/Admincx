@@ -6749,6 +6749,90 @@
                 color: var(--gris-3);
                 font-size: .9rem;
             }
+
+            /* ══════════════════════════════════════════
+               MÓDULO GUARDIA VACANTE — ESTILOS
+            ══════════════════════════════════════════ */
+            .gv-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px; }
+            .gv-header h2 { font-size:1.45rem;font-weight:800;color:var(--negro); }
+            .gv-header h2 span { color:var(--verde); }
+            .gv-tabs { display:flex;gap:8px;background:var(--gris-1);border-radius:var(--radius-s);padding:4px;width:fit-content; }
+            .gv-tab { padding:7px 18px;border-radius:7px;border:none;background:transparent;font-family:var(--font-main);font-weight:700;font-size:.82rem;cursor:pointer;color:var(--gris-4);transition:all .2s; }
+            .gv-tab.active { background:var(--blanco);color:var(--negro);box-shadow:0 2px 8px rgba(15,17,30,.10); }
+            .gv-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px; }
+            .gv-card { background:var(--blanco);border-radius:var(--radius);border:1.5px solid var(--borde);padding:20px;box-shadow:var(--shadow);display:flex;flex-direction:column;gap:10px;transition:transform .18s,box-shadow .18s; }
+            .gv-card:hover { transform:translateY(-2px);box-shadow:0 8px 32px rgba(15,17,30,.13); }
+            .gv-card-badge { display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:800;padding:4px 12px;border-radius:999px;width:fit-content; }
+            .gv-card-badge.disponible { background:var(--verde-p);color:#1a8a6a; }
+            .gv-card-badge.aceptada   { background:var(--azul-p);color:var(--azul); }
+            .gv-card-badge.vencida    { background:var(--gris-1);color:var(--gris-4); }
+            .gv-card-fecha { font-size:1.1rem;font-weight:800;color:var(--negro); }
+            .gv-card-info { display:flex;flex-direction:column;gap:4px; }
+            .gv-card-row { display:flex;align-items:center;gap:8px;font-size:.83rem;color:var(--gris-4);font-weight:600; }
+            .gv-card-row span { color:var(--negro);font-weight:700; }
+            .gv-penalizacion { background:var(--amber-p);border:1.5px solid #fbbf24;border-radius:var(--radius-s);padding:10px 14px;font-size:.78rem;font-weight:700;color:var(--amber); }
+            .gv-btn-aceptar { margin-top:4px;padding:10px;background:var(--verde);color:var(--negro);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.88rem;cursor:pointer;transition:background .18s,transform .12s;width:100%; }
+            .gv-btn-aceptar:hover { background:var(--verde-l);transform:scale(1.02); }
+            .gv-btn-aceptar:disabled { background:var(--gris-2);color:var(--gris-4);cursor:not-allowed;transform:none; }
+            .gv-empty { text-align:center;padding:60px 20px;color:var(--gris-3);font-size:.95rem;font-weight:600; }
+            .gv-empty .gv-empty-icon { font-size:2.8rem;margin-bottom:12px; }
+            .gv-admin-toolbar { display:flex;align-items:center;gap:10px;margin-bottom:18px;flex-wrap:wrap; }
+            .gv-btn-crear { padding:9px 20px;background:var(--verde);color:var(--negro);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.84rem;cursor:pointer;transition:background .18s; }
+            .gv-btn-crear:hover { background:var(--verde-l); }
+            .gv-btn-export { padding:9px 16px;background:var(--blanco);color:var(--negro);border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-weight:700;font-size:.84rem;cursor:pointer;transition:border-color .18s; }
+            .gv-btn-export:hover { border-color:var(--verde); }
+            .gv-filter { margin-left:auto;display:flex;gap:8px; }
+            .gv-filter select { padding:8px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.82rem;font-weight:600;background:var(--blanco);color:var(--negro);cursor:pointer; }
+            .gv-table-wrap { overflow-x:auto;border-radius:var(--radius);border:1.5px solid var(--borde);background:var(--blanco);box-shadow:var(--shadow); }
+            .gv-table { width:100%;border-collapse:collapse;font-size:.83rem; }
+            .gv-table th { background:var(--fondo);padding:12px 14px;text-align:left;font-weight:800;color:var(--gris-4);border-bottom:1.5px solid var(--borde);white-space:nowrap; }
+            .gv-table td { padding:12px 14px;border-bottom:1px solid var(--gris-1);vertical-align:middle;color:var(--negro);font-weight:600; }
+            .gv-table tr:last-child td { border-bottom:none; }
+            .gv-table tr:hover td { background:var(--fondo); }
+            .gv-pill { display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:.72rem;font-weight:800; }
+            .gv-pill.pagada    { background:var(--verde-p);color:#1a8a6a; }
+            .gv-pill.no-pagada { background:var(--rosa-p);color:var(--rosa); }
+            .gv-pill.disponible{ background:var(--amber-p);color:var(--amber); }
+            .gv-pill.aceptada  { background:var(--azul-p);color:var(--azul); }
+            .gv-table-btns { display:flex;gap:6px;flex-wrap:wrap; }
+            .gv-table-btns button { padding:4px 11px;border-radius:6px;border:1.5px solid;font-family:var(--font-main);font-size:.73rem;font-weight:800;cursor:pointer;background:var(--blanco);transition:opacity .15s; }
+            .gv-table-btns button:hover { opacity:.8; }
+            .gv-btn-edit { color:var(--azul);border-color:var(--azul); }
+            .gv-btn-pago { color:#1a8a6a;border-color:var(--verde); }
+            .gv-btn-del  { color:var(--rosa);border-color:var(--rosa); }
+            .gv-resumen-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px;margin-top:24px; }
+            .gv-resumen-card { background:var(--blanco);border-radius:var(--radius);border:1.5px solid var(--borde);padding:18px 20px;box-shadow:var(--shadow); }
+            .gv-resumen-card .gv-r-nombre { font-size:1rem;font-weight:800;margin-bottom:10px;color:var(--negro); }
+            .gv-resumen-card .gv-r-stat { display:flex;justify-content:space-between;font-size:.8rem;font-weight:600;color:var(--gris-4);margin-bottom:4px; }
+            .gv-resumen-card .gv-r-stat span { color:var(--negro);font-weight:800; }
+            .gv-resumen-card .gv-r-total { margin-top:10px;padding-top:10px;border-top:1.5px solid var(--borde);font-size:.88rem;font-weight:800;display:flex;justify-content:space-between;align-items:center; }
+            .gv-r-deuda { color:var(--rosa); }
+            .gv-r-ok    { color:#1a8a6a; }
+            .gv-modal-overlay { display:none;position:fixed;inset:0;background:rgba(15,17,30,.45);z-index:8000;align-items:center;justify-content:center;padding:20px; }
+            .gv-modal-overlay.open { display:flex; }
+            .gv-modal { background:var(--blanco);border-radius:var(--radius);padding:28px;width:100%;max-width:500px;box-shadow:0 16px 60px rgba(15,17,30,.22);max-height:90vh;overflow-y:auto; }
+            .gv-modal h3 { font-size:1.1rem;font-weight:800;margin-bottom:20px;color:var(--negro); }
+            .gv-form-row { display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px; }
+            .gv-form-row.full { grid-template-columns:1fr; }
+            .gv-form-group { display:flex;flex-direction:column;gap:5px; }
+            .gv-form-group label { font-size:.75rem;font-weight:800;color:var(--gris-4);text-transform:uppercase;letter-spacing:.04em; }
+            .gv-form-group input,
+            .gv-form-group select,
+            .gv-form-group textarea { padding:9px 12px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.85rem;font-weight:600;color:var(--negro);background:var(--blanco);transition:border-color .18s;width:100%; }
+            .gv-form-group input:focus,
+            .gv-form-group select:focus { outline:none;border-color:var(--verde); }
+            .gv-form-group textarea { resize:vertical;min-height:72px; }
+            .gv-penalizacion-toggle { display:flex;align-items:center;gap:10px;margin-bottom:12px;font-size:.84rem;font-weight:700;color:var(--negro);cursor:pointer; }
+            .gv-penalizacion-toggle input[type="checkbox"] { width:17px;height:17px;accent-color:var(--verde); }
+            .gv-modal-footer { display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1.5px solid var(--borde); }
+            .gv-modal-footer button { padding:10px 22px;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;font-size:.85rem;cursor:pointer;border:none; }
+            .gv-btn-cancel { background:var(--gris-1);color:var(--negro); }
+            .gv-btn-save   { background:var(--verde);color:var(--negro); }
+            .gv-btn-cancel:hover { background:var(--gris-2); }
+            .gv-btn-save:hover   { background:var(--verde-l); }
+            .gv-msg { padding:10px 14px;border-radius:8px;font-size:.82rem;font-weight:700;margin-top:8px;display:none; }
+            .gv-msg.error   { background:var(--rosa-p);color:var(--rosa); }
+            .gv-msg.success { background:var(--verde-p);color:#1a8a6a; }
         </style>
     </head>
     <body>
@@ -11111,6 +11195,9 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                 if (page === 'kits') {
                     kitCargarContenido();
                     kitInyectarBotonesAdmin();
+                }
+                if (page === 'guardia-vacante') {
+                    gvInit();
                 }
             }
 
@@ -17306,8 +17393,8 @@ let gvTabActual = 'vacantes';
 
 // ── Inicializar cuando la sección se activa ──────────────────────────
 function gvInit() {
-  const esAdmin = (typeof loginType !== 'undefined') && loginType === 'Administrador';
-  const esRemoto = (typeof loginType !== 'undefined') && loginType === 'Agente Remoto';
+  const esAdmin  = (typeof loginType !== 'undefined') && loginType === 'admin';
+  const esRemoto = (typeof loginType !== 'undefined') && loginType === 'remoto';
 
   // Mostrar tabs y toolbar solo al admin
   document.getElementById('gv-tabs').style.display         = esAdmin ? 'flex' : 'none';
@@ -17386,8 +17473,8 @@ async function gvAceptarVacante(guardiaId, btn) {
   btn.textContent = '⏳ Procesando...';
 
   // Obtener datos del usuario logueado (ajusta según tu sistema)
-  const agenteId    = window.currentUserId    || '';
-  const nombreAgente = window.currentUserNombre || window.currentUser || '';
+  const agenteId     = '';
+  const nombreAgente = (typeof currentUser !== 'undefined' ? currentUser : '') || '';
 
   try {
     const res  = await fetch('/api/guardias', {
@@ -17686,7 +17773,7 @@ async function gvGuardar() {
     montoPago:           monto,
     mostrarPenalizacion: document.getElementById('gv-f-pen-toggle').checked,
     montoPenalizacion:   parseFloat(document.getElementById('gv-f-pen-monto').value) || 0,
-    creadaPor:           window.currentUserId || '',
+    creadaPor:           '',
   };
 
   try {
