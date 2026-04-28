@@ -7553,6 +7553,21 @@
                             <button class="rc-btn-copy" onclick="rcCopiar()">📋 Copiar Resumen</button>
                             <button class="rc-btn-copy" style="background:var(--azul);border-color:rgba(39,40,131,.3)" onclick="rcExportarImagen()">🖼️ Exportar Imagen</button>
                         </div>
+                        <!-- Surge Admin & Dispatcher -->
+                        <div style="display:flex;gap:14px;margin-top:18px;flex-wrap:wrap">
+                          <div class="rc-cell rc-input" style="flex:1;min-width:220px">
+                            <div class="rc-lbl"><span>🔺</span> Surge Admin</div>
+                            <span class="rc-pct rc-pct-green">Suma al Amount Real</span>
+                            <input type="number" class="rc-num" id="rc-surge-admin" placeholder="ej: 1.5" step="0.01" min="0" inputmode="decimal" oninput="rcCalc()" onfocus="this.select()">
+                            <div style="font-size:.72rem;color:var(--gris-3);margin-top:6px;font-weight:600">Amount Real × Surge Admin = monto extra sumado</div>
+                          </div>
+                          <div class="rc-cell rc-input" style="flex:1;min-width:220px">
+                            <div class="rc-lbl"><span>🔻</span> Surge Dispatcher</div>
+                            <span class="rc-pct" style="background:rgba(215,29,92,.12);color:var(--rosa)">Descuenta del Amount Real</span>
+                            <input type="number" class="rc-num" id="rc-surge-disp" placeholder="ej: 1.5" step="0.01" min="0" inputmode="decimal" oninput="rcCalc()" onfocus="this.select()">
+                            <div style="font-size:.72rem;color:var(--gris-3);margin-top:6px;font-weight:600">Amount Real ÷ Surge Dispatcher = monto descontado</div>
+                          </div>
+                        </div>
                         <!-- Info lógica -->
                         <div class="rc-info-card">
                             <div class="rc-info-title">📌 Lógica del cálculo</div>
@@ -12628,13 +12643,18 @@ ${contexto}
             // ═══════════════════════════════════════════
             function rcCalc() {
                 const admin = parseFloat(document.getElementById('rc-aa').value);
-                const real = parseFloat(document.getElementById('rc-ar').value);
-                if (isNaN(admin) && isNaN(real)) {
-                    rcResetDisplay();
-                    return;
-                }
+                const real  = parseFloat(document.getElementById('rc-ar').value);
+                if (isNaN(admin) && isNaN(real)) { rcResetDisplay(); return; }
                 const aa = isNaN(admin) ? 0 : admin;
-                const ar = isNaN(real) ? 0 : real;
+                let   ar = isNaN(real)  ? 0 : real;
+
+                // Surge Admin: suma ar * surgeAdmin al amount real
+                const surgeAdmin = parseFloat(document.getElementById('rc-surge-admin').value);
+                if (!isNaN(surgeAdmin) && surgeAdmin > 0) ar = ar + (ar * surgeAdmin);
+
+                // Surge Dispatcher: divide el amount real por surgeDisp
+                const surgeDisp = parseFloat(document.getElementById('rc-surge-disp').value);
+                if (!isNaN(surgeDisp) && surgeDisp > 0) ar = ar / surgeDisp;
 
                 const comision = aa * 0.29;
                 const ganancia = aa * 0.71;
@@ -12759,6 +12779,8 @@ ${contexto}
             function rcReset() {
                 document.getElementById('rc-aa').value = '';
                 document.getElementById('rc-ar').value = '';
+                document.getElementById('rc-surge-admin').value = '';
+                document.getElementById('rc-surge-disp').value = '';
                 rcResetDisplay();
             }
 
