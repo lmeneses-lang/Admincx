@@ -842,6 +842,21 @@
             .gv-mis-pill.por-pagar  { background: var(--azul-p);   color: var(--azul);  }
             .gv-mis-pill.pagada     { background: var(--verde-p);   color: #1a7a5e;      }
 
+            .gv-mis-filtro {
+                padding: 6px 16px;
+                border-radius: 999px;
+                border: 1.5px solid var(--borde);
+                background: var(--blanco);
+                font-family: var(--font-main);
+                font-size: .78rem;
+                font-weight: 800;
+                color: var(--gris-4);
+                cursor: pointer;
+                transition: all .15s;
+            }
+            .gv-mis-filtro:hover  { background: var(--gris-1); }
+            .gv-mis-filtro.active { background: var(--negro); color: var(--blanco); border-color: var(--negro); }
+
             .page-content {
                 flex: 1;
                 padding: 32px;
@@ -9693,6 +9708,33 @@
         <div class="gv-empty-icon">🎉</div>
         No hay guardias vacantes disponibles en este momento.
       </div>
+
+      <!-- MIS GUARDIAS — solo remoto, aparece si tiene guardias aceptadas -->
+      <div class="gv-mis-section" id="gv-mis-section" style="display:none">
+        <div class="gv-mis-title">🗂️ Mis Guardias</div>
+        <div class="gv-mis-sub">Historial de guardias vacantes que has tomado</div>
+
+        <!-- Filtro -->
+        <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+          <button class="gv-mis-filtro active" id="gv-mis-f-todas"      onclick="gvMisFiltro('todas')">📋 Todas</button>
+          <button class="gv-mis-filtro"        id="gv-mis-f-pendientes" onclick="gvMisFiltro('pendientes')">⏳ Pendientes</button>
+          <button class="gv-mis-filtro"        id="gv-mis-f-porpagar"   onclick="gvMisFiltro('porpagar')">💳 Por cobrar</button>
+          <button class="gv-mis-filtro"        id="gv-mis-f-pagadas"    onclick="gvMisFiltro('pagadas')">✅ Pagadas</button>
+        </div>
+
+        <div class="gv-mis-group" id="gv-mis-pendientes-group">
+          <div class="gv-mis-group-title">⏳ Pendientes por realizar</div>
+          <div id="gv-mis-pendientes"></div>
+        </div>
+        <div class="gv-mis-group" id="gv-mis-porpagar-group">
+          <div class="gv-mis-group-title">💳 Realizadas — Por cobrar</div>
+          <div id="gv-mis-porpagar"></div>
+        </div>
+        <div class="gv-mis-group" id="gv-mis-pagadas-group">
+          <div class="gv-mis-group-title">✅ Pagadas</div>
+          <div id="gv-mis-pagadas"></div>
+        </div>
+      </div>
     </div>
 
     <!-- PANEL REGISTRO ADMIN -->
@@ -17684,6 +17726,31 @@ function gvRenderMisGuardias(guardias) {
   renderGrupo('gv-mis-pendientes', 'gv-mis-pendientes-group', pendientes);
   renderGrupo('gv-mis-porpagar',   'gv-mis-porpagar-group',   porPagar);
   renderGrupo('gv-mis-pagadas',    'gv-mis-pagadas-group',    pagadas);
+}
+
+// ── Filtro de Mis Guardias ───────────────────────────────────────────
+function gvMisFiltro(tipo) {
+  // Actualizar botones activos
+  ['todas','pendientes','porpagar','pagadas'].forEach(t => {
+    const btn = document.getElementById('gv-mis-f-' + t);
+    if (btn) btn.classList.toggle('active', t === tipo);
+  });
+  // Mostrar / ocultar grupos
+  const grupos = {
+    pendientes: document.getElementById('gv-mis-pendientes-group'),
+    porpagar:   document.getElementById('gv-mis-porpagar-group'),
+    pagadas:    document.getElementById('gv-mis-pagadas-group'),
+  };
+  Object.entries(grupos).forEach(([key, el]) => {
+    if (!el) return;
+    if (tipo === 'todas') {
+      // Mostrar solo los que tienen contenido
+      const cnt = el.querySelector('[id^="gv-mis-"]');
+      el.style.display = (cnt && cnt.innerHTML.trim()) ? '' : 'none';
+    } else {
+      el.style.display = key === tipo ? '' : 'none';
+    }
+  });
 }
 
 function gvRenderVacantesRemoto(guardias) {
