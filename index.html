@@ -675,6 +675,94 @@
                 font-family: var(--font-secondary);
             }
 
+            /* ── CAMPANA DE NOTIFICACIONES ── */
+            .notif-bell-btn {
+                position: relative;
+                background: none;
+                border: none;
+                cursor: pointer;
+                font-size: 1.4rem;
+                line-height: 1;
+                padding: 4px 6px;
+                border-radius: 8px;
+                transition: background .15s;
+            }
+            .notif-bell-btn:hover { background: var(--gris-1); }
+            .notif-bell-count {
+                position: absolute;
+                top: -2px; right: -4px;
+                background: var(--rosa);
+                color: #fff;
+                border-radius: 999px;
+                font-size: .6rem;
+                font-weight: 900;
+                min-width: 16px;
+                height: 16px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 0 4px;
+                pointer-events: none;
+            }
+            .notif-panel {
+                position: absolute;
+                top: calc(100% + 8px);
+                right: 0;
+                width: 340px;
+                background: var(--blanco);
+                border: 1.5px solid var(--borde);
+                border-radius: var(--radius);
+                box-shadow: 0 8px 32px rgba(15,17,30,.14);
+                z-index: 9999;
+                display: none;
+                overflow: hidden;
+            }
+            .notif-panel.open { display: block; }
+            .notif-panel-header {
+                padding: 14px 18px;
+                background: var(--fondo);
+                border-bottom: 1.5px solid var(--borde);
+                font-weight: 800;
+                font-size: .88rem;
+                color: var(--negro);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            .notif-list { max-height: 340px; overflow-y: auto; }
+            .notif-item {
+                padding: 12px 18px;
+                border-bottom: 1px solid var(--gris-1);
+                font-size: .82rem;
+                font-weight: 600;
+                color: var(--negro);
+                cursor: pointer;
+                transition: background .12s;
+            }
+            .notif-item:hover { background: var(--fondo); }
+            .notif-item.unread { background: var(--verde-p); }
+            .notif-item-title { font-weight: 800; margin-bottom: 2px; }
+            .notif-item-sub { color: var(--gris-4); font-size: .75rem; }
+            .notif-empty {
+                padding: 28px;
+                text-align: center;
+                color: var(--gris-3);
+                font-size: .84rem;
+                font-weight: 600;
+            }
+            .notif-clear-btn {
+                width: 100%;
+                border: none;
+                background: none;
+                padding: 10px;
+                font-size: .78rem;
+                font-weight: 700;
+                color: var(--gris-4);
+                cursor: pointer;
+                transition: background .12s;
+            }
+            .notif-clear-btn:hover { background: var(--gris-1); }
+
             .page-content {
                 flex: 1;
                 padding: 32px;
@@ -7109,6 +7197,12 @@
                                 <span class="nav-label">Ver Mi Progreso</span>
                             </div>
                         </div>
+                        <div class="nav-item">
+                            <div class="nav-item-header" onclick="navigateTo('guardia-vacante', this)">
+                                <span class="nav-icon">🛡️</span>
+                                <span class="nav-label">Disponibilidad Vacante</span>
+                            </div>
+                        </div>
                     </div>
                     <div id="nav-admin-section" style="display:none">
                         <!-- ADMINISTRATIVE -->
@@ -7146,6 +7240,23 @@
                     <button class="sidebar-collapse-btn" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" title="Ocultar/Mostrar menú">☰</button>
                     <button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
                     <div class="topbar-title" id="topbarTitle">Panel Principal</div>
+                    <!-- CAMPANA NOTIFICACIONES -->
+                    <div style="position:relative">
+                        <button class="notif-bell-btn" id="notifBellBtn" onclick="notifTogglePanel()" title="Notificaciones">
+                            🔔
+                            <span class="notif-bell-count" id="notifBellCount" style="display:none">0</span>
+                        </button>
+                        <div class="notif-panel" id="notifPanel">
+                            <div class="notif-panel-header">
+                                🔔 Notificaciones
+                                <span id="notifPanelCount" style="font-size:.72rem;color:var(--gris-4);font-weight:700"></span>
+                            </div>
+                            <div class="notif-list" id="notifList">
+                                <div class="notif-empty">Sin notificaciones nuevas</div>
+                            </div>
+                            <button class="notif-clear-btn" onclick="notifClearAll()">✖ Marcar todas como leídas</button>
+                        </div>
+                    </div>
                     <div class="topbar-badge" id="topbarBadge">Admin CX</div>
                 </div>
                 <!-- ══ PÁGINA: CATEGORÍA ══ -->
@@ -9573,11 +9684,11 @@
     </div>
     <label class="gv-penalizacion-toggle">
       <input type="checkbox" id="gv-f-pen-toggle" onchange="gvPenalizacionToggle()">
-      Mostrar penalización si nadie la toma
+      Mostrar aumento de tarifa en vacante
     </label>
     <div id="gv-pen-bloque" style="display:none">
       <div class="gv-form-row full">
-        <div class="gv-form-group"><label>Monto de penalización ($)</label><input type="number" id="gv-f-pen-monto" placeholder="ej: 20" min="0" step="0.01"></div>
+        <div class="gv-form-group"><label>Monto de aumento de tarifa ($)</label><input type="number" id="gv-f-pen-monto" placeholder="ej: 20" min="0" step="0.01"></div>
       </div>
     </div>
     <div class="gv-msg error"   id="gv-modal-error"></div>
@@ -10931,11 +11042,13 @@ Desperfectos físicos detectados: ${desperfectos.length > 0 ? desperfectos.join(
                     lastPage = sessionStorage.getItem('cx_lastPage') || 'home';
                 } catch (e) {}
                 navigateTo(lastPage, null);
+                notifStartPolling();
             }
 
             function doLogout() {
                 currentUser = null;
                 currentRol = null;
+                if (typeof notifStopPolling === 'function') notifStopPolling();
                 // Limpiar sesión guardada
                 try {
                     sessionStorage.removeItem('cx_user');
@@ -17338,12 +17451,12 @@ ${contexto}
     <!-- Penalización -->
     <label class="gv-penalizacion-toggle">
       <input type="checkbox" id="gv-f-pen-toggle" onchange="gvPenalizacionToggle()">
-      Mostrar penalización si nadie la toma
+      Mostrar aumento de tarifa en vacante
     </label>
     <div id="gv-pen-bloque" style="display:none">
       <div class="gv-form-row full">
         <div class="gv-form-group">
-          <label>Monto de penalización ($)</label>
+          <label>Monto de aumento de tarifa ($)</label>
           <input type="number" id="gv-f-pen-monto" placeholder="ej: 20" min="0" step="0.01">
         </div>
       </div>
@@ -17753,15 +17866,24 @@ async function gvGuardar() {
   const cola       = document.getElementById('gv-f-cola').value.trim();
   const horaInicio = document.getElementById('gv-f-hora-inicio').value;
   const horaFin    = document.getElementById('gv-f-hora-fin').value;
-  const monto      = parseFloat(document.getElementById('gv-f-monto').value) || 0;
+  const monto      = parseFloat(document.getElementById('gv-f-monto').value);
 
   if (!fecha || !cola || !horaInicio || !horaFin) {
-    errEl.textContent    = '⚠️ Completa todos los campos obligatorios.';
+    errEl.textContent    = '⚠️ Completa todos los campos obligatorios (fecha, cola, hora inicio y hora fin).';
     errEl.style.display  = 'block';
+    return;
+  }
+  if (isNaN(monto) || monto < 0) {
+    errEl.textContent   = '⚠️ Ingresa un monto válido (mayor o igual a 0).';
+    errEl.style.display = 'block';
     return;
   }
 
   btn.disabled = true; btn.textContent = '⏳ Guardando...';
+  // Safety: re-habilitar botón después de 12s por si acaso
+  const safetyTimer = setTimeout(() => {
+    btn.disabled = false; btn.textContent = '💾 Guardar';
+  }, 12000);
 
   const payload = {
     fecha,
@@ -17773,7 +17895,7 @@ async function gvGuardar() {
     montoPago:           monto,
     mostrarPenalizacion: document.getElementById('gv-f-pen-toggle').checked,
     montoPenalizacion:   parseFloat(document.getElementById('gv-f-pen-monto').value) || 0,
-    creadaPor:           '',
+    creadaPor:           (typeof currentUser !== 'undefined' ? currentUser : '') || '',
   };
 
   try {
@@ -17796,11 +17918,13 @@ async function gvGuardar() {
 
     succEl.textContent   = gvEditId ? '✅ Guardia actualizada.' : '✅ Guardia creada.';
     succEl.style.display = 'block';
+    clearTimeout(safetyTimer);
     setTimeout(() => { gvCerrarModal(); gvCargarAdmin(); }, 1400);
 
   } catch (e) {
-    errEl.textContent   = '❌ ' + (e.message || 'Error al guardar.');
+    errEl.textContent   = '❌ ' + (e.message || 'Error al guardar. Verifica tu conexión.');
     errEl.style.display = 'block';
+    clearTimeout(safetyTimer);
   } finally {
     btn.disabled = false; btn.textContent = '💾 Guardar';
   }
@@ -17910,6 +18034,145 @@ function gvExportarExcel() {
 // document.querySelectorAll('[data-section="guardias"]').forEach(el =>
 //   el.addEventListener('click', () => gvInit())
 // );
+
+/* ══════════════════════════════════════════════════════════════════
+   SISTEMA DE NOTIFICACIONES — CAMPANA 🔔
+   - Admin: recibe notif cuando una guardia es aceptada
+   - Remoto: recibe notif cuando hay una nueva guardia vacante
+             para su equipo (cola)
+   ══════════════════════════════════════════════════════════════════ */
+
+let _notifItems     = [];   // { id, title, body, unread, ts }
+let _notifPollTimer = null;
+let _notifLastCheck = 0;    // timestamp del último fetch
+
+// Abre / cierra el panel
+function notifTogglePanel() {
+  const panel = document.getElementById('notifPanel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) notifRender();
+}
+
+// Cierra si click fuera
+document.addEventListener('click', function(e) {
+  const btn   = document.getElementById('notifBellBtn');
+  const panel = document.getElementById('notifPanel');
+  if (!btn || !panel) return;
+  if (!btn.contains(e.target) && !panel.contains(e.target)) {
+    panel.classList.remove('open');
+  }
+});
+
+// Renderiza la lista de notificaciones
+function notifRender() {
+  const list      = document.getElementById('notifList');
+  const countEl   = document.getElementById('notifPanelCount');
+  const bellCount = document.getElementById('notifBellCount');
+
+  if (!list) return;
+
+  const unread = _notifItems.filter(n => n.unread).length;
+  countEl.textContent = unread > 0 ? unread + ' sin leer' : '';
+  bellCount.textContent = unread;
+  bellCount.style.display = unread > 0 ? 'flex' : 'none';
+
+  if (!_notifItems.length) {
+    list.innerHTML = '<div class="notif-empty">Sin notificaciones nuevas</div>';
+    return;
+  }
+
+  list.innerHTML = _notifItems.map((n, i) => `
+    <div class="notif-item ${n.unread ? 'unread' : ''}" onclick="notifMarkRead(${i})">
+      <div class="notif-item-title">${n.title}</div>
+      <div class="notif-item-sub">${n.body}</div>
+      <div class="notif-item-sub" style="margin-top:2px">${new Date(n.ts).toLocaleString('es-VE', {hour:'2-digit',minute:'2-digit',day:'numeric',month:'short'})}</div>
+    </div>
+  `).join('');
+}
+
+// Marca una notificación como leída
+function notifMarkRead(idx) {
+  if (_notifItems[idx]) _notifItems[idx].unread = false;
+  notifRender();
+}
+
+// Borra todas
+function notifClearAll() {
+  _notifItems.forEach(n => n.unread = false);
+  notifRender();
+}
+
+// Agrega una notificación local
+function notifPush(title, body) {
+  _notifItems.unshift({ id: Date.now(), title, body, unread: true, ts: Date.now() });
+  if (_notifItems.length > 30) _notifItems = _notifItems.slice(0, 30);
+  notifRender();
+}
+
+// ── POLLING: revisa nuevas guardias vacantes ──────────────────────────
+// Para el REMOTO: avisa si aparece una nueva guardia para su cola
+// Para el ADMIN:  avisa si alguien aceptó una guardia
+async function notifPoll() {
+  const esAdmin  = (typeof loginType !== 'undefined') && loginType === 'admin';
+  const esRemoto = (typeof loginType !== 'undefined') && loginType === 'remoto';
+  if (!esAdmin && !esRemoto) return;
+
+  try {
+    if (esRemoto) {
+      // Remoto: busca guardias disponibles nuevas desde el último check
+      const res  = await fetch('/api/guardias?vista=remoto&since=' + _notifLastCheck);
+      const json = await res.json();
+      if (json.success && json.data && json.data.length) {
+        json.data.forEach(g => {
+          // Solo notificar las que son nuevas (no vistas antes)
+          const yaVista = _notifItems.some(n => n.id === g._id);
+          if (!yaVista) {
+            const fecha = new Date(g.fecha).toLocaleDateString('es-VE', { day:'numeric', month:'short' });
+            notifPush(
+              '🛡️ Nueva guardia disponible',
+              `Cola: ${g.cola} · ${fecha} · ${g.horaInicio}–${g.horaFin}`
+            );
+            _notifItems[0].id = g._id; // usar el _id real para evitar duplicados
+          }
+        });
+      }
+    } else if (esAdmin) {
+      // Admin: busca guardias que fueron aceptadas recientemente
+      const res  = await fetch('/api/guardias?vista=admin&aceptadas_recientes=1&since=' + _notifLastCheck);
+      const json = await res.json();
+      if (json.success && json.data && json.data.length) {
+        json.data.forEach(g => {
+          const yaVista = _notifItems.some(n => n.id === 'acept-' + g._id);
+          if (!yaVista && g.estado === 'aceptada') {
+            notifPush(
+              '✅ Guardia vacante tomada',
+              `${g.nombreAgente || 'Un agente'} aceptó la guardia del ${new Date(g.fecha).toLocaleDateString('es-VE',{day:'numeric',month:'short'})} · Cola: ${g.cola}. ¡Contáctale!`
+            );
+            _notifItems[0].id = 'acept-' + g._id;
+          }
+        });
+      }
+    }
+  } catch(e) {
+    // silencioso — no hay conexión o la API no soporta el param 'since'
+  }
+  _notifLastCheck = Date.now();
+}
+
+// Inicia el polling cada 30 segundos
+function notifStartPolling() {
+  if (_notifPollTimer) clearInterval(_notifPollTimer);
+  notifPoll(); // primer check inmediato
+  _notifPollTimer = setInterval(notifPoll, 30000);
+}
+
+// Detiene el polling (al hacer logout)
+function notifStopPolling() {
+  if (_notifPollTimer) clearInterval(_notifPollTimer);
+  _notifPollTimer = null;
+  _notifItems = [];
+  notifRender();
+}
 </script>
     </body>
 </html>
