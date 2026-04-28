@@ -8608,53 +8608,6 @@
                     </div>
                 </div>
 
-                <!-- Modal importar Zendesk -->
-                <div id="hc-import-modal" style="display:none;position:fixed;inset:0;background:rgba(15,17,30,.6);z-index:10000;align-items:center;justify-content:center">
-                    <div style="background:var(--blanco);border-radius:var(--radius);padding:28px;max-width:560px;width:94%;position:relative;max-height:90vh;overflow-y:auto">
-                        <button onclick="hcCerrarImport()" style="position:absolute;top:14px;right:14px;background:var(--gris-1);border:none;border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;font-weight:700">✕</button>
-                        <div style="font-weight:800;font-size:1rem;letter-spacing:.06em;color:var(--negro);margin-bottom:6px">📥 IMPORTAR DESDE ZENDESK</div>
-                        <p style="font-size:.8rem;color:var(--gris-4);font-weight:600;margin-bottom:18px">Sube el reporte "Total time in state" de Zendesk. Se suman las horas Online por agente agrupadas por semana ISO.</p>
-                        <div class="hc-grid" style="margin-bottom:16px">
-                            <div class="hc-field">
-                                <label>Turno a asignar</label>
-                                <select id="hc-imp-turno" style="width:100%;padding:10px 14px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.88rem;font-weight:600;color:var(--negro);background:var(--fondo);outline:none">
-                                    <option value="AM Semana|40">AM Semana (40h/sem)</option>
-                                    <option value="PM Semana|40">PM Semana (40h/sem)</option>
-                                    <option value="Madrugada Semana|30">Madrugada Semana (30h/sem)</option>
-                                    <option value="Madrugada Fin de Semana|12">Madrugada Fin de Semana (12h/sem)</option>
-                                    <option value="Fin de Semana AM|16">Fin de Semana AM (16h/sem)</option>
-                                    <option value="Fin de Semana PM|16">Fin de Semana PM (16h/sem)</option>
-                                </select>
-                            </div>
-                            <div class="hc-field">
-                                <label>Semana manual (opcional)</label>
-                                <input type="week" id="hc-imp-semana" style="width:100%;padding:10px 14px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.88rem;font-weight:600;color:var(--negro);background:var(--fondo);outline:none">
-                                <span style="font-size:.7rem;color:var(--gris-3);font-weight:600">Si se deja vacío se detecta del archivo</span>
-                            </div>
-                        </div>
-                        <div onclick="document.getElementById('hc-imp-file').click()" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;border:2px dashed var(--borde);border-radius:var(--radius-s);cursor:pointer;background:var(--fondo);margin-bottom:14px">
-                            <span style="font-size:1.5rem">📂</span>
-                            <span style="font-weight:700;font-size:.88rem;color:var(--gris-4)" id="hc-imp-filename">Haz clic para seleccionar el archivo .xlsx</span>
-                            <input type="file" id="hc-imp-file" accept=".xlsx" style="display:none" onchange="hcOnFileSelect(this)">
-                        </div>
-                        <div id="hc-imp-preview" style="display:none;margin-bottom:14px;max-height:200px;overflow-y:auto;border:1px solid var(--borde);border-radius:var(--radius-s)">
-                            <table style="width:100%;border-collapse:collapse;font-size:.78rem">
-                                <thead><tr style="background:var(--negro);color:var(--blanco)">
-                                    <th style="padding:8px 10px;font-weight:800;text-align:left">Agente</th>
-                                    <th style="padding:8px 10px;font-weight:800;text-align:left">Semana</th>
-                                    <th style="padding:8px 10px;font-weight:800;text-align:left">Horas Online</th>
-                                </tr></thead>
-                                <tbody id="hc-imp-tbody"></tbody>
-                            </table>
-                        </div>
-                        <div id="hc-imp-msg" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:var(--radius-s);font-weight:700;font-size:.82rem"></div>
-                        <div style="display:flex;gap:10px;justify-content:flex-end">
-                            <button onclick="hcCerrarImport()" style="padding:10px 20px;background:var(--gris-1);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:700;cursor:pointer;color:var(--gris-4)">Cancelar</button>
-                            <button id="hc-imp-btn" onclick="hcConfirmarImport()" style="padding:10px 24px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;cursor:pointer;color:var(--negro);display:none">✅ Importar registros</button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Modal editar -->
                 <div id="hc-edit-modal" style="display:none;position:fixed;inset:0;background:rgba(15,17,30,.6);z-index:10000;align-items:center;justify-content:center">
                     <div style="background:var(--blanco);border-radius:var(--radius);padding:28px;max-width:480px;width:90%;position:relative">
@@ -9057,6 +9010,53 @@
                 </script>
                 </div><!-- /page-calidad -->
 
+                <!-- Modal importar Zendesk — FUERA de page-calidad para que position:fixed funcione siempre -->
+                <div id="hc-import-modal" style="display:none;position:fixed;inset:0;background:rgba(15,17,30,.6);z-index:10000;align-items:center;justify-content:center">
+                    <div style="background:var(--blanco);border-radius:var(--radius);padding:28px;max-width:560px;width:94%;position:relative;max-height:90vh;overflow-y:auto">
+                        <button onclick="hcCerrarImport()" style="position:absolute;top:14px;right:14px;background:var(--gris-1);border:none;border-radius:50%;width:30px;height:30px;font-size:1rem;cursor:pointer;font-weight:700">✕</button>
+                        <div style="font-weight:800;font-size:1rem;letter-spacing:.06em;color:var(--negro);margin-bottom:6px">📥 IMPORTAR DESDE ZENDESK</div>
+                        <p style="font-size:.8rem;color:var(--gris-4);font-weight:600;margin-bottom:18px">Sube el reporte "Total time in state" de Zendesk. Se suman las horas Online por agente agrupadas por semana ISO.</p>
+                        <div class="hc-grid" style="margin-bottom:16px">
+                            <div class="hc-field">
+                                <label>Turno a asignar</label>
+                                <select id="hc-imp-turno" style="width:100%;padding:10px 14px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.88rem;font-weight:600;color:var(--negro);background:var(--fondo);outline:none">
+                                    <option value="AM Semana|40">AM Semana (40h/sem)</option>
+                                    <option value="PM Semana|40">PM Semana (40h/sem)</option>
+                                    <option value="Madrugada Semana|30">Madrugada Semana (30h/sem)</option>
+                                    <option value="Madrugada Fin de Semana|12">Madrugada Fin de Semana (12h/sem)</option>
+                                    <option value="Fin de Semana AM|16">Fin de Semana AM (16h/sem)</option>
+                                    <option value="Fin de Semana PM|16">Fin de Semana PM (16h/sem)</option>
+                                </select>
+                            </div>
+                            <div class="hc-field">
+                                <label>Semana manual (opcional)</label>
+                                <input type="week" id="hc-imp-semana" style="width:100%;padding:10px 14px;border:1.5px solid var(--borde);border-radius:var(--radius-s);font-family:var(--font-main);font-size:.88rem;font-weight:600;color:var(--negro);background:var(--fondo);outline:none">
+                                <span style="font-size:.7rem;color:var(--gris-3);font-weight:600">Si se deja vacío se detecta del archivo</span>
+                            </div>
+                        </div>
+                        <div onclick="document.getElementById('hc-imp-file').click()" style="display:flex;align-items:center;justify-content:center;gap:10px;padding:20px;border:2px dashed var(--borde);border-radius:var(--radius-s);cursor:pointer;background:var(--fondo);margin-bottom:14px">
+                            <span style="font-size:1.5rem">📂</span>
+                            <span style="font-weight:700;font-size:.88rem;color:var(--gris-4)" id="hc-imp-filename">Haz clic para seleccionar el archivo .xlsx</span>
+                            <input type="file" id="hc-imp-file" accept=".xlsx" style="display:none" onchange="hcOnFileSelect(this)">
+                        </div>
+                        <div id="hc-imp-preview" style="display:none;margin-bottom:14px;max-height:200px;overflow-y:auto;border:1px solid var(--borde);border-radius:var(--radius-s)">
+                            <table style="width:100%;border-collapse:collapse;font-size:.78rem">
+                                <thead><tr style="background:var(--negro);color:var(--blanco)">
+                                    <th style="padding:8px 10px;font-weight:800;text-align:left">Agente</th>
+                                    <th style="padding:8px 10px;font-weight:800;text-align:left">Semana</th>
+                                    <th style="padding:8px 10px;font-weight:800;text-align:left">Horas Online</th>
+                                </tr></thead>
+                                <tbody id="hc-imp-tbody"></tbody>
+                            </table>
+                        </div>
+                        <div id="hc-imp-msg" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:var(--radius-s);font-weight:700;font-size:.82rem"></div>
+                        <div style="display:flex;gap:10px;justify-content:flex-end">
+                            <button onclick="hcCerrarImport()" style="padding:10px 20px;background:var(--gris-1);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:700;cursor:pointer;color:var(--gris-4)">Cancelar</button>
+                            <button id="hc-imp-btn" onclick="hcConfirmarImport()" style="padding:10px 24px;background:var(--verde);border:none;border-radius:var(--radius-s);font-family:var(--font-main);font-weight:800;cursor:pointer;color:var(--negro);display:none">✅ Importar registros</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ═══════════════════════════════════════════
                      MÓDULO: MÉTRICAS SEMANALES
                 ═══════════════════════════════════════════ -->
@@ -9421,6 +9421,8 @@
                     msSaving = true;
                     try {
                         await msApiPost(k, msLocalToSemanas(k));
+                        // Invalidar cache para que msRender recargue datos frescos desde la API
+                        delete msData[k];
                     } catch(e) { msToast('Error guardando en base de datos', 'err'); }
                     finally { msSaving = false; }
                 }
