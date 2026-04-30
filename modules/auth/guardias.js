@@ -177,6 +177,7 @@ export {
   gvSetTab, gvMisFiltro, gvRenderTabla, gvRenderResumen,
   gvExportarExcel, gvConfirmarPago, gvAbrirModalPago,
   gvCerrarModalPago, gvModalClickOutside, gvTipoPagoChange,
-  gvPenalizacionToggle, gvExportarImagenResumen,
+  gvPenalizacionToggle,
+  _gvExportarImagenResumen as gvExportarImagenResumen,
   notifTogglePanel, notifClearAll, notifMarkRead
 };
