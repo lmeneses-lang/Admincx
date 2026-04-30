@@ -167,6 +167,8 @@ window.onload = function() {
   };
   document.head.appendChild(s);
 };
+<\/script>
+</body></html>`,win=window.open(``,`_blank`,`width=1060,height=700`);win.document.write(html),win.document.close()}
 
 // ─── Exports para uso desde index.html ───
 export { gvInit, gvCargarRemoto, gvAceptarVacante };
