@@ -171,4 +171,12 @@ window.onload = function() {
 </body></html>`,win=window.open(``,`_blank`,`width=1060,height=700`);win.document.write(html),win.document.close()}
 
 // ─── Exports para uso desde index.html ───
-export { gvInit, gvCargarRemoto, gvAceptarVacante };
+export {
+  gvInit, gvCargarRemoto, gvAceptarVacante,
+  gvAbrirModal, gvCerrarModal, gvGuardar, gvEliminar,
+  gvSetTab, gvMisFiltro, gvRenderTabla, gvRenderResumen,
+  gvExportarExcel, gvConfirmarPago, gvAbrirModalPago,
+  gvCerrarModalPago, gvModalClickOutside, gvTipoPagoChange,
+  gvPenalizacionToggle, gvExportarImagenResumen,
+  notifTogglePanel, notifClearAll, notifMarkRead
+};
