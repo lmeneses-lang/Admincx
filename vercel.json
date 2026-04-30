@@ -14,12 +14,8 @@
       "dest": "/modules/$1"
     },
     {
-      "src": "/(.*\\.js)",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*\\.css)",
-      "dest": "/$1"
+      "src": "/styles/(.*)",
+      "dest": "/styles/$1"
     },
     {
       "src": "/(.*)",
